@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Phone, Globe, Mail, User } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
-import logoImage from "@/assets/novo-tempo-logo-v2.png";
+import logoImage from "@/assets/novo-tempo-logo-v3.png";
 
 interface CartazPreviewProps {
   data: CartazData;
