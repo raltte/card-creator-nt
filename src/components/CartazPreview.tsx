@@ -258,18 +258,20 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     const headerTextMetrics = ctx.measureText('Envie seu currículo em:');
     const buttonWidth = headerTextMetrics.width;
     const buttonHeight = 48;
+    const buttonY = 1116;
     
     // Desenhar o fundo branco centralizado
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.roundRect(720 - buttonWidth/2, 1116 - buttonHeight/2, buttonWidth, buttonHeight, 24);
+    ctx.roundRect(720 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
     ctx.fill();
     
     // Texto do contato centralizado verticalmente e horizontalmente
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 24px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(contactText, 720, 1120);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(contactText, 720, buttonY);
   };
 
   useEffect(() => {
