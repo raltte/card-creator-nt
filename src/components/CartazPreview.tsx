@@ -162,7 +162,8 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    ctx.drawImage(logo, 440, 32, 360, 72);
+    // Manter proporção original do logo e alinhar à esquerda do texto
+    ctx.drawImage(logo, 420, 32, 240, 120);
 
     // "Vaga de emprego" - título principal (posição igual ao exemplo)
     ctx.fillStyle = '#FFFFFF';
