@@ -141,7 +141,7 @@ serve(async (req) => {
     // Ação de enviar cartaz
     console.log('Enviando cartaz para Monday.com:', cartazData);
 
-    // Buscar as colunas do quadro para mapear corretamente
+    // Buscar as colunas e grupos do quadro
     const boardQuery = `
       query {
         boards (ids: [${boardId}]) {
@@ -149,6 +149,11 @@ serve(async (req) => {
             id
             title
             type
+            settings_str
+          }
+          groups {
+            id
+            title
           }
         }
       }
@@ -167,50 +172,131 @@ serve(async (req) => {
     });
 
     const boardInfo = await boardInfoResponse.json();
-    const columns = boardInfo.data?.boards?.[0]?.columns || [];
+    console.log('Informações do board:', JSON.stringify(boardInfo, null, 2));
     
-    // Mapear valores para as colunas corretas
-    const columnValues: any = {};
+    if (boardInfo.errors) {
+      console.error('Erro na API do Monday.com:', boardInfo.errors);
+      throw new Error(`Erro do Monday.com: ${boardInfo.errors[0].message}`);
+    }
+
+    const columns = boardInfo.data?.boards?.[0]?.columns || [];
+    const groups = boardInfo.data?.boards?.[0]?.groups || [];
+    
+    // Selecionar grupo baseado no tipo de contrato
+    let selectedGroupId = groupId;
+    if (!selectedGroupId && groups.length > 0) {
+      const tipoContrato = cartazData.tipoContrato?.toLowerCase();
+      const foundGroup = groups.find((group: any) => 
+        group.title.toLowerCase().includes(tipoContrato || '') ||
+        group.title.toLowerCase().includes('vaga') ||
+        group.title.toLowerCase().includes('cartaz')
+      );
+      selectedGroupId = foundGroup?.id || groups[0].id;
+    }
+    
+    // Mapear valores para as colunas corretas de forma mais robusta
+    const columnValues: Record<string, any> = {};
     
     columns.forEach((col: any) => {
-      switch(col.title) {
-        case "Status":
-          columnValues[col.id] = {"label": 0}; // Pendente
+      const colTitle = col.title.toLowerCase().trim();
+      
+      switch(colTitle) {
+        case "status":
+        case "situação":
+          if (col.type === "color") {
+            columnValues[col.id] = {"label": "Pendente"};
+          } else if (col.type === "dropdown") {
+            columnValues[col.id] = {"labels": ["Pendente"]};
+          } else {
+            columnValues[col.id] = "Pendente";
+          }
           break;
-        case "Código PS":
-          columnValues[col.id] = cartazData.codigo;
+        case "código ps":
+        case "codigo ps":
+        case "código":
+        case "codigo":
+          if (cartazData.codigo) {
+            columnValues[col.id] = cartazData.codigo;
+          }
           break;
-        case "Tipo Contrato":
-          const contratoMap: any = {"Efetivo": 1, "Temporário": 2, "Estágio": 3, "PCD": 4, "Freelancer": 5};
-          columnValues[col.id] = {"label": contratoMap[cartazData.tipoContrato] || 1};
+        case "tipo contrato":
+        case "tipo_contrato":
+        case "contrato":
+          if (cartazData.tipoContrato) {
+            if (col.type === "dropdown") {
+              columnValues[col.id] = {"labels": [cartazData.tipoContrato]};
+            } else {
+              columnValues[col.id] = cartazData.tipoContrato;
+            }
+          }
           break;
-        case "Local":
-          columnValues[col.id] = cartazData.local;
+        case "local":
+        case "localização":
+        case "cidade":
+          if (cartazData.local) {
+            columnValues[col.id] = cartazData.local;
+          }
           break;
-        case "Contato":
-          columnValues[col.id] = cartazData.contato.valor;
+        case "contato":
+        case "telefone":
+        case "email":
+          if (cartazData.contato?.valor) {
+            columnValues[col.id] = cartazData.contato.valor;
+          }
           break;
-        case "Tipo Contato":
-          const contatoMap: any = {"whatsapp": 1, "email": 2, "site": 3};
-          columnValues[col.id] = {"label": contatoMap[cartazData.contato.tipo] || 3};
+        case "tipo contato":
+        case "tipo_contato":
+        case "forma contato":
+          if (cartazData.contato?.tipo) {
+            if (col.type === "dropdown") {
+              const tipoMap: Record<string, string> = {
+                "whatsapp": "WhatsApp",
+                "email": "Email", 
+                "site": "Site"
+              };
+              columnValues[col.id] = {"labels": [tipoMap[cartazData.contato.tipo] || cartazData.contato.tipo]};
+            } else {
+              columnValues[col.id] = cartazData.contato.tipo;
+            }
+          }
           break;
-        case "Requisitos":
-          columnValues[col.id] = cartazData.requisitos;
+        case "requisitos":
+        case "descricão":
+        case "descrição":
+          if (cartazData.requisitos) {
+            columnValues[col.id] = cartazData.requisitos;
+          }
           break;
-        case "Data Criação":
-          columnValues[col.id] = {"date": new Date().toISOString().split('T')[0]};
+        case "data criação":
+        case "data_criacao":
+        case "created_at":
+        case "data":
+          if (col.type === "date") {
+            columnValues[col.id] = {"date": new Date().toISOString().split('T')[0]};
+          } else {
+            columnValues[col.id] = new Date().toLocaleDateString('pt-BR');
+          }
+          break;
+        case "cargo":
+        case "vaga":
+        case "posição":
+          if (cartazData.cargo) {
+            columnValues[col.id] = cartazData.cargo;
+          }
           break;
       }
     });
+
+    console.log('Column values sendo enviados:', JSON.stringify(columnValues, null, 2));
 
     // Criar item no Monday.com
     const mutation = `
       mutation {
         create_item (
           board_id: ${boardId},
-          ${groupId ? `group_id: "${groupId}",` : ''}
+          ${selectedGroupId ? `group_id: "${selectedGroupId}",` : ''}
           item_name: "${cartazData.cargo} - ${cartazData.local}",
-          column_values: "${JSON.stringify(columnValues).replace(/"/g, '\\"')}"
+          column_values: ${JSON.stringify(JSON.stringify(columnValues))}
         ) {
           id
           name

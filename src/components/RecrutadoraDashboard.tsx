@@ -162,47 +162,17 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleMondayIntegration = async () => {
-    if (!cartazGerado) return;
-    
-    // Opções para o usuário
-    const action = confirm("Você quer:\n- OK: Criar um novo quadro de aprovação\n- Cancelar: Enviar para um quadro existente");
-    
-    if (action) {
-      // Criar novo quadro
-      try {
-        const { data, error } = await supabase.functions.invoke('monday-integration', {
-          body: {
-            action: 'create_board'
-          }
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Quadro criado!",
-          description: `Quadro de aprovação criado. ID: ${data.boardId}. Agora envie o cartaz para este quadro.`
-        });
-        
-        // Após criar, enviar o cartaz automaticamente
-        setTimeout(() => {
-          handleSendToBoard(data.boardId);
-        }, 1000);
-        
-      } catch (error: any) {
-        console.error('Erro ao criar quadro:', error);
-        toast({
-          title: "Erro",
-          description: error.message || "Falha ao criar quadro no Monday.com.",
-          variant: "destructive"
-        });
-      }
-    } else {
-      // Enviar para quadro existente
-      const boardId = prompt("Digite o ID do Board no Monday.com:");
-      if (boardId) {
-        handleSendToBoard(parseInt(boardId));
-      }
+    if (!cartazGerado) {
+      toast({
+        title: "Erro",
+        description: "Nenhum cartaz foi gerado ainda.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    // Envia diretamente para o board padrão 8717502047
+    await handleSendToBoard(8717502047);
   };
 
   const handleSendToBoard = async (boardId: number) => {
@@ -221,7 +191,7 @@ export const RecrutadoraDashboard = () => {
             image: imageData
           },
           boardId: boardId,
-          groupId: "topics" // grupo padrão
+          groupId: null // será selecionado automaticamente
         }
       });
 
