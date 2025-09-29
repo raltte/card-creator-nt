@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Phone, Globe, Mail, User } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
-import logoImage from "@/assets/novo-tempo-logo-v3.png";
+import logoImage from "@/assets/novo-tempo-logo-v4.png";
 
 interface CartazPreviewProps {
   data: CartazData;
@@ -156,14 +156,16 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.roundRect(384, 0, 576, 1008, [0, 24, 0, 0]);
     ctx.fill();
 
-    // Logo Novo Tempo (topo direito) - posicionamento ajustado para novo logo
+    // Logo Novo Tempo (topo direito) - proporção mantida para evitar distorção
     const logo = new Image();
     logo.src = logoImage;
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    // Manter proporção original do logo e alinhar à esquerda do texto
-    ctx.drawImage(logo, 420, 32, 240, 120);
+    // Calcular proporção correta baseada na largura desejada
+    const logoWidth = 200;
+    const logoHeight = (logoWidth * logo.height) / logo.width;
+    ctx.drawImage(logo, 420, 32, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal (posição igual ao exemplo)
     ctx.fillStyle = '#FFFFFF';
