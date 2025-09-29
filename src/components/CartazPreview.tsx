@@ -252,20 +252,24 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
 
     // Texto fixo do contato: novotemporh.com.br
     const contactText = getContactDisplay();
-    ctx.font = 'bold 24px Montserrat, Arial';
-    const textMetrics = ctx.measureText(contactText);
-    const buttonWidth = textMetrics.width + 48;
+    
+    // Medir o texto "Envie seu currículo em:" para usar a mesma largura
+    ctx.font = 'bold 32px Montserrat, Arial';
+    const headerTextMetrics = ctx.measureText('Envie seu currículo em:');
+    const buttonWidth = headerTextMetrics.width;
     const buttonHeight = 48;
     
+    // Desenhar o fundo branco centralizado
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.roundRect(720 - buttonWidth/2, 1116 - buttonHeight/2, buttonWidth, buttonHeight, 24);
     ctx.fill();
     
-    // Texto do contato
+    // Texto do contato centralizado verticalmente e horizontalmente
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 24px Montserrat, Arial';
-    ctx.fillText(contactText, 720, 1140);
+    ctx.textAlign = 'center';
+    ctx.fillText(contactText, 720, 1120);
   };
 
   useEffect(() => {
