@@ -137,7 +137,7 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="CLT">CLT</SelectItem>
+              <SelectItem value="Efetivo">Efetivo</SelectItem>
               <SelectItem value="Temporário">Temporário</SelectItem>
               <SelectItem value="PJ">PJ</SelectItem>
               <SelectItem value="Estágio">Estágio</SelectItem>
