@@ -162,8 +162,8 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    // Calcular proporção correta baseada na largura desejada
-    const logoWidth = 200;
+    // Calcular proporção correta baseada na largura desejada (ampliado em 20%)
+    const logoWidth = 240;
     const logoHeight = (logoWidth * logo.height) / logo.width;
     ctx.drawImage(logo, 420, 32, logoWidth, logoHeight);
 
