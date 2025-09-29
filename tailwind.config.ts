@@ -27,6 +27,9 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        "nt-dark": "hsl(var(--nt-dark-green))",
+        "nt-light": "hsl(var(--nt-light-green))",
+        "nt-white": "hsl(var(--nt-white))",
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",

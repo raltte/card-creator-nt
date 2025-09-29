@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Novo Tempo RH Design System - Cores e estilos baseados na identidade visual */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -17,24 +17,29 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Novo Tempo Brand Colors */
+    --nt-dark-green: 158 58% 14%; /* #11332B */
+    --nt-light-green: 158 70% 45%; /* #20CE90 */
+    --nt-white: 0 0% 100%;
+    
+    --primary: 158 58% 14%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 158 70% 45%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 158 70% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 158 58% 14%;
 
     --radius: 0.5rem;
 
@@ -101,5 +106,28 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* Cartaz Styles */
+  .cartaz-container {
+    @apply relative w-full;
+    aspect-ratio: 4/5;
+    max-width: 400px;
+  }
+
+  .cartaz-left {
+    @apply absolute left-0 top-0 w-1/2 h-full overflow-hidden;
+  }
+
+  .cartaz-right {
+    @apply absolute right-0 top-0 w-1/2 h-full;
+    background: hsl(var(--nt-dark-green));
+    border-top-right-radius: 20px;
+  }
+
+  .cartaz-contact-bar {
+    @apply absolute bottom-0 left-1/2 right-0 h-20;
+    background: hsl(var(--nt-light-green));
   }
 }
