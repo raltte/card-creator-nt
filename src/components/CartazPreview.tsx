@@ -169,7 +169,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Vaga de', 520, 200);
-    ctx.fillText('emprego', 520, 280);
+    ctx.fillText('emprego', 520, 250);
 
     // Função auxiliar para quebrar texto
     const wrapText = (text: string, maxWidth: number, fontSize: string) => {
@@ -193,96 +193,100 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     };
 
     // Dados da vaga - começando na posição correta
-    let y = 360;
+    let y = 320;
     const maxTextWidth = 400; // Margem de 40px da direita (960 - 520 - 40)
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Vaga:', 520, y);
-      y += 36;
-      
-      ctx.font = '28px Montserrat, Arial';
-      const cargoLines = wrapText(data.cargo, maxTextWidth, '28px Montserrat, Arial');
+      ctx.font = 'bold 30px Montserrat, Arial';
+      const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 30px Montserrat, Arial');
       cargoLines.forEach(line => {
         ctx.fillText(line, 520, y);
         y += 36;
       });
     }
-    y += 20;
+    y += 16;
 
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Local:', 520, y);
-      y += 36;
+      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.fillText('Local: ', 520, y);
       
-      ctx.font = '28px Montserrat, Arial';
-      const localLines = wrapText(data.local, maxTextWidth, '28px Montserrat, Arial');
-      localLines.forEach(line => {
-        ctx.fillText(line, 520, y);
-        y += 36;
+      const localWidth = ctx.measureText('Local: ').width;
+      ctx.font = '26px Montserrat, Arial';
+      const localLines = wrapText(data.local, maxTextWidth - localWidth, '26px Montserrat, Arial');
+      localLines.forEach((line, index) => {
+        if (index === 0) {
+          ctx.fillText(line, 520 + localWidth, y);
+        } else {
+          ctx.fillText(line, 520, y);
+        }
+        y += 32;
       });
     }
-    y += 20;
+    y += 16;
 
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Código:', 520, y);
-      y += 36;
+      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.fillText('Código: ', 520, y);
       
-      ctx.font = '28px Montserrat, Arial';
-      ctx.fillText(data.codigo, 520, y);
+      const codigoWidth = ctx.measureText('Código: ').width;
+      ctx.font = '26px Montserrat, Arial';
+      ctx.fillText(data.codigo, 520 + codigoWidth, y);
     }
-    y += 40;
+    y += 56;
 
     // Tipo de contrato
     if (data.tipoContrato) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       ctx.fillText('Tipo de contrato:', 520, y);
-      y += 36;
+      y += 40;
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '26px Montserrat, Arial';
+      ctx.font = '28px Montserrat, Arial';
       ctx.fillText(data.tipoContrato, 520, y);
     }
-    y += 40;
+    y += 56;
 
     // Requisitos
     if (data.requisitos) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
       ctx.fillText(requisitosTitle, 520, y);
-      y += 40;
+      y += 44;
 
       // Quebrar texto dos requisitos com espaçamento correto
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '22px Montserrat, Arial';
+      ctx.font = '24px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
-          const wrappedLines = wrapText(line, maxTextWidth, '22px Montserrat, Arial');
-          wrappedLines.forEach(wrappedLine => {
-            ctx.fillText(wrappedLine, 520, y);
-            y += 28;
+          // Adicionar bullet point se não existir
+          const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
+          const wrappedLines = wrapText(lineWithBullet, maxTextWidth, '24px Montserrat, Arial');
+          wrappedLines.forEach((wrappedLine, index) => {
+            // Para linhas continuadas, adicionar indentação
+            const x = index === 0 ? 520 : 540;
+            ctx.fillText(wrappedLine, x, y);
+            y += 32;
           });
         }
       });
     }
 
     // "Saiba mais na legenda" - posicionamento exato
-    y += 20;
+    y += 32;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '24px Montserrat, Arial';
+    ctx.font = '26px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', 520, y);
     
     // Medir texto para posicionar "legenda" em verde
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#20CE90';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 26px Montserrat, Arial';
     ctx.fillText('legenda.', 520 + textWidth, y);
 
     // Barra de contato verde claro na parte inferior
