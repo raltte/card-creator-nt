@@ -171,73 +171,118 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.fillText('Vaga de', 520, 200);
     ctx.fillText('emprego', 520, 280);
 
+    // Função auxiliar para quebrar texto
+    const wrapText = (text: string, maxWidth: number, fontSize: string) => {
+      ctx.font = fontSize;
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + ' ' + word).width;
+        if (width < maxWidth) {
+          currentLine += ' ' + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    };
+
     // Dados da vaga - começando na posição correta
     let y = 360;
+    const maxTextWidth = 400; // Margem de 40px da direita (960 - 520 - 40)
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 36px Montserrat, Arial';
-      ctx.fillText(`Vaga: ${data.cargo}`, 520, y);
+      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.fillText('Vaga:', 520, y);
+      y += 40;
+      
+      ctx.font = '32px Montserrat, Arial';
+      const cargoLines = wrapText(data.cargo, maxTextWidth, '32px Montserrat, Arial');
+      cargoLines.forEach(line => {
+        ctx.fillText(line, 520, y);
+        y += 40;
+      });
     }
-    y += 56;
+    y += 24;
 
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.fillText('Local:', 520, y);
+      y += 40;
+      
       ctx.font = '32px Montserrat, Arial';
-      ctx.fillText(`Local: ${data.local}`, 520, y);
+      const localLines = wrapText(data.local, maxTextWidth, '32px Montserrat, Arial');
+      localLines.forEach(line => {
+        ctx.fillText(line, 520, y);
+        y += 40;
+      });
     }
-    y += 56;
+    y += 24;
 
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.fillText('Código:', 520, y);
+      y += 40;
+      
       ctx.font = '32px Montserrat, Arial';
-      ctx.fillText(`Código: ${data.codigo}`, 520, y);
+      ctx.fillText(data.codigo, 520, y);
     }
-    y += 72;
+    y += 48;
 
     // Tipo de contrato
     if (data.tipoContrato) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 28px Montserrat, Arial';
+      ctx.font = 'bold 30px Montserrat, Arial';
       ctx.fillText('Tipo de contrato:', 520, y);
       y += 40;
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '28px Montserrat, Arial';
+      ctx.font = '30px Montserrat, Arial';
       ctx.fillText(data.tipoContrato, 520, y);
     }
-    y += 72;
+    y += 48;
 
     // Requisitos
     if (data.requisitos) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 28px Montserrat, Arial';
+      ctx.font = 'bold 30px Montserrat, Arial';
       const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
       ctx.fillText(requisitosTitle, 520, y);
       y += 48;
 
       // Quebrar texto dos requisitos com espaçamento correto
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '24px Montserrat, Arial';
+      ctx.font = '26px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
-          ctx.fillText(line, 520, y);
-          y += 36;
+          const wrappedLines = wrapText(line, maxTextWidth, '26px Montserrat, Arial');
+          wrappedLines.forEach(wrappedLine => {
+            ctx.fillText(wrappedLine, 520, y);
+            y += 32;
+          });
         }
       });
     }
 
     // "Saiba mais na legenda" - posicionamento exato
-    y += 32;
+    y += 24;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '24px Montserrat, Arial';
+    ctx.font = '28px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', 520, y);
     
     // Medir texto para posicionar "legenda" em verde
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#20CE90';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 28px Montserrat, Arial';
     ctx.fillText('legenda.', 520 + textWidth, y);
 
     // Barra de contato verde claro na parte inferior
