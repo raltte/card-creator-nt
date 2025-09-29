@@ -1,11 +1,8 @@
-import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Upload, User, Building, Phone, Mail, Globe } from "lucide-react";
+import { Upload, Globe } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 
 interface CartazFormProps {
@@ -13,17 +10,7 @@ interface CartazFormProps {
   onChange: (data: CartazData) => void;
 }
 
-const templateImages = [
-  { id: 'admin', name: 'Administrativo', description: 'Pessoa em ambiente de escritório' },
-  { id: 'industrial', name: 'Industrial', description: 'Pessoa com EPI/capacete' },
-  { id: 'comercial', name: 'Comercial', description: 'Pessoa em ambiente comercial' },
-  { id: 'operacional', name: 'Operacional', description: 'Pessoa em uniforme' },
-  { id: 'estagio', name: 'Estágio', description: 'Estudante/jovem profissional' }
-];
-
 export const CartazForm = ({ data, onChange }: CartazFormProps) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
-
   const updateData = (field: keyof CartazData | string, value: any) => {
     if (field === 'contato.tipo' || field === 'contato.valor') {
       const [parent, child] = field.split('.');
@@ -46,21 +33,6 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
     const file = event.target.files?.[0];
     if (file) {
       updateData('image', file);
-      setSelectedTemplate('');
-    }
-  };
-
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplate(templateId);
-    updateData('image', templateId);
-  };
-
-  const getContactIcon = (tipo: string) => {
-    switch (tipo) {
-      case 'whatsapp': return <Phone className="w-4 h-4" />;
-      case 'email': return <Mail className="w-4 h-4" />;
-      case 'site': return <Globe className="w-4 h-4" />;
-      default: return <Globe className="w-4 h-4" />;
     }
   };
 
@@ -87,27 +59,6 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               </div>
             </div>
           </label>
-        </div>
-
-        {/* Templates */}
-        <div>
-          <Label className="text-sm font-medium text-muted-foreground mb-2 block">
-            Ou escolha um template:
-          </Label>
-          <div className="grid grid-cols-2 gap-2">
-            {templateImages.map((template) => (
-              <Button
-                key={template.id}
-                variant={selectedTemplate === template.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleTemplateSelect(template.id)}
-                className="h-auto p-3 flex flex-col items-center gap-1"
-              >
-                <User className="w-4 h-4" />
-                <span className="text-xs">{template.name}</span>
-              </Button>
-            ))}
-          </div>
         </div>
       </div>
 

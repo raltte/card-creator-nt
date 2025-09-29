@@ -23,71 +23,6 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     return '🌐 novotemporh.com.br';
   };
 
-  const generateTemplateImage = async (templateId: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 500;
-      const ctx = canvas.getContext('2d');
-      
-      if (!ctx) {
-        const img = new Image();
-        img.src = 'data:image/svg+xml;base64,' + btoa(`
-          <svg width="400" height="500" xmlns="http://www.w3.org/2000/svg">
-            <rect width="400" height="500" fill="#f3f4f6"/>
-            <text x="200" y="250" text-anchor="middle" font-family="Arial" font-size="24" fill="#9ca3af">Template</text>
-          </svg>
-        `);
-        img.onload = () => resolve(img);
-        return;
-      }
-
-      // Criar um gradiente baseado no tipo de template
-      const gradient = ctx.createLinearGradient(0, 0, 400, 500);
-      
-      switch (templateId) {
-        case 'admin':
-          gradient.addColorStop(0, '#f8fafc');
-          gradient.addColorStop(1, '#e2e8f0');
-          break;
-        case 'industrial':
-          gradient.addColorStop(0, '#fff7ed');
-          gradient.addColorStop(1, '#fed7aa');
-          break;
-        case 'comercial':
-          gradient.addColorStop(0, '#f0f9ff');
-          gradient.addColorStop(1, '#bae6fd');
-          break;
-        case 'operacional':
-          gradient.addColorStop(0, '#f7fee7');
-          gradient.addColorStop(1, '#bbf7d0');
-          break;
-        case 'estagio':
-          gradient.addColorStop(0, '#fef7ff');
-          gradient.addColorStop(1, '#f3e8ff');
-          break;
-        default:
-          gradient.addColorStop(0, '#f3f4f6');
-          gradient.addColorStop(1, '#d1d5db');
-      }
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 400, 500);
-
-      // Adicionar ícone representativo
-      ctx.fillStyle = '#6b7280';
-      ctx.font = 'bold 48px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('👤', 200, 200);
-      
-      ctx.font = '20px Arial';
-      ctx.fillText(templateId.charAt(0).toUpperCase() + templateId.slice(1), 200, 250);
-
-      const img = new Image();
-      img.src = canvas.toDataURL();
-      img.onload = () => resolve(img);
-    });
-  };
 
   const drawCartaz = async () => {
     const canvas = canvasRef.current;
@@ -112,10 +47,8 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       await new Promise((resolve) => {
         leftImage.onload = resolve;
       });
-    } else if (typeof data.image === 'string' && data.image) {
-      leftImage = await generateTemplateImage(data.image);
     } else {
-      // Imagem padrão
+      // Imagem padrão quando não há upload
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
         <svg width="432" height="1200" xmlns="http://www.w3.org/2000/svg">
