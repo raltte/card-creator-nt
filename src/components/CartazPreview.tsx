@@ -99,14 +99,14 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configurar canvas
-    canvas.width = 800;
-    canvas.height = 1000;
+    // Configurar canvas com proporção 4:5 (960x1200)
+    canvas.width = 960;
+    canvas.height = 1200;
     
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Lado esquerdo - imagem
+    // Lado esquerdo - imagem (50% da largura)
     let leftImage: HTMLImageElement;
     
     if (data.image instanceof File) {
@@ -121,9 +121,9 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       // Imagem padrão
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg width="400" height="1000" xmlns="http://www.w3.org/2000/svg">
-          <rect width="400" height="1000" fill="#f3f4f6"/>
-          <text x="200" y="500" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
+        <svg width="480" height="1200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="480" height="1200" fill="#f3f4f6"/>
+          <text x="240" y="600" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
         </svg>
       `);
       await new Promise((resolve) => {
@@ -131,128 +131,145 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       });
     }
 
-    // Desenhar imagem do lado esquerdo
-    ctx.drawImage(leftImage, 0, 0, 400, 1000);
+    // Desenhar imagem do lado esquerdo com object-fit: cover
+    const imageAspect = leftImage.width / leftImage.height;
+    const canvasAspect = 480 / 1200;
+    
+    let drawWidth, drawHeight, offsetX, offsetY;
+    
+    if (imageAspect > canvasAspect) {
+      // Imagem é mais larga - cortar nas laterais
+      drawHeight = 1200;
+      drawWidth = 1200 * imageAspect;
+      offsetX = -(drawWidth - 480) / 2;
+      offsetY = 0;
+    } else {
+      // Imagem é mais alta - cortar no topo/fundo
+      drawWidth = 480;
+      drawHeight = 480 / imageAspect;
+      offsetX = 0;
+      offsetY = -(drawHeight - 1200) / 2;
+    }
+    
+    ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
-    // Lado direito - fundo verde escuro com canto arredondado
+    // Lado direito - fundo verde escuro com canto superior direito arredondado
     ctx.fillStyle = '#11332B';
     ctx.beginPath();
-    ctx.roundRect(400, 0, 400, 840, [0, 20, 0, 0]);
+    ctx.roundRect(480, 0, 480, 1008, [0, 24, 0, 0]);
     ctx.fill();
 
-    // Logo Novo Tempo (topo direito)
+    // Logo Novo Tempo (topo direito) - posicionamento exato
     const logo = new Image();
     logo.src = logoImage;
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    ctx.drawImage(logo, 420, 20, 360, 80);
+    ctx.drawImage(logo, 520, 24, 400, 96);
 
-    // "Vaga de emprego" - título principal
+    // "Vaga de emprego" - título principal (posição igual ao exemplo)
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 56px Montserrat, Arial';
+    ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 420, 160);
-    ctx.fillText('emprego', 420, 220);
+    ctx.fillText('Vaga de', 520, 200);
+    ctx.fillText('emprego', 520, 280);
 
-    // Dados da vaga
-    let y = 280;
+    // Dados da vaga - começando na posição correta
+    let y = 360;
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 32px Montserrat, Arial';
-      ctx.fillText(`Vaga: ${data.cargo}`, 420, y);
+      ctx.font = 'bold 36px Montserrat, Arial';
+      ctx.fillText(`Vaga: ${data.cargo}`, 520, y);
     }
-    y += 50;
+    y += 56;
 
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '28px Montserrat, Arial';
-      ctx.fillText(`Local: ${data.local}`, 420, y);
+      ctx.font = '32px Montserrat, Arial';
+      ctx.fillText(`Local: ${data.local}`, 520, y);
     }
-    y += 50;
+    y += 56;
 
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '28px Montserrat, Arial';
-      ctx.fillText(`Código: ${data.codigo}`, 420, y);
+      ctx.font = '32px Montserrat, Arial';
+      ctx.fillText(`Código: ${data.codigo}`, 520, y);
     }
-    y += 60;
+    y += 72;
 
     // Tipo de contrato
     if (data.tipoContrato) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 24px Montserrat, Arial';
-      ctx.fillText('Tipo de contrato:', 420, y);
-      y += 35;
+      ctx.font = 'bold 28px Montserrat, Arial';
+      ctx.fillText('Tipo de contrato:', 520, y);
+      y += 40;
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '24px Montserrat, Arial';
-      ctx.fillText(data.tipoContrato, 420, y);
+      ctx.font = '28px Montserrat, Arial';
+      ctx.fillText(data.tipoContrato, 520, y);
     }
-    y += 60;
+    y += 72;
 
     // Requisitos
     if (data.requisitos) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
-      ctx.fillText(requisitosTitle, 420, y);
-      y += 40;
+      ctx.fillText(requisitosTitle, 520, y);
+      y += 48;
 
-      // Quebrar texto dos requisitos
+      // Quebrar texto dos requisitos com espaçamento correto
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '20px Montserrat, Arial';
+      ctx.font = '24px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
-          ctx.fillText(line, 420, y);
-          y += 30;
+          ctx.fillText(line, 520, y);
+          y += 36;
         }
       });
     }
 
-    // "Saiba mais na legenda"
-    y += 20;
+    // "Saiba mais na legenda" - posicionamento exato
+    y += 32;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '20px Montserrat, Arial';
-    ctx.fillText('Saiba mais na ', 420, y);
+    ctx.font = '24px Montserrat, Arial';
+    ctx.fillText('Saiba mais na ', 520, y);
     
     // Medir texto para posicionar "legenda" em verde
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#20CE90';
-    ctx.font = 'bold 20px Montserrat, Arial';
-    ctx.fillText('legenda.', 420 + textWidth, y);
+    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.fillText('legenda.', 520 + textWidth, y);
 
-    // Barra de contato (verde claro)
+    // Barra de contato verde claro na parte inferior
     ctx.fillStyle = '#20CE90';
-    ctx.fillRect(400, 840, 400, 160);
+    ctx.fillRect(480, 1008, 480, 192);
 
     // Texto do contato
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 28px Montserrat, Arial';
+    ctx.font = 'bold 32px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo em:', 600, 890);
+    ctx.fillText('Envie seu currículo em:', 720, 1068);
 
     if (data.contato.valor) {
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '24px Montserrat, Arial';
-      
-      // Fundo branco para o contato
+      // Fundo branco para o contato com bordas arredondadas
       const contactText = getContactDisplay(data.contato);
+      ctx.font = 'bold 24px Montserrat, Arial';
       const textMetrics = ctx.measureText(contactText);
-      const textWidth = textMetrics.width + 40;
-      const textHeight = 40;
+      const buttonWidth = textMetrics.width + 48;
+      const buttonHeight = 48;
       
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.roundRect(600 - textWidth/2, 920 - textHeight/2, textWidth, textHeight, 20);
+      ctx.roundRect(720 - buttonWidth/2, 1116 - buttonHeight/2, buttonWidth, buttonHeight, 24);
       ctx.fill();
       
       // Texto do contato
       ctx.fillStyle = '#11332B';
-      ctx.font = 'bold 20px Montserrat, Arial';
-      ctx.fillText(contactText, 600, 945);
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.fillText(contactText, 720, 1140);
     }
   };
 
