@@ -103,7 +103,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Lado esquerdo - imagem (50% da largura)
+    // Lado esquerdo - imagem (40% da largura)
     let leftImage: HTMLImageElement;
     
     if (data.image instanceof File) {
@@ -118,9 +118,9 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       // Imagem padrão
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg width="480" height="1200" xmlns="http://www.w3.org/2000/svg">
-          <rect width="480" height="1200" fill="#f3f4f6"/>
-          <text x="240" y="600" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
+        <svg width="384" height="1200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="384" height="1200" fill="#f3f4f6"/>
+          <text x="192" y="600" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
         </svg>
       `);
       await new Promise((resolve) => {
@@ -130,7 +130,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
 
     // Desenhar imagem do lado esquerdo com object-fit: cover
     const imageAspect = leftImage.width / leftImage.height;
-    const canvasAspect = 480 / 1200;
+    const canvasAspect = 384 / 1200;
     
     let drawWidth, drawHeight, offsetX, offsetY;
     
@@ -138,12 +138,12 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       // Imagem é mais larga - cortar nas laterais
       drawHeight = 1200;
       drawWidth = 1200 * imageAspect;
-      offsetX = -(drawWidth - 480) / 2;
+      offsetX = -(drawWidth - 384) / 2;
       offsetY = 0;
     } else {
       // Imagem é mais alta - cortar no topo/fundo
-      drawWidth = 480;
-      drawHeight = 480 / imageAspect;
+      drawWidth = 384;
+      drawHeight = 384 / imageAspect;
       offsetX = 0;
       offsetY = -(drawHeight - 1200) / 2;
     }
@@ -153,7 +153,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Lado direito - fundo verde escuro com canto superior direito arredondado
     ctx.fillStyle = '#11332B';
     ctx.beginPath();
-    ctx.roundRect(480, 0, 480, 1008, [0, 24, 0, 0]);
+    ctx.roundRect(384, 0, 576, 1008, [0, 24, 0, 0]);
     ctx.fill();
 
     // Logo Novo Tempo (topo direito) - posicionamento ajustado para novo logo
@@ -162,14 +162,14 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    ctx.drawImage(logo, 540, 32, 360, 72);
+    ctx.drawImage(logo, 440, 32, 360, 72);
 
     // "Vaga de emprego" - título principal (posição igual ao exemplo)
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 520, 200);
-    ctx.fillText('emprego', 520, 253);
+    ctx.fillText('Vaga de', 420, 200);
+    ctx.fillText('emprego', 420, 253);
 
     // Função auxiliar para quebrar texto
     const wrapText = (text: string, maxWidth: number, fontSize: string) => {
@@ -194,14 +194,14 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
 
     // Dados da vaga - começando na posição correta
     let y = 320;
-    const maxTextWidth = 400; // Margem de 40px da direita (960 - 520 - 40)
+    const maxTextWidth = 500; // Margem de 40px da direita (960 - 420 - 40)
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 30px Montserrat, Arial';
       const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 30px Montserrat, Arial');
       cargoLines.forEach(line => {
-        ctx.fillText(line, 520, y);
+        ctx.fillText(line, 420, y);
         y += 36;
       });
     }
@@ -210,16 +210,16 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 26px Montserrat, Arial';
-      ctx.fillText('Local: ', 520, y);
+      ctx.fillText('Local: ', 420, y);
       
       const localWidth = ctx.measureText('Local: ').width;
       ctx.font = '26px Montserrat, Arial';
       const localLines = wrapText(data.local, maxTextWidth - localWidth, '26px Montserrat, Arial');
       localLines.forEach((line, index) => {
         if (index === 0) {
-          ctx.fillText(line, 520 + localWidth, y);
+          ctx.fillText(line, 420 + localWidth, y);
         } else {
-          ctx.fillText(line, 520, y);
+          ctx.fillText(line, 420, y);
         }
         y += 32;
       });
@@ -229,11 +229,11 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 26px Montserrat, Arial';
-      ctx.fillText('Código: ', 520, y);
+      ctx.fillText('Código: ', 420, y);
       
       const codigoWidth = ctx.measureText('Código: ').width;
       ctx.font = '26px Montserrat, Arial';
-      ctx.fillText(data.codigo, 520 + codigoWidth, y);
+      ctx.fillText(data.codigo, 420 + codigoWidth, y);
     }
     y += 56;
 
@@ -241,12 +241,12 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     if (data.tipoContrato) {
       ctx.fillStyle = '#20CE90';
       ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Tipo de contrato:', 520, y);
+      ctx.fillText('Tipo de contrato:', 420, y);
       y += 40;
       
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '28px Montserrat, Arial';
-      ctx.fillText(data.tipoContrato, 520, y);
+      ctx.fillText(data.tipoContrato, 420, y);
     }
     y += 56;
 
@@ -255,7 +255,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       ctx.fillStyle = '#20CE90';
       ctx.font = 'bold 28px Montserrat, Arial';
       const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
-      ctx.fillText(requisitosTitle, 520, y);
+      ctx.fillText(requisitosTitle, 420, y);
       y += 44;
 
       // Quebrar texto dos requisitos com espaçamento correto
@@ -269,7 +269,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
           const wrappedLines = wrapText(lineWithBullet, maxTextWidth, '24px Montserrat, Arial');
           wrappedLines.forEach((wrappedLine, index) => {
             // Para linhas continuadas, adicionar indentação
-            const x = index === 0 ? 520 : 540;
+            const x = index === 0 ? 420 : 440;
             ctx.fillText(wrappedLine, x, y);
             y += 32;
           });
@@ -281,23 +281,23 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     y += 32;
     ctx.fillStyle = '#FFFFFF';
     ctx.font = '26px Montserrat, Arial';
-    ctx.fillText('Saiba mais na ', 520, y);
+    ctx.fillText('Saiba mais na ', 420, y);
     
     // Medir texto para posicionar "legenda" em verde
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#20CE90';
     ctx.font = 'bold 26px Montserrat, Arial';
-    ctx.fillText('legenda.', 520 + textWidth, y);
+    ctx.fillText('legenda.', 420 + textWidth, y);
 
     // Barra de contato verde claro na parte inferior
     ctx.fillStyle = '#20CE90';
-    ctx.fillRect(480, 1008, 480, 192);
+    ctx.fillRect(384, 1008, 576, 192);
 
     // Texto do contato
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 32px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo em:', 720, 1068);
+    ctx.fillText('Envie seu currículo em:', 672, 1068);
 
     // Texto fixo do contato: novotemporh.com.br
     const contactText = getContactDisplay();
@@ -312,7 +312,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Desenhar o fundo branco centralizado
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.roundRect(720 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
+    ctx.roundRect(672 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
     ctx.fill();
     
     // Texto do contato centralizado verticalmente e horizontalmente
@@ -320,7 +320,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.font = 'bold 24px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(contactText, 720, buttonY);
+    ctx.fillText(contactText, 672, buttonY);
   };
 
   useEffect(() => {
