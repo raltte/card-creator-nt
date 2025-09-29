@@ -169,7 +169,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Vaga de', 520, 200);
-    ctx.fillText('emprego', 520, 248);
+    ctx.fillText('emprego', 520, 253);
 
     // Função auxiliar para quebrar texto
     const wrapText = (text: string, maxWidth: number, fontSize: string) => {

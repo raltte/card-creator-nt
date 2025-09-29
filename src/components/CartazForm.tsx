@@ -172,12 +172,12 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             placeholder="• Ensino Médio completo;&#10;• Experiência anterior na função/área;&#10;• Disponibilidade para trabalhar em turnos;"
             value={data.requisitos}
             onChange={(e) => updateData('requisitos', e.target.value)}
-            maxLength={256}
+            maxLength={180}
             rows={4}
             className="mt-1 resize-none"
           />
           <div className="text-xs text-muted-foreground mt-1">
-            {data.requisitos.length}/256 caracteres
+            {data.requisitos.length}/180 caracteres
           </div>
         </div>
       </div>
