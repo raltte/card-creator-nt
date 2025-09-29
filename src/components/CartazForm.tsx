@@ -14,6 +14,7 @@ interface CartazFormProps {
 
 export const CartazForm = ({ data, onChange }: CartazFormProps) => {
   const updateData = (field: keyof CartazData | string, value: any) => {
+    console.log('updateData called:', field, value);
     if (field === 'contato.tipo' || field === 'contato.valor') {
       const [parent, child] = field.split('.');
       onChange({
@@ -35,6 +36,24 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
     const file = event.target.files?.[0];
     if (file) {
       updateData('image', file);
+    }
+  };
+
+  const handleContactTypeChange = (tipo: 'site' | 'whatsapp' | 'email') => {
+    console.log('Contact type changing to:', tipo);
+    updateData('contato.tipo', tipo);
+    
+    // Set default values for each type
+    switch (tipo) {
+      case 'site':
+        updateData('contato.valor', 'novotemporh.com.br');
+        break;
+      case 'whatsapp':
+        updateData('contato.valor', '');
+        break;
+      case 'email':
+        updateData('contato.valor', 'email@novotemporh.com.br');
+        break;
     }
   };
 
@@ -167,13 +186,17 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="website"
               checked={data.contato.tipo === 'site'}
               onCheckedChange={(checked) => {
+                console.log('Website checkbox clicked:', checked);
                 if (checked) {
-                  updateData('contato.tipo', 'site');
-                  updateData('contato.valor', 'novotemporh.com.br');
+                  handleContactTypeChange('site');
                 }
               }}
             />
-            <label htmlFor="website" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label 
+              htmlFor="website" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              onClick={() => handleContactTypeChange('site')}
+            >
               Website da empresa
             </label>
           </div>
@@ -192,13 +215,17 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="whatsapp"
               checked={data.contato.tipo === 'whatsapp'}
               onCheckedChange={(checked) => {
+                console.log('WhatsApp checkbox clicked:', checked);
                 if (checked) {
-                  updateData('contato.tipo', 'whatsapp');
-                  updateData('contato.valor', '');
+                  handleContactTypeChange('whatsapp');
                 }
               }}
             />
-            <label htmlFor="whatsapp" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label 
+              htmlFor="whatsapp" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              onClick={() => handleContactTypeChange('whatsapp')}
+            >
               WhatsApp
             </label>
           </div>
@@ -226,13 +253,17 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="email"
               checked={data.contato.tipo === 'email'}
               onCheckedChange={(checked) => {
+                console.log('Email checkbox clicked:', checked);
                 if (checked) {
-                  updateData('contato.tipo', 'email');
-                  updateData('contato.valor', 'email@novotemporh.com.br');
+                  handleContactTypeChange('email');
                 }
               }}
             />
-            <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label 
+              htmlFor="email" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              onClick={() => handleContactTypeChange('email')}
+            >
               Email da empresa
             </label>
           </div>
