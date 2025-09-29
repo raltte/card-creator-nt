@@ -162,10 +162,10 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     await new Promise((resolve) => {
       logo.onload = resolve;
     });
-    // Calcular proporção correta baseada na largura desejada (ampliado mais)
-    const logoWidth = 300;
+    // Calcular proporção correta baseada na largura desejada (ampliado mais com margem superior)
+    const logoWidth = 320;
     const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 420, 32, logoWidth, logoHeight);
+    ctx.drawImage(logo, 420, 48, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal (posição igual ao exemplo)
     ctx.fillStyle = '#FFFFFF';
