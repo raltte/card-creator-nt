@@ -167,12 +167,12 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     const logoHeight = (logoWidth * logo.height) / logo.width;
     ctx.drawImage(logo, 420, 48, logoWidth, logoHeight);
 
-    // "Vaga de emprego" - título principal (posição igual ao exemplo)
+    // "Vaga de emprego" - título principal centralizado verticalmente
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 420, 200);
-    ctx.fillText('emprego', 420, 253);
+    ctx.fillText('Vaga de', 420, 280);
+    ctx.fillText('emprego', 420, 333);
 
     // Função auxiliar para quebrar texto
     const wrapText = (text: string, maxWidth: number, fontSize: string) => {
@@ -195,8 +195,8 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       return lines;
     };
 
-    // Dados da vaga - começando na posição correta
-    let y = 320;
+    // Dados da vaga - começando na posição centralizada
+    let y = 400;
     const maxTextWidth = 500; // Margem de 40px da direita (960 - 420 - 40)
     
     if (data.cargo) {
