@@ -6,14 +6,16 @@ import { ArrowLeft, Download, Share2 } from "lucide-react";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazData } from "./CartazGenerator";
+import { ImageSelector } from "./ImageSelector";
 import { useToast } from "@/hooks/use-toast";
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const [cartazGerado, setCartazGerado] = useState<CartazData | null>(null);
-  const [mostrarFormulario, setMostrarFormulario] = useState(true);
+  const [etapaAtual, setEtapaAtual] = useState<'formulario' | 'selecaoImagem' | 'preview'>('formulario');
+  const [dadosFormulario, setDadosFormulario] = useState<RecrutadoraData | null>(null);
 
-  const converterDados = (dados: RecrutadoraData): CartazData => {
+  const converterDados = (dados: RecrutadoraData, imagemUrl: string): CartazData => {
     // Mapeamento dos dados do formulário de recrutadora para o formato do cartaz
     let contatoInfo: CartazData['contato'];
     
@@ -38,7 +40,7 @@ export const RecrutadoraDashboard = () => {
     }
 
     return {
-      image: dados.imagemVaga,
+      image: imagemUrl,
       cargo: dados.nomeVaga,
       local: dados.cidadeEstado,
       codigo: dados.codigoPS,
@@ -49,18 +51,31 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleFormSubmit = (dados: RecrutadoraData) => {
-    const cartazData = converterDados(dados);
-    setCartazGerado(cartazData);
-    setMostrarFormulario(false);
-    
-    toast({
-      title: "Cartaz gerado com sucesso!",
-      description: "Você pode visualizar, baixar ou compartilhar o cartaz."
-    });
+    setDadosFormulario(dados);
+    setEtapaAtual('selecaoImagem');
+  };
+
+  const handleImageSelect = (imagemUrl: string) => {
+    if (dadosFormulario) {
+      const cartazData = converterDados(dadosFormulario, imagemUrl);
+      setCartazGerado(cartazData);
+      setEtapaAtual('preview');
+      
+      toast({
+        title: "Cartaz gerado com sucesso!",
+        description: "Você pode visualizar, baixar ou compartilhar o cartaz."
+      });
+    }
   };
 
   const voltarFormulario = () => {
-    setMostrarFormulario(true);
+    setEtapaAtual('formulario');
+    setCartazGerado(null);
+    setDadosFormulario(null);
+  };
+
+  const voltarSelecaoImagem = () => {
+    setEtapaAtual('selecaoImagem');
     setCartazGerado(null);
   };
 
@@ -145,7 +160,7 @@ export const RecrutadoraDashboard = () => {
           </p>
         </div>
 
-        {mostrarFormulario ? (
+        {etapaAtual === 'formulario' ? (
           /* Formulário de Solicitação */
           <Card className="max-w-4xl mx-auto">
             <CardContent className="p-8">
@@ -155,13 +170,24 @@ export const RecrutadoraDashboard = () => {
               <RecrutadoraForm onSubmit={handleFormSubmit} />
             </CardContent>
           </Card>
+        ) : etapaAtual === 'selecaoImagem' && dadosFormulario ? (
+          /* Seleção de Imagem */
+          <Card className="max-w-6xl mx-auto">
+            <CardContent className="p-8">
+              <ImageSelector
+                jobData={dadosFormulario}
+                onImageSelect={handleImageSelect}
+                onBack={voltarFormulario}
+              />
+            </CardContent>
+          </Card>
         ) : (
           /* Visualização do Cartaz Gerado */
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Button variant="outline" onClick={voltarFormulario}>
+              <Button variant="outline" onClick={voltarSelecaoImagem}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar ao Formulário
+                Voltar à Seleção de Imagem
               </Button>
               <div className="flex gap-2 ml-auto">
                 <Button variant="outline" onClick={handleShare}>

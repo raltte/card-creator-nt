@@ -10,19 +10,15 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface RecrutadoraData {
   nomeVaga: string;
-  tipoCartaz: string;
   codigoPS: string;
   tipoContrato: string;
   cidadeEstado: string;
-  captacaoCurriculo: 'whatsapp' | 'email' | 'presencial';
+  captacaoCurriculo: 'whatsapp' | 'email' | 'site';
   whatsappNumber?: string;
   emailCaptacao?: string;
-  descricaoVaga: string;
   requisitos: string[];
   setorAtuacao: string;
-  linkPS: string;
   emailSolicitante: string;
-  imagemVaga?: File;
 }
 
 interface RecrutadoraFormProps {
@@ -33,17 +29,14 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<RecrutadoraData>({
     nomeVaga: "",
-    tipoCartaz: "",
     codigoPS: "",
     tipoContrato: "",
     cidadeEstado: "",
-    captacaoCurriculo: 'whatsapp',
+    captacaoCurriculo: 'site',
     whatsappNumber: "",
     emailCaptacao: "email@novotemporh.com.br",
-    descricaoVaga: "",
     requisitos: [],
     setorAtuacao: "",
-    linkPS: "",
     emailSolicitante: ""
   });
 
@@ -56,12 +49,6 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
     }));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      updateFormData('imagemVaga', file);
-    }
-  };
 
   const adicionarRequisito = () => {
     if (novoRequisito.trim() && formData.requisitos.length < 3) {
@@ -94,19 +81,10 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
   const handleSubmit = () => {
     // Validação básica
     if (!formData.nomeVaga || !formData.codigoPS || !formData.tipoContrato || 
-        !formData.cidadeEstado || !formData.descricaoVaga || !formData.emailSolicitante) {
+        !formData.cidadeEstado || !formData.emailSolicitante || !formData.setorAtuacao) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos obrigatórios antes de enviar.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (formData.descricaoVaga.length < 200 || formData.descricaoVaga.length > 300) {
-      toast({
-        title: "Descrição inválida",
-        description: "A descrição deve ter entre 200 e 300 caracteres.",
         variant: "destructive"
       });
       return;
@@ -138,20 +116,6 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
         />
       </div>
 
-      {/* Tipo de Cartaz */}
-      <div>
-        <Label htmlFor="tipo-cartaz">Tipo de Cartaz</Label>
-        <Select value={formData.tipoCartaz} onValueChange={(value) => updateFormData('tipoCartaz', value)}>
-          <SelectTrigger className="mt-1">
-            <SelectValue placeholder="Selecione o tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="padrao">Padrão</SelectItem>
-            <SelectItem value="destaque">Destaque</SelectItem>
-            <SelectItem value="urgente">Urgente</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
       {/* Código PS e Tipo de Contrato */}
       <div className="grid grid-cols-2 gap-4">
@@ -173,32 +137,46 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Efetivo">Efetivo</SelectItem>
+              <SelectItem value="CLT">CLT</SelectItem>
               <SelectItem value="Temporário">Temporário</SelectItem>
               <SelectItem value="PJ">PJ</SelectItem>
               <SelectItem value="Estágio">Estágio</SelectItem>
+              <SelectItem value="Terceirizado">Terceirizado</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Cidade/Estado */}
+      {/* Local da Vaga */}
       <div>
-        <Label htmlFor="cidade-estado">Cidade/Estado *</Label>
+        <Label htmlFor="cidade-estado">Local da Vaga *</Label>
         <Input
           id="cidade-estado"
-          placeholder="Ex: Resende - RJ"
+          placeholder="Ex: São Paulo/SP"
           value={formData.cidadeEstado}
           onChange={(e) => updateFormData('cidadeEstado', e.target.value)}
           className="mt-1"
         />
       </div>
 
-      {/* Captação de Currículo */}
+      {/* Como enviar currículo */}
       <div className="space-y-4">
-        <Label className="text-base font-semibold">Captação de Currículo *</Label>
+        <Label className="text-base font-semibold">Como enviar currículo? *</Label>
         
         <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="site-captacao"
+              checked={formData.captacaoCurriculo === 'site'}
+              onCheckedChange={(checked) => {
+                if (checked) updateFormData('captacaoCurriculo', 'site');
+              }}
+            />
+            <label htmlFor="site-captacao" className="text-sm font-medium cursor-pointer">
+              Site (novotemporh.com.br)
+            </label>
+          </div>
+
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="whatsapp-captacao"
@@ -208,13 +186,13 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
               }}
             />
             <label htmlFor="whatsapp-captacao" className="text-sm font-medium cursor-pointer">
-              Por WhatsApp
+              WhatsApp
             </label>
           </div>
           {formData.captacaoCurriculo === 'whatsapp' && (
             <div className="ml-6">
               <Input
-                placeholder="(11) 99999-9999"
+                placeholder="(xx) xxxxx-xxxx"
                 value={formData.whatsappNumber || ""}
                 onChange={(e) => handleWhatsAppChange(e.target.value)}
                 maxLength={15}
@@ -232,7 +210,7 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
               }}
             />
             <label htmlFor="email-captacao" className="text-sm font-medium cursor-pointer">
-              Por E-mail
+              E-mail
             </label>
           </div>
           {formData.captacaoCurriculo === 'email' && (
@@ -245,42 +223,10 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
               />
             </div>
           )}
-
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="presencial-captacao"
-              checked={formData.captacaoCurriculo === 'presencial'}
-              onCheckedChange={(checked) => {
-                if (checked) updateFormData('captacaoCurriculo', 'presencial');
-              }}
-            />
-            <label htmlFor="presencial-captacao" className="text-sm font-medium cursor-pointer">
-              Presencial
-            </label>
-          </div>
         </div>
       </div>
 
-      {/* Descrição da Vaga */}
-      <div>
-        <Label htmlFor="descricao-vaga">Descrição da Vaga *</Label>
-        <p className="text-xs text-muted-foreground mb-2">
-          Fale brevemente sobre a vaga e suas principais responsabilidades (200 a 300 caracteres)
-        </p>
-        <Textarea
-          id="descricao-vaga"
-          placeholder="Descreva brevemente a vaga e suas principais responsabilidades..."
-          value={formData.descricaoVaga}
-          onChange={(e) => updateFormData('descricaoVaga', e.target.value)}
-          minLength={200}
-          maxLength={300}
-          rows={4}
-          className="mt-1 resize-none"
-        />
-        <div className="text-xs text-muted-foreground mt-1">
-          {formData.descricaoVaga.length}/300 caracteres
-        </div>
-      </div>
+      {/* Descrição será gerada automaticamente baseada nos requisitos */}
 
       {/* Requisitos */}
       <div>
@@ -325,58 +271,31 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
 
       {/* Setor de Atuação */}
       <div>
-        <Label htmlFor="setor-atuacao">Setor de Atuação</Label>
+        <Label htmlFor="setor-atuacao">Setor de Atuação *</Label>
         <Select value={formData.setorAtuacao} onValueChange={(value) => updateFormData('setorAtuacao', value)}>
           <SelectTrigger className="mt-1">
             <SelectValue placeholder="Selecione o setor" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="industria">Indústria</SelectItem>
-            <SelectItem value="comercio">Comércio</SelectItem>
-            <SelectItem value="servicos">Serviços</SelectItem>
-            <SelectItem value="saude">Saúde</SelectItem>
-            <SelectItem value="educacao">Educação</SelectItem>
-            <SelectItem value="tecnologia">Tecnologia</SelectItem>
-            <SelectItem value="financeiro">Financeiro</SelectItem>
-            <SelectItem value="outros">Outros</SelectItem>
+            <SelectItem value="Administração">Administração</SelectItem>
+            <SelectItem value="Produção">Produção</SelectItem>
+            <SelectItem value="Vendas">Vendas</SelectItem>
+            <SelectItem value="Tecnologia">Tecnologia</SelectItem>
+            <SelectItem value="Saúde">Saúde</SelectItem>
+            <SelectItem value="Educação">Educação</SelectItem>
+            <SelectItem value="Financeiro">Financeiro</SelectItem>
+            <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
+            <SelectItem value="Logística">Logística</SelectItem>
+            <SelectItem value="Marketing">Marketing</SelectItem>
+            <SelectItem value="Atendimento ao Cliente">Atendimento ao Cliente</SelectItem>
+            <SelectItem value="Segurança">Segurança</SelectItem>
+            <SelectItem value="Limpeza">Limpeza</SelectItem>
+            <SelectItem value="Manutenção">Manutenção</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Imagem da Vaga */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Imagem da Vaga (opcional)</Label>
-        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-nt-light transition-colors">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-            id="image-upload"
-          />
-          <label htmlFor="image-upload" className="cursor-pointer">
-            <div className="flex flex-col items-center gap-2 text-center">
-              <Upload className="w-8 h-8 text-muted-foreground" />
-              <div className="text-sm text-muted-foreground">
-                Clique para fazer upload de uma imagem
-              </div>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      {/* Link da PS */}
-      <div>
-        <Label htmlFor="link-ps">Link da PS</Label>
-        <Input
-          id="link-ps"
-          placeholder="https://..."
-          value={formData.linkPS}
-          onChange={(e) => updateFormData('linkPS', e.target.value)}
-          type="url"
-          className="mt-1"
-        />
-      </div>
+      {/* A imagem será gerada automaticamente pela IA */}
 
       {/* E-mail do Solicitante */}
       <div>
@@ -394,10 +313,10 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
       {/* Botão de Envio */}
       <Button 
         onClick={handleSubmit}
-        className="w-full"
+        className="w-full bg-nt-light hover:bg-nt-light/90"
         size="lg"
       >
-        Gerar Cartaz
+        Continuar - Selecionar Imagem
       </Button>
     </div>
   );
