@@ -7,13 +7,15 @@ import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazData } from "./CartazGenerator";
 import { ImageSelector } from "./ImageSelector";
+import { ImageFraming } from "./ImageFraming";
 import { useToast } from "@/hooks/use-toast";
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const [cartazGerado, setCartazGerado] = useState<CartazData | null>(null);
-  const [etapaAtual, setEtapaAtual] = useState<'formulario' | 'selecaoImagem' | 'preview'>('formulario');
+  const [etapaAtual, setEtapaAtual] = useState<'formulario' | 'selecaoImagem' | 'ajusteImagem' | 'preview'>('formulario');
   const [dadosFormulario, setDadosFormulario] = useState<RecrutadoraData | null>(null);
+  const [imagemSelecionada, setImagemSelecionada] = useState<string | null>(null);
 
   const converterDados = (dados: RecrutadoraData, imagemUrl: string): CartazData => {
     // Mapeamento dos dados do formulário de recrutadora para o formato do cartaz
@@ -56,8 +58,13 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleImageSelect = (imagemUrl: string) => {
+    setImagemSelecionada(imagemUrl);
+    setEtapaAtual('ajusteImagem');
+  };
+
+  const handleFramingComplete = (croppedImageData: string) => {
     if (dadosFormulario) {
-      const cartazData = converterDados(dadosFormulario, imagemUrl);
+      const cartazData = converterDados(dadosFormulario, croppedImageData);
       setCartazGerado(cartazData);
       setEtapaAtual('preview');
       
@@ -72,10 +79,16 @@ export const RecrutadoraDashboard = () => {
     setEtapaAtual('formulario');
     setCartazGerado(null);
     setDadosFormulario(null);
+    setImagemSelecionada(null);
   };
 
   const voltarSelecaoImagem = () => {
     setEtapaAtual('selecaoImagem');
+    setImagemSelecionada(null);
+  };
+
+  const voltarAjusteImagem = () => {
+    setEtapaAtual('ajusteImagem');
     setCartazGerado(null);
   };
 
@@ -181,13 +194,24 @@ export const RecrutadoraDashboard = () => {
               />
             </CardContent>
           </Card>
+        ) : etapaAtual === 'ajusteImagem' && imagemSelecionada ? (
+          /* Ajuste de Enquadramento */
+          <Card className="max-w-4xl mx-auto">
+            <CardContent className="p-8">
+              <ImageFraming
+                imageUrl={imagemSelecionada}
+                onFramingComplete={handleFramingComplete}
+                onBack={voltarSelecaoImagem}
+              />
+            </CardContent>
+          </Card>
         ) : (
           /* Visualização do Cartaz Gerado */
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Button variant="outline" onClick={voltarSelecaoImagem}>
+              <Button variant="outline" onClick={voltarAjusteImagem}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar à Seleção de Imagem
+                Voltar ao Ajuste de Imagem
               </Button>
               <div className="flex gap-2 ml-auto">
                 <Button variant="outline" onClick={handleShare}>
