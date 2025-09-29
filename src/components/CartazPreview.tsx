@@ -49,14 +49,26 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Lado esquerdo - imagem (45% da largura)
     let leftImage: HTMLImageElement;
     
-    if (data.image instanceof File) {
+    if (data.image && data.image !== '') {
       leftImage = new Image();
-      leftImage.src = URL.createObjectURL(data.image);
-      await new Promise((resolve) => {
+      leftImage.crossOrigin = 'anonymous';
+      
+      if (data.image instanceof File) {
+        leftImage.src = URL.createObjectURL(data.image);
+      } else {
+        // Imagem da IA (URL ou base64)
+        leftImage.src = data.image;
+      }
+      
+      await new Promise((resolve, reject) => {
         leftImage.onload = resolve;
+        leftImage.onerror = () => {
+          console.error('Erro ao carregar imagem:', data.image);
+          resolve(null); // Usar imagem padrão em caso de erro
+        };
       });
     } else {
-      // Imagem padrão quando não há upload
+      // Imagem padrão quando não há imagem
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
         <svg width="432" height="1200" xmlns="http://www.w3.org/2000/svg">
