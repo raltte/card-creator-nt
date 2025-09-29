@@ -164,18 +164,50 @@ export const RecrutadoraDashboard = () => {
   const handleMondayIntegration = async () => {
     if (!cartazGerado) return;
     
-    const boardId = prompt("Digite o ID do Board no Monday.com:");
-    const groupId = prompt("Digite o ID do Group no Monday.com (opcional):");
+    // Opções para o usuário
+    const action = confirm("Você quer:\n- OK: Criar um novo quadro de aprovação\n- Cancelar: Enviar para um quadro existente");
     
-    if (!boardId) {
-      toast({
-        title: "Erro",
-        description: "ID do Board é obrigatório.",
-        variant: "destructive"
-      });
-      return;
-    }
+    if (action) {
+      // Criar novo quadro
+      try {
+        const { data, error } = await supabase.functions.invoke('monday-integration', {
+          body: {
+            action: 'create_board'
+          }
+        });
 
+        if (error) throw error;
+
+        toast({
+          title: "Quadro criado!",
+          description: `Quadro de aprovação criado. ID: ${data.boardId}. Agora envie o cartaz para este quadro.`
+        });
+        
+        // Após criar, enviar o cartaz automaticamente
+        setTimeout(() => {
+          handleSendToBoard(data.boardId);
+        }, 1000);
+        
+      } catch (error: any) {
+        console.error('Erro ao criar quadro:', error);
+        toast({
+          title: "Erro",
+          description: error.message || "Falha ao criar quadro no Monday.com.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      // Enviar para quadro existente
+      const boardId = prompt("Digite o ID do Board no Monday.com:");
+      if (boardId) {
+        handleSendToBoard(parseInt(boardId));
+      }
+    }
+  };
+
+  const handleSendToBoard = async (boardId: number) => {
+    if (!cartazGerado) return;
+    
     try {
       // Converter canvas para base64
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
@@ -183,12 +215,13 @@ export const RecrutadoraDashboard = () => {
 
       const { data, error } = await supabase.functions.invoke('monday-integration', {
         body: {
+          action: 'send_cartaz',
           cartazData: {
             ...cartazGerado,
             image: imageData
           },
-          boardId: parseInt(boardId),
-          groupId: groupId || "topics"
+          boardId: boardId,
+          groupId: "topics" // grupo padrão
         }
       });
 
@@ -198,7 +231,7 @@ export const RecrutadoraDashboard = () => {
 
       toast({
         title: "Sucesso!",
-        description: "Cartaz enviado para Monday.com com sucesso!"
+        description: "Cartaz enviado para Monday.com para aprovação!"
       });
     } catch (error: any) {
       console.error('Erro na integração Monday.com:', error);
