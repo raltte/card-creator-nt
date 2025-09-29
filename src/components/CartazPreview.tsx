@@ -198,91 +198,91 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       ctx.fillText('Vaga:', 520, y);
-      y += 40;
+      y += 36;
       
-      ctx.font = '32px Montserrat, Arial';
-      const cargoLines = wrapText(data.cargo, maxTextWidth, '32px Montserrat, Arial');
+      ctx.font = '28px Montserrat, Arial';
+      const cargoLines = wrapText(data.cargo, maxTextWidth, '28px Montserrat, Arial');
       cargoLines.forEach(line => {
         ctx.fillText(line, 520, y);
-        y += 40;
+        y += 36;
       });
     }
-    y += 24;
+    y += 20;
 
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       ctx.fillText('Local:', 520, y);
-      y += 40;
+      y += 36;
       
-      ctx.font = '32px Montserrat, Arial';
-      const localLines = wrapText(data.local, maxTextWidth, '32px Montserrat, Arial');
+      ctx.font = '28px Montserrat, Arial';
+      const localLines = wrapText(data.local, maxTextWidth, '28px Montserrat, Arial');
       localLines.forEach(line => {
         ctx.fillText(line, 520, y);
-        y += 40;
+        y += 36;
       });
     }
-    y += 24;
+    y += 20;
 
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 32px Montserrat, Arial';
+      ctx.font = 'bold 28px Montserrat, Arial';
       ctx.fillText('Código:', 520, y);
-      y += 40;
+      y += 36;
       
-      ctx.font = '32px Montserrat, Arial';
+      ctx.font = '28px Montserrat, Arial';
       ctx.fillText(data.codigo, 520, y);
     }
-    y += 48;
+    y += 40;
 
     // Tipo de contrato
     if (data.tipoContrato) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 30px Montserrat, Arial';
+      ctx.font = 'bold 26px Montserrat, Arial';
       ctx.fillText('Tipo de contrato:', 520, y);
-      y += 40;
+      y += 36;
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '30px Montserrat, Arial';
+      ctx.font = '26px Montserrat, Arial';
       ctx.fillText(data.tipoContrato, 520, y);
     }
-    y += 48;
+    y += 40;
 
     // Requisitos
     if (data.requisitos) {
       ctx.fillStyle = '#20CE90';
-      ctx.font = 'bold 30px Montserrat, Arial';
+      ctx.font = 'bold 26px Montserrat, Arial';
       const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
       ctx.fillText(requisitosTitle, 520, y);
-      y += 48;
+      y += 40;
 
       // Quebrar texto dos requisitos com espaçamento correto
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '26px Montserrat, Arial';
+      ctx.font = '22px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
-          const wrappedLines = wrapText(line, maxTextWidth, '26px Montserrat, Arial');
+          const wrappedLines = wrapText(line, maxTextWidth, '22px Montserrat, Arial');
           wrappedLines.forEach(wrappedLine => {
             ctx.fillText(wrappedLine, 520, y);
-            y += 32;
+            y += 28;
           });
         }
       });
     }
 
     // "Saiba mais na legenda" - posicionamento exato
-    y += 24;
+    y += 20;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '28px Montserrat, Arial';
+    ctx.font = '24px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', 520, y);
     
     // Medir texto para posicionar "legenda" em verde
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#20CE90';
-    ctx.font = 'bold 28px Montserrat, Arial';
+    ctx.font = 'bold 24px Montserrat, Arial';
     ctx.fillText('legenda.', 520 + textWidth, y);
 
     // Barra de contato verde claro na parte inferior
