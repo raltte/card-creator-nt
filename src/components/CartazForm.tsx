@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Globe } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Upload, Globe, MessageCircle, Mail } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 
 interface CartazFormProps {
@@ -34,6 +36,26 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
     if (file) {
       updateData('image', file);
     }
+  };
+
+  const formatWhatsAppNumber = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, '');
+    
+    // Aplica a máscara (xx) xxxxx-xxxx
+    if (numbers.length <= 2) {
+      return `(${numbers}`;
+    } else if (numbers.length <= 7) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    } else if (numbers.length <= 11) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+    }
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  const handleWhatsAppChange = (value: string) => {
+    const formatted = formatWhatsAppNumber(value);
+    updateData('contato.valor', formatted);
   };
 
   return (
@@ -134,18 +156,94 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       </div>
 
       {/* Contato */}
-      <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          Contato (Fixo: novotemporh.com.br)
-        </Label>
-        <div className="p-4 bg-muted rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Globe className="w-4 h-4" />
-            <span>novotemporh.com.br</span>
+      <div className="space-y-4">
+        <Label className="text-base font-semibold">Opções de Contato</Label>
+        
+        {/* Opções de contato */}
+        <div className="space-y-4">
+          {/* Website (padrão) */}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="website"
+              checked={data.contato.tipo === 'site'}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  updateData('contato.tipo', 'site');
+                  updateData('contato.valor', 'novotemporh.com.br');
+                }
+              }}
+            />
+            <label htmlFor="website" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Website da empresa
+            </label>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Website fixo da empresa
-          </p>
+          {data.contato.tipo === 'site' && (
+            <div className="ml-6 p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-2 text-sm">
+                <Globe className="w-4 h-4 text-nt-light" />
+                <span>novotemporh.com.br</span>
+              </div>
+            </div>
+          )}
+
+          {/* WhatsApp */}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="whatsapp"
+              checked={data.contato.tipo === 'whatsapp'}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  updateData('contato.tipo', 'whatsapp');
+                  updateData('contato.valor', '');
+                }
+              }}
+            />
+            <label htmlFor="whatsapp" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              WhatsApp
+            </label>
+          </div>
+          {data.contato.tipo === 'whatsapp' && (
+            <div className="ml-6 space-y-2">
+              <Label htmlFor="whatsapp-number" className="text-sm">Número do WhatsApp</Label>
+              <Input
+                id="whatsapp-number"
+                placeholder="(11) 99999-9999"
+                value={data.contato.valor}
+                onChange={(e) => handleWhatsAppChange(e.target.value)}
+                maxLength={15}
+                className="font-mono"
+              />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MessageCircle className="w-4 h-4 text-nt-light" />
+                <span>Formato: (xx) xxxxx-xxxx</span>
+              </div>
+            </div>
+          )}
+
+          {/* Email */}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="email"
+              checked={data.contato.tipo === 'email'}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  updateData('contato.tipo', 'email');
+                  updateData('contato.valor', 'email@novotemporh.com.br');
+                }
+              }}
+            />
+            <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Email da empresa
+            </label>
+          </div>
+          {data.contato.tipo === 'email' && (
+            <div className="ml-6 p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-2 text-sm">
+                <Mail className="w-4 h-4 text-nt-light" />
+                <span>email@novotemporh.com.br</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

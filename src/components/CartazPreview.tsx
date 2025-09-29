@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Phone, Globe, Mail, User } from "lucide-react";
+import { Phone, Globe, Mail, User, MessageCircle } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 import logoImage from "@/assets/novo-tempo-logo-v4.png";
 
@@ -20,7 +20,15 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
   };
 
   const getContactDisplay = () => {
-    return '🌐 novotemporh.com.br';
+    switch (data.contato.tipo) {
+      case 'whatsapp':
+        return `📱 ${data.contato.valor || '(xx) xxxxx-xxxx'}`;
+      case 'email':
+        return `✉️ ${data.contato.valor}`;
+      case 'site':
+      default:
+        return '🌐 novotemporh.com.br';
+    }
   };
 
 
