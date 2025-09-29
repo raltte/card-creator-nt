@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Download, Share2, Calendar } from "lucide-react";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazData } from "./CartazGenerator";
 import { ImageSelector } from "./ImageSelector";
 import { ImageFraming } from "./ImageFraming";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
@@ -160,6 +161,55 @@ export const RecrutadoraDashboard = () => {
     }
   };
 
+  const handleMondayIntegration = async () => {
+    if (!cartazGerado) return;
+    
+    const boardId = prompt("Digite o ID do Board no Monday.com:");
+    const groupId = prompt("Digite o ID do Group no Monday.com (opcional):");
+    
+    if (!boardId) {
+      toast({
+        title: "Erro",
+        description: "ID do Board é obrigatório.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Converter canvas para base64
+      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
+      const imageData = canvas ? canvas.toDataURL('image/png', 1.0) : cartazGerado.image;
+
+      const { data, error } = await supabase.functions.invoke('monday-integration', {
+        body: {
+          cartazData: {
+            ...cartazGerado,
+            image: imageData
+          },
+          boardId: parseInt(boardId),
+          groupId: groupId || "topics"
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Cartaz enviado para Monday.com com sucesso!"
+      });
+    } catch (error: any) {
+      console.error('Erro na integração Monday.com:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Falha ao enviar para Monday.com.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
       <div className="max-w-7xl mx-auto">
@@ -214,6 +264,10 @@ export const RecrutadoraDashboard = () => {
                 Voltar ao Ajuste de Imagem
               </Button>
               <div className="flex gap-2 ml-auto">
+                <Button variant="outline" onClick={handleMondayIntegration}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Enviar para Monday.com
+                </Button>
                 <Button variant="outline" onClick={handleShare}>
                   <Share2 className="w-4 h-4 mr-2" />
                   Compartilhar

@@ -1,1 +1,4 @@
 project_id = "jqpjcoitrmochijrgfbc"
+
+[functions.monday-integration]
+verify_jwt = false
