@@ -19,11 +19,8 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     }
   };
 
-  const getContactDisplay = (contato: CartazData['contato']) => {
-    if (contato.tipo === 'whatsapp') {
-      return `📱 ${contato.valor}`;
-    }
-    return contato.valor;
+  const getContactDisplay = () => {
+    return '🌐 novotemporh.com.br';
   };
 
   const generateTemplateImage = async (templateId: string): Promise<HTMLImageElement> => {
@@ -253,24 +250,22 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.textAlign = 'center';
     ctx.fillText('Envie seu currículo em:', 720, 1068);
 
-    if (data.contato.valor) {
-      // Fundo branco para o contato com bordas arredondadas
-      const contactText = getContactDisplay(data.contato);
-      ctx.font = 'bold 24px Montserrat, Arial';
-      const textMetrics = ctx.measureText(contactText);
-      const buttonWidth = textMetrics.width + 48;
-      const buttonHeight = 48;
-      
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.roundRect(720 - buttonWidth/2, 1116 - buttonHeight/2, buttonWidth, buttonHeight, 24);
-      ctx.fill();
-      
-      // Texto do contato
-      ctx.fillStyle = '#11332B';
-      ctx.font = 'bold 24px Montserrat, Arial';
-      ctx.fillText(contactText, 720, 1140);
-    }
+    // Texto fixo do contato: novotemporh.com.br
+    const contactText = getContactDisplay();
+    ctx.font = 'bold 24px Montserrat, Arial';
+    const textMetrics = ctx.measureText(contactText);
+    const buttonWidth = textMetrics.width + 48;
+    const buttonHeight = 48;
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(720 - buttonWidth/2, 1116 - buttonHeight/2, buttonWidth, buttonHeight, 24);
+    ctx.fill();
+    
+    // Texto do contato
+    ctx.fillStyle = '#11332B';
+    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.fillText(contactText, 720, 1140);
   };
 
   useEffect(() => {

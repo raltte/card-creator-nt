@@ -183,71 +183,20 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       </div>
 
       {/* Contato */}
-      <Card>
-        <CardContent className="p-4">
-          <Label className="text-base font-semibold mb-4 block">
-            Contato para Envio de Currículo
-          </Label>
-          
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="contato-tipo">Tipo de Contato</Label>
-              <Select 
-                value={data.contato.tipo} 
-                onValueChange={(value: 'whatsapp' | 'email' | 'site') => updateData('contato.tipo', value)}
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="site">
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4" />
-                      Site
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="whatsapp">
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      WhatsApp
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="email">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      E-mail
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="contato-valor">
-                {data.contato.tipo === 'whatsapp' && 'Número do WhatsApp'}
-                {data.contato.tipo === 'email' && 'Endereço de E-mail'}
-                {data.contato.tipo === 'site' && 'URL do Site'}
-              </Label>
-              <div className="relative mt-1">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                  {getContactIcon(data.contato.tipo)}
-                </div>
-                <Input
-                  id="contato-valor"
-                  placeholder={
-                    data.contato.tipo === 'whatsapp' ? '(11) 94449-6131' :
-                    data.contato.tipo === 'email' ? 'contato@novotemporh.com.br' :
-                    'novotemporh.com.br'
-                  }
-                  value={data.contato.valor}
-                  onChange={(e) => updateData('contato.valor', e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
+      <div className="space-y-3">
+        <Label className="text-base font-semibold">
+          Contato (Fixo: novotemporh.com.br)
+        </Label>
+        <div className="p-4 bg-muted rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Globe className="w-4 h-4" />
+            <span>novotemporh.com.br</span>
           </div>
-        </CardContent>
-      </Card>
+          <p className="text-xs text-muted-foreground mt-1">
+            Website fixo da empresa
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

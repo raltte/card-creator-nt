@@ -31,7 +31,7 @@ export const CartazGenerator = () => {
     requisitos: "",
     contato: {
       tipo: 'site',
-      valor: ""
+      valor: "novotemporh.com.br"
     }
   });
 
