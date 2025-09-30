@@ -3,9 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CartazForm } from "./CartazForm";
 import { CartazPreview } from "./CartazPreview";
+import { CompiladoForm, CompiladoData } from "./CompiladoForm";
+import { CompiladoPreview } from "./CompiladoPreview";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export interface CartazData {
   image?: File | string;
@@ -22,6 +26,8 @@ export interface CartazData {
 
 export const CartazGenerator = () => {
   const { toast } = useToast();
+  const [modeloType, setModeloType] = useState<'tradicional' | 'compilado'>('tradicional');
+  
   const [cartazData, setCartazData] = useState<CartazData>({
     image: undefined,
     cargo: "",
@@ -32,6 +38,17 @@ export const CartazGenerator = () => {
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
+    }
+  });
+
+  const [compiladoData, setCompiladoData] = useState<CompiladoData>({
+    image: undefined,
+    local: "",
+    vagas: [{ codigo: '', cargo: '' }],
+    requisitos: "",
+    contato: {
+      tipo: 'whatsapp',
+      valor: "(12) 99617-9471"
     }
   });
 
@@ -48,7 +65,11 @@ export const CartazGenerator = () => {
       }
 
       const link = document.createElement('a');
-      link.download = `cartaz-${cartazData.cargo.replace(/\s+/g, '-').toLowerCase()}-${cartazData.codigo}.png`;
+      if (modeloType === 'tradicional') {
+        link.download = `cartaz-${cartazData.cargo.replace(/\s+/g, '-').toLowerCase()}-${cartazData.codigo}.png`;
+      } else {
+        link.download = `cartaz-compilado-${compiladoData.local.replace(/\s+/g, '-').toLowerCase()}.png`;
+      }
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
       
@@ -73,15 +94,18 @@ export const CartazGenerator = () => {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
         
+        const title = modeloType === 'tradicional' 
+          ? `Vaga: ${cartazData.cargo}`
+          : `Vagas de emprego - ${compiladoData.local}`;
+          
         if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'cartaz.png', { type: 'image/png' })] })) {
           const file = new File([blob], 'cartaz.png', { type: 'image/png' });
           await navigator.share({
-            title: `Vaga: ${cartazData.cargo}`,
+            title,
             text: `Confira esta oportunidade de emprego na Novo Tempo RH`,
             files: [file]
           });
         } else {
-          // Fallback: copy to clipboard
           const item = new ClipboardItem({ 'image/png': blob });
           await navigator.clipboard.write([item]);
           toast({
@@ -99,6 +123,14 @@ export const CartazGenerator = () => {
     }
   };
 
+  const isFormValid = () => {
+    if (modeloType === 'tradicional') {
+      return cartazData.cargo && cartazData.local && cartazData.codigo;
+    } else {
+      return compiladoData.local && compiladoData.vagas.some(v => v.codigo && v.cargo);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
       <div className="max-w-7xl mx-auto">
@@ -112,6 +144,27 @@ export const CartazGenerator = () => {
           </p>
         </div>
 
+        {/* Seleção de Modelo */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <Label className="text-lg font-semibold mb-4 block">Selecione o tipo de modelo:</Label>
+            <RadioGroup value={modeloType} onValueChange={(value: 'tradicional' | 'compilado') => setModeloType(value)}>
+              <div className="flex items-center space-x-2 mb-3">
+                <RadioGroupItem value="tradicional" id="tradicional" />
+                <Label htmlFor="tradicional" className="cursor-pointer">
+                  Tradicional - Uma vaga por cartaz
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="compilado" id="compilado" />
+                <Label htmlFor="compilado" className="cursor-pointer">
+                  Compilado - Múltiplas vagas em um cartaz
+                </Label>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
+
         <Tabs defaultValue="editor" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -124,12 +177,19 @@ export const CartazGenerator = () => {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-semibold text-nt-dark mb-6">
-                    Dados da Vaga
+                    {modeloType === 'tradicional' ? 'Dados da Vaga' : 'Dados das Vagas'}
                   </h2>
-                  <CartazForm 
-                    data={cartazData}
-                    onChange={setCartazData}
-                  />
+                  {modeloType === 'tradicional' ? (
+                    <CartazForm 
+                      data={cartazData}
+                      onChange={setCartazData}
+                    />
+                  ) : (
+                    <CompiladoForm 
+                      data={compiladoData}
+                      onChange={setCompiladoData}
+                    />
+                  )}
                 </CardContent>
               </Card>
 
@@ -145,7 +205,7 @@ export const CartazGenerator = () => {
                         variant="outline" 
                         size="sm"
                         onClick={handleShare}
-                        disabled={!cartazData.cargo}
+                        disabled={!isFormValid()}
                       >
                         <Share2 className="w-4 h-4 mr-1" />
                         Compartilhar
@@ -154,7 +214,7 @@ export const CartazGenerator = () => {
                         variant="default"
                         size="sm"
                         onClick={handleDownload}
-                        disabled={!cartazData.cargo}
+                        disabled={!isFormValid()}
                       >
                         <Download className="w-4 h-4 mr-1" />
                         Baixar PNG
@@ -162,7 +222,11 @@ export const CartazGenerator = () => {
                     </div>
                   </div>
                   <div className="flex justify-center">
-                    <CartazPreview data={cartazData} />
+                    {modeloType === 'tradicional' ? (
+                      <CartazPreview data={cartazData} />
+                    ) : (
+                      <CompiladoPreview data={compiladoData} />
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -180,14 +244,14 @@ export const CartazGenerator = () => {
                     <Button 
                       variant="outline"
                       onClick={handleShare}
-                      disabled={!cartazData.cargo}
+                      disabled={!isFormValid()}
                     >
                       <Share2 className="w-4 h-4 mr-2" />
                       Compartilhar
                     </Button>
                     <Button 
                       onClick={handleDownload}
-                      disabled={!cartazData.cargo}
+                      disabled={!isFormValid()}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Baixar PNG
@@ -196,7 +260,11 @@ export const CartazGenerator = () => {
                 </div>
                 <div className="flex justify-center">
                   <div className="scale-125 origin-top">
-                    <CartazPreview data={cartazData} />
+                    {modeloType === 'tradicional' ? (
+                      <CartazPreview data={cartazData} />
+                    ) : (
+                      <CompiladoPreview data={compiladoData} />
+                    )}
                   </div>
                 </div>
               </CardContent>
