@@ -111,7 +111,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     }
 
     // Vagas - Fonte aumentada para 30px com espaçamento adequado após local
-    y += data.local ? 80 : 0;
+    y += data.local ? 120 : 0;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';
