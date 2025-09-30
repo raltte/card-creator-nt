@@ -46,21 +46,9 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Espaço reservado para tarja PCD (sempre reservado)
-    const topOffset = 60;
-    const availableHeight = 1140;
-
-    // Desenhar tarja azul PCD no topo (apenas se for vaga PCD)
-    if (data.isPcd) {
-      ctx.fillStyle = '#3B5998';
-      ctx.fillRect(0, 0, canvas.width, topOffset);
-      
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 20px Montserrat, Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
-      ctx.textAlign = 'left';
-    }
+    // Configurações padrão (sem offset para ocupar todo o espaço)
+    const topOffset = 0;
+    const availableHeight = 1200;
 
     // Lado esquerdo - imagem (45% da largura)
     let leftImage: HTMLImageElement;
@@ -120,7 +108,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
     // Lado direito - fundo verde escuro com canto superior direito arredondado
-    const rightHeight = 948;
+    const rightHeight = 1008;
     ctx.fillStyle = '#11332B';
     ctx.beginPath();
     ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);
@@ -313,6 +301,18 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(contactText, 696, buttonY);
+
+    // Desenhar tarja azul PCD no topo (sobrepondo os elementos) se for vaga PCD
+    if (data.isPcd) {
+      ctx.fillStyle = '#3B5998';
+      ctx.fillRect(0, 0, canvas.width, 60);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.textAlign = 'left';
+    }
   };
 
   useEffect(() => {
