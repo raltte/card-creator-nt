@@ -3,7 +3,7 @@ import { CompiladoData } from "./CompiladoForm";
 import marisaLogo from "@/assets/marisa-logo.png";
 import marisaLogoBranco from "@/assets/marisa-logo-branco.png";
 import marisaTexto from "@/assets/marisa-texto.png";
-import novoTempoLogo from "@/assets/novo-tempo-logo-v4.png";
+import novoTempoLogo from "@/assets/novo-tempo-logo-light-bg.png";
 
 interface CompiladoPreviewMarisaProps {
   data: CompiladoData;
