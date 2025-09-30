@@ -34,9 +34,23 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Tarja azul PCD no topo (se for vaga PCD)
+    let topOffset = 0;
+    if (data.isPcd) {
+      topOffset = 60;
+      ctx.fillStyle = '#3B5998';
+      ctx.fillRect(0, 0, canvas.width, topOffset);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.textAlign = 'left';
+    }
+
     // Fundo branco
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, topOffset, canvas.width, canvas.height - topOffset);
 
     // Lado esquerdo - conteúdo
     const leftWidth = 528;
@@ -45,28 +59,28 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vagas de', 64, 160);
-    ctx.fillText('emprego', 64, 224);
+    ctx.fillText('Vagas de', 64, topOffset + 160);
+    ctx.fillText('emprego', 64, topOffset + 224);
     
     // "abertas" em verde com ícone de seta
     ctx.fillStyle = '#20CE90';
-    ctx.fillText('abertas', 64, 288);
+    ctx.fillText('abertas', 64, topOffset + 288);
     
     // Ícone de seta (down arrow) após "abertas"
     const textWidth = ctx.measureText('abertas ').width;
     ctx.beginPath();
-    ctx.arc(64 + textWidth + 24, 270, 24, 0, Math.PI * 2);
+    ctx.arc(64 + textWidth + 24, topOffset + 270, 24, 0, Math.PI * 2);
     ctx.fillStyle = '#20CE90';
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 28px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('↓', 64 + textWidth + 24, 278);
+    ctx.fillText('↓', 64 + textWidth + 24, topOffset + 278);
     
     ctx.textAlign = 'left';
 
-    // Badge local
-    let y = 360;
+    // Badge local e PCD
+    let y = topOffset + 360;
     if (data.local) {
       ctx.fillStyle = '#20CE90';
       ctx.beginPath();
@@ -78,6 +92,21 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.textAlign = 'center';
       ctx.fillText(data.local, 164, y + 30);
       ctx.textAlign = 'left';
+      
+      // Badge PCD ao lado do local (se for vaga PCD)
+      if (data.isPcd) {
+        const badgeX = 64 + 200 + 16;
+        ctx.fillStyle = '#3B5998';
+        ctx.beginPath();
+        ctx.roundRect(badgeX, y, 100, 48, 24);
+        ctx.fill();
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 22px Montserrat, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('PCD', badgeX + 50, y + 30);
+        ctx.textAlign = 'left';
+      }
     }
 
     // Vagas - Fonte aumentada para 30px
@@ -186,11 +215,11 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     
     const logoWidth = 320;
     const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 576, 40, logoWidth, logoHeight);
+    ctx.drawImage(logo, 576, topOffset + 40, logoWidth, logoHeight);
 
     // Desenhar imagem no lado direito com todas as bordas arredondadas
     const imageX = 528;
-    const imageY = logoHeight + 80;
+    const imageY = topOffset + logoHeight + 80;
     const imageWidth = 432;
     const imageHeight = 900;
 

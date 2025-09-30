@@ -46,6 +46,22 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Tarja azul PCD no topo (se for vaga PCD)
+    if (data.isPcd) {
+      ctx.fillStyle = '#3B5998'; // Azul Facebook/Profissional
+      ctx.fillRect(0, 0, canvas.width, 60);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.textAlign = 'left';
+    }
+
+    // Ajustar posições se for vaga PCD
+    const topOffset = data.isPcd ? 60 : 0;
+    const availableHeight = data.isPcd ? 1140 : 1200;
+
     // Lado esquerdo - imagem (45% da largura)
     let leftImage: HTMLImageElement;
     
@@ -71,9 +87,9 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       // Imagem padrão quando não há imagem
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg width="432" height="1200" xmlns="http://www.w3.org/2000/svg">
-          <rect width="432" height="1200" fill="#f3f4f6"/>
-          <text x="216" y="600" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
+        <svg width="432" height="${availableHeight}" xmlns="http://www.w3.org/2000/svg">
+          <rect width="432" height="${availableHeight}" fill="#f3f4f6"/>
+          <text x="216" y="${availableHeight/2}" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
         </svg>
       `);
       await new Promise((resolve) => {
@@ -83,30 +99,31 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
 
     // Desenhar imagem do lado esquerdo com object-fit: cover
     const imageAspect = leftImage.width / leftImage.height;
-    const canvasAspect = 432 / 1200;
+    const canvasAspect = 432 / availableHeight;
     
     let drawWidth, drawHeight, offsetX, offsetY;
     
     if (imageAspect > canvasAspect) {
       // Imagem é mais larga - cortar nas laterais
-      drawHeight = 1200;
-      drawWidth = 1200 * imageAspect;
+      drawHeight = availableHeight;
+      drawWidth = availableHeight * imageAspect;
       offsetX = -(drawWidth - 432) / 2;
-      offsetY = 0;
+      offsetY = topOffset;
     } else {
       // Imagem é mais alta - cortar no topo/fundo
       drawWidth = 432;
       drawHeight = 432 / imageAspect;
       offsetX = 0;
-      offsetY = -(drawHeight - 1200) / 2;
+      offsetY = topOffset - (drawHeight - availableHeight) / 2;
     }
     
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
     // Lado direito - fundo verde escuro com canto superior direito arredondado
+    const rightHeight = data.isPcd ? 948 : 1008;
     ctx.fillStyle = '#11332B';
     ctx.beginPath();
-    ctx.roundRect(432, 0, 528, 1008, [0, 24, 0, 0]);
+    ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
 
     // Logo Novo Tempo (topo direito) - proporção mantida para evitar distorção
@@ -118,14 +135,32 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Calcular proporção correta com logo maior e margem equilibrada
     const logoWidth = 360;
     const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 456, 80, logoWidth, logoHeight);
+    ctx.drawImage(logo, 456, topOffset + 80, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal centralizado verticalmente
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 456, 280);
-    ctx.fillText('emprego', 456, 333);
+    ctx.fillText('Vaga de', 456, topOffset + 280);
+    ctx.fillText('emprego', 456, topOffset + 333);
+
+    // Badge PCD ao lado do título (se for vaga PCD)
+    if (data.isPcd) {
+      const textWidth = ctx.measureText('emprego').width;
+      const badgeX = 456 + textWidth + 24;
+      const badgeY = topOffset + 305;
+      
+      ctx.fillStyle = '#3B5998';
+      ctx.beginPath();
+      ctx.roundRect(badgeX, badgeY, 100, 48, 24);
+      ctx.fill();
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PCD', badgeX + 50, badgeY + 30);
+      ctx.textAlign = 'left';
+    }
 
     // Função auxiliar para quebrar texto
     const wrapText = (text: string, maxWidth: number, fontSize: string) => {
@@ -149,7 +184,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     };
 
     // Dados da vaga - começando na posição centralizada
-    let y = 400;
+    let y = topOffset + 400;
     const maxTextWidth = 464; // Margem de 40px da direita (960 - 456 - 40)
     
     if (data.cargo) {
@@ -246,14 +281,15 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.fillText('legenda.', 456 + textWidth, y);
 
     // Barra de contato verde claro na parte inferior
+    const footerY = topOffset + rightHeight;
     ctx.fillStyle = '#20CE90';
-    ctx.fillRect(432, 1008, 528, 192);
+    ctx.fillRect(432, footerY, 528, 192);
 
     // Texto do contato
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 32px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo em:', 696, 1068);
+    ctx.fillText('Envie seu currículo em:', 696, footerY + 60);
 
     // Texto fixo do contato: novotemporh.com.br
     const contactText = getContactDisplay();
@@ -263,7 +299,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     const headerTextMetrics = ctx.measureText('Envie seu currículo em:');
     const buttonWidth = headerTextMetrics.width;
     const buttonHeight = 48;
-    const buttonY = 1116;
+    const buttonY = footerY + 108;
     
     // Desenhar o fundo branco centralizado
     ctx.fillStyle = '#FFFFFF';

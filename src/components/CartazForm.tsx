@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Upload, Globe, MessageCircle, Mail } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 
@@ -101,6 +102,21 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             </div>
           </label>
         </div>
+      </div>
+
+      {/* Vaga PCD */}
+      <div className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="space-y-0.5">
+          <Label htmlFor="pcd" className="text-base font-semibold">Vaga PCD</Label>
+          <div className="text-sm text-muted-foreground">
+            Vaga exclusiva ou afirmativa para Pessoa com Deficiência
+          </div>
+        </div>
+        <Switch
+          id="pcd"
+          checked={data.isPcd}
+          onCheckedChange={(checked) => updateData('isPcd', checked)}
+        />
       </div>
 
       {/* Dados da vaga */}

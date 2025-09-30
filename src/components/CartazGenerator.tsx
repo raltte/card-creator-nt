@@ -18,6 +18,7 @@ export interface CartazData {
   codigo: string;
   tipoContrato: string;
   requisitos: string;
+  isPcd: boolean;
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -35,6 +36,7 @@ export const CartazGenerator = () => {
     codigo: "",
     tipoContrato: "Efetivo",
     requisitos: "",
+    isPcd: false,
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
@@ -46,6 +48,7 @@ export const CartazGenerator = () => {
     local: "",
     vagas: [{ codigo: '', cargo: '' }],
     requisitos: "",
+    isPcd: false,
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"

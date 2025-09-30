@@ -49,6 +49,7 @@ export const RecrutadoraDashboard = () => {
       codigo: dados.codigoPS,
       tipoContrato: dados.tipoContrato,
       requisitos: dados.requisitos.join('\n• '),
+      isPcd: false,
       contato: contatoInfo
     };
   };

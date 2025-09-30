@@ -2,6 +2,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Upload, Plus, Trash2, Globe, MessageCircle, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -15,6 +16,7 @@ export interface CompiladoData {
   local: string;
   vagas: CompiladoVaga[];
   requisitos: string;
+  isPcd: boolean;
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -125,6 +127,21 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
             </div>
           </label>
         </div>
+      </div>
+
+      {/* Vaga PCD */}
+      <div className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="space-y-0.5">
+          <Label htmlFor="pcd-compilado" className="text-base font-semibold">Vaga PCD</Label>
+          <div className="text-sm text-muted-foreground">
+            Vaga exclusiva ou afirmativa para Pessoa com Deficiência
+          </div>
+        </div>
+        <Switch
+          id="pcd-compilado"
+          checked={data.isPcd}
+          onCheckedChange={(checked) => updateData('isPcd', checked)}
+        />
       </div>
 
       {/* Local */}
