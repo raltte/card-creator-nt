@@ -74,31 +74,31 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.fill();
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
       ctx.fillText(data.local, 164, y + 30);
       ctx.textAlign = 'left';
     }
 
-    // Vagas - Fonte padronizada em 28px
+    // Vagas - Fonte aumentada para 30px
     y = 460;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';
-        ctx.font = 'bold 28px Montserrat, Arial';
+        ctx.font = 'bold 30px Montserrat, Arial';
         const codigoText = `${vaga.codigo}:`;
         ctx.fillText(codigoText, 64, y);
         
         const codigoWidth = ctx.measureText(codigoText).width;
         ctx.fillStyle = '#11332B';
-        ctx.font = '28px Montserrat, Arial';
+        ctx.font = '30px Montserrat, Arial';
         ctx.fillText(` ${vaga.cargo}`, 64 + codigoWidth, y);
         
         y += 44;
       }
     });
 
-    // Requisitos - Fonte padronizada em 24px
+    // Requisitos - Fonte aumentada para 26px
     y += 32;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
@@ -106,7 +106,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Requisitos', 144, y + 30);
     ctx.textAlign = 'left';
@@ -114,7 +114,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     y += 80;
     if (data.requisitos) {
       ctx.fillStyle = '#11332B';
-      ctx.font = '24px Montserrat, Arial';
+      ctx.font = '26px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
@@ -125,7 +125,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       });
     }
 
-    // Badge "Envie seu currículo:" - Proporcional ao badge Requisitos
+    // Badge "Envie seu currículo:" - Fonte aumentada para 22px
     y = 1000;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
@@ -133,15 +133,15 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Envie seu currículo:', 204, y + 30);
     ctx.textAlign = 'left';
 
-    // Contato direto sem label - Fonte padronizada em 24px
+    // Contato direto - Fonte aumentada para 26px
     y += 80;
     ctx.fillStyle = '#11332B';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 26px Montserrat, Arial';
     ctx.fillText(getContactDisplay(), 64, y);
 
     // Lado direito - imagem
