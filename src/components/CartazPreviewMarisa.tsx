@@ -150,7 +150,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     ctx.font = 'bold 26px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText('novotemporh.com.br/marisa', 490, 955);
+    ctx.fillText('novotemporh.com.br/marisa', 490, 962);
   };
 
   useEffect(() => {
