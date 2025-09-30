@@ -119,7 +119,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     }
 
     // Vagas - Fonte 30px com espaçamento adequado
-    y += data.local ? 60 : 40;
+    y += data.local ? 80 : 40;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#E5007E';
