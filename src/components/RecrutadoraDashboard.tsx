@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Share2, Calendar } from "lucide-react";
+import { ArrowLeft, Download, Share2, Calendar, FileText, Layers } from "lucide-react";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
+import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
+import { CompiladoPreview } from "./CompiladoPreview";
+import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { CartazData } from "./CartazGenerator";
 import { ImageSelector } from "./ImageSelector";
 import { ImageFraming } from "./ImageFraming";
@@ -14,14 +17,40 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
+  const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado' | null>(null);
   const [cartazGerado, setCartazGerado] = useState<CartazData | null>(null);
-  const [etapaAtual, setEtapaAtual] = useState<'selecaoModelo' | 'formulario' | 'selecaoImagem' | 'ajusteImagem' | 'preview'>('selecaoModelo');
+  const [compiladoGerado, setCompiladoGerado] = useState<CompiladoData | null>(null);
+  const [etapaAtual, setEtapaAtual] = useState<'selecaoTipo' | 'selecaoModelo' | 'formulario' | 'selecaoImagem' | 'ajusteImagem' | 'preview'>('selecaoTipo');
   const [dadosFormulario, setDadosFormulario] = useState<RecrutadoraData | null>(null);
   const [imagemSelecionada, setImagemSelecionada] = useState<string | null>(null);
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa'>('padrao');
+  const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
+    image: '',
+    local: '',
+    vagas: [{ codigo: '', cargo: '' }],
+    requisitos: '',
+    isPcd: false,
+    clientTemplate: 'padrao',
+    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
+  });
+
+  const handleTipoSelect = (tipo: 'individual' | 'compilado') => {
+    setTipoCartaz(tipo);
+    setEtapaAtual('selecaoModelo');
+  };
 
   const handleModeloSelect = (modelo: 'padrao' | 'marisa') => {
     setModeloSelecionado(modelo);
+    if (tipoCartaz === 'compilado') {
+      setDadosCompilado({
+        ...dadosCompilado,
+        clientTemplate: modelo,
+        contato: { 
+          ...dadosCompilado.contato,
+          valor: modelo === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
+        }
+      });
+    }
     setEtapaAtual('formulario');
   };
 
@@ -67,6 +96,15 @@ export const RecrutadoraDashboard = () => {
     setEtapaAtual('selecaoImagem');
   };
 
+  const handleCompiladoGenerate = () => {
+    setCompiladoGerado(dadosCompilado);
+    setEtapaAtual('preview');
+    toast({
+      title: "Compilado gerado com sucesso!",
+      description: "Você pode visualizar, baixar ou compartilhar o compilado."
+    });
+  };
+
   const handleImageSelect = (imagemUrl: string) => {
     setImagemSelecionada(imagemUrl);
     setEtapaAtual('ajusteImagem');
@@ -85,9 +123,19 @@ export const RecrutadoraDashboard = () => {
     }
   };
 
+  const voltarSelecaoTipo = () => {
+    setEtapaAtual('selecaoTipo');
+    setTipoCartaz(null);
+    setCartazGerado(null);
+    setCompiladoGerado(null);
+    setDadosFormulario(null);
+    setImagemSelecionada(null);
+  };
+
   const voltarSelecaoModelo = () => {
     setEtapaAtual('selecaoModelo');
     setCartazGerado(null);
+    setCompiladoGerado(null);
     setDadosFormulario(null);
     setImagemSelecionada(null);
   };
@@ -95,6 +143,7 @@ export const RecrutadoraDashboard = () => {
   const voltarFormulario = () => {
     setEtapaAtual('formulario');
     setCartazGerado(null);
+    setCompiladoGerado(null);
     setDadosFormulario(null);
     setImagemSelecionada(null);
   };
@@ -109,8 +158,16 @@ export const RecrutadoraDashboard = () => {
     setCartazGerado(null);
   };
 
+  const getImagemAtual = () => {
+    if (tipoCartaz === 'compilado' && compiladoGerado?.image) {
+      return compiladoGerado.image;
+    }
+    return cartazGerado?.image;
+  };
+
   const handleDownload = async () => {
-    if (!cartazGerado) return;
+    const dataAtual = tipoCartaz === 'compilado' ? compiladoGerado : cartazGerado;
+    if (!dataAtual) return;
     
     try {
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
@@ -124,7 +181,11 @@ export const RecrutadoraDashboard = () => {
       }
 
       const link = document.createElement('a');
-      link.download = `cartaz-${cartazGerado.cargo.replace(/\s+/g, '-').toLowerCase()}-${cartazGerado.codigo}.png`;
+      const nomeArquivo = tipoCartaz === 'compilado' 
+        ? `compilado-${dataAtual.local.replace(/\s+/g, '-').toLowerCase()}.png`
+        : `cartaz-${(dataAtual as CartazData).cargo.replace(/\s+/g, '-').toLowerCase()}-${(dataAtual as CartazData).codigo}.png`;
+      
+      link.download = nomeArquivo;
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
       
@@ -142,7 +203,8 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleShare = async () => {
-    if (!cartazGerado) return;
+    const dataAtual = tipoCartaz === 'compilado' ? compiladoGerado : cartazGerado;
+    if (!dataAtual) return;
     
     try {
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
@@ -153,8 +215,12 @@ export const RecrutadoraDashboard = () => {
         
         if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'cartaz.png', { type: 'image/png' })] })) {
           const file = new File([blob], 'cartaz.png', { type: 'image/png' });
+          const titulo = tipoCartaz === 'compilado'
+            ? `Vagas disponíveis em ${dataAtual.local}`
+            : `Vaga: ${(dataAtual as CartazData).cargo}`;
+          
           await navigator.share({
-            title: `Vaga: ${cartazGerado.cargo}`,
+            title: titulo,
             text: `Confira esta oportunidade de emprego na Novo Tempo RH`,
             files: [file]
           });
@@ -178,7 +244,8 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleMondayIntegration = async () => {
-    if (!cartazGerado) {
+    const dataAtual = tipoCartaz === 'compilado' ? compiladoGerado : cartazGerado;
+    if (!dataAtual) {
       toast({
         title: "Erro",
         description: "Nenhum cartaz foi gerado ainda.",
@@ -192,18 +259,19 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleSendToBoard = async (boardId: number) => {
-    if (!cartazGerado) return;
+    const dataAtual = tipoCartaz === 'compilado' ? compiladoGerado : cartazGerado;
+    if (!dataAtual) return;
     
     try {
       // Converter canvas para base64
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
-      const imageData = canvas ? canvas.toDataURL('image/png', 1.0) : cartazGerado.image;
+      const imageData = canvas ? canvas.toDataURL('image/png', 1.0) : getImagemAtual();
 
       const { data, error } = await supabase.functions.invoke('monday-integration', {
         body: {
           action: 'send_cartaz',
           cartazData: {
-            ...cartazGerado,
+            ...dataAtual,
             image: imageData
           },
           boardId: boardId,
@@ -242,12 +310,52 @@ export const RecrutadoraDashboard = () => {
           </p>
         </div>
 
-        {etapaAtual === 'selecaoModelo' ? (
-          /* Seleção de Modelo */
+        {etapaAtual === 'selecaoTipo' ? (
+          /* Seleção de Tipo */
           <Card className="max-w-4xl mx-auto">
             <CardContent className="p-8">
               <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
-                Selecione o Tipo de Cartaz
+                O que você deseja criar?
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card 
+                  className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-nt-primary"
+                  onClick={() => handleTipoSelect('individual')}
+                >
+                  <CardContent className="p-6 text-center">
+                    <FileText className="w-12 h-12 mx-auto mb-4 text-nt-primary" />
+                    <h3 className="text-xl font-bold text-nt-dark mb-2">Cartaz Individual</h3>
+                    <p className="text-muted-foreground">
+                      Cartaz para uma única vaga com foto e informações específicas
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card 
+                  className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-nt-primary"
+                  onClick={() => handleTipoSelect('compilado')}
+                >
+                  <CardContent className="p-6 text-center">
+                    <Layers className="w-12 h-12 mx-auto mb-4 text-nt-primary" />
+                    <h3 className="text-xl font-bold text-nt-dark mb-2">Compilado de Vagas</h3>
+                    <p className="text-muted-foreground">
+                      Lista múltiplas vagas em um único cartaz
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        ) : etapaAtual === 'selecaoModelo' ? (
+          /* Seleção de Modelo */
+          <Card className="max-w-4xl mx-auto">
+            <CardContent className="p-8">
+              <Button variant="ghost" onClick={voltarSelecaoTipo} className="mb-4">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar à Seleção de Tipo
+              </Button>
+              <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
+                Selecione o Modelo do {tipoCartaz === 'compilado' ? 'Compilado' : 'Cartaz'}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card 
@@ -287,9 +395,28 @@ export const RecrutadoraDashboard = () => {
                 Voltar à Seleção de Modelo
               </Button>
               <h2 className="text-2xl font-semibold text-nt-dark mb-6">
-                Solicitar Cartaz de Vaga - {modeloSelecionado === 'marisa' ? 'Marisa' : 'Tradicional'}
+                {tipoCartaz === 'compilado' ? 'Criar Compilado de Vagas' : 'Solicitar Cartaz de Vaga'} - {modeloSelecionado === 'marisa' ? 'Marisa' : 'Tradicional'}
               </h2>
-              <RecrutadoraForm onSubmit={handleFormSubmit} />
+              
+              {tipoCartaz === 'compilado' ? (
+                <>
+                  <CompiladoForm 
+                    data={dadosCompilado}
+                    onChange={setDadosCompilado}
+                  />
+                  <div className="mt-6">
+                    <Button 
+                      onClick={handleCompiladoGenerate}
+                      className="w-full"
+                      disabled={!dadosCompilado.local || dadosCompilado.vagas.some(v => !v.codigo || !v.cargo)}
+                    >
+                      Gerar Compilado
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <RecrutadoraForm onSubmit={handleFormSubmit} />
+              )}
             </CardContent>
           </Card>
         ) : etapaAtual === 'selecaoImagem' && dadosFormulario ? (
@@ -315,12 +442,15 @@ export const RecrutadoraDashboard = () => {
             </CardContent>
           </Card>
         ) : (
-          /* Visualização do Cartaz Gerado */
+          /* Visualização do Cartaz/Compilado Gerado */
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Button variant="outline" onClick={voltarAjusteImagem}>
+              <Button 
+                variant="outline" 
+                onClick={tipoCartaz === 'compilado' ? voltarFormulario : voltarAjusteImagem}
+              >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar ao Ajuste de Imagem
+                {tipoCartaz === 'compilado' ? 'Voltar ao Formulário' : 'Voltar ao Ajuste de Imagem'}
               </Button>
               <div className="flex gap-2 ml-auto">
                 <Button variant="outline" onClick={handleMondayIntegration}>
@@ -348,13 +478,21 @@ export const RecrutadoraDashboard = () => {
                 <Card>
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
-                      Cartaz Gerado
+                      {tipoCartaz === 'compilado' ? 'Compilado' : 'Cartaz'} Gerado
                     </h2>
                     <div className="flex justify-center">
-                      {modeloSelecionado === 'marisa' ? (
-                        <CartazPreviewMarisa data={cartazGerado!} />
+                      {tipoCartaz === 'compilado' ? (
+                        modeloSelecionado === 'marisa' ? (
+                          <CompiladoPreviewMarisa data={compiladoGerado!} />
+                        ) : (
+                          <CompiladoPreview data={compiladoGerado!} />
+                        )
                       ) : (
-                        <CartazPreview data={cartazGerado!} />
+                        modeloSelecionado === 'marisa' ? (
+                          <CartazPreviewMarisa data={cartazGerado!} />
+                        ) : (
+                          <CartazPreview data={cartazGerado!} />
+                        )
                       )}
                     </div>
                   </CardContent>
@@ -369,10 +507,18 @@ export const RecrutadoraDashboard = () => {
                     </h2>
                     <div className="flex justify-center">
                       <div className="scale-125 origin-top">
-                        {modeloSelecionado === 'marisa' ? (
-                          <CartazPreviewMarisa data={cartazGerado!} />
+                        {tipoCartaz === 'compilado' ? (
+                          modeloSelecionado === 'marisa' ? (
+                            <CompiladoPreviewMarisa data={compiladoGerado!} />
+                          ) : (
+                            <CompiladoPreview data={compiladoGerado!} />
+                          )
                         ) : (
-                          <CartazPreview data={cartazGerado!} />
+                          modeloSelecionado === 'marisa' ? (
+                            <CartazPreviewMarisa data={cartazGerado!} />
+                          ) : (
+                            <CartazPreview data={cartazGerado!} />
+                          )
                         )}
                       </div>
                     </div>
