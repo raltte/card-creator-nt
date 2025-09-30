@@ -3,8 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CartazForm } from "./CartazForm";
 import { CartazPreview } from "./CartazPreview";
+import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CompiladoPreview } from "./CompiladoPreview";
+import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +21,7 @@ export interface CartazData {
   tipoContrato: string;
   requisitos: string;
   isPcd: boolean;
+  clientTemplate: 'padrao' | 'marisa';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -37,6 +40,7 @@ export const CartazGenerator = () => {
     tipoContrato: "Efetivo",
     requisitos: "",
     isPcd: false,
+    clientTemplate: 'padrao',
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
@@ -49,6 +53,7 @@ export const CartazGenerator = () => {
     vagas: [{ codigo: '', cargo: '' }],
     requisitos: "",
     isPcd: false,
+    clientTemplate: 'padrao',
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
@@ -226,9 +231,17 @@ export const CartazGenerator = () => {
                   </div>
                   <div className="flex justify-center">
                     {modeloType === 'tradicional' ? (
-                      <CartazPreview data={cartazData} />
+                      cartazData.clientTemplate === 'marisa' ? (
+                        <CartazPreviewMarisa data={cartazData} />
+                      ) : (
+                        <CartazPreview data={cartazData} />
+                      )
                     ) : (
-                      <CompiladoPreview data={compiladoData} />
+                      compiladoData.clientTemplate === 'marisa' ? (
+                        <CompiladoPreviewMarisa data={compiladoData} />
+                      ) : (
+                        <CompiladoPreview data={compiladoData} />
+                      )
                     )}
                   </div>
                 </CardContent>
@@ -264,9 +277,17 @@ export const CartazGenerator = () => {
                 <div className="flex justify-center">
                   <div className="scale-125 origin-top">
                     {modeloType === 'tradicional' ? (
-                      <CartazPreview data={cartazData} />
+                      cartazData.clientTemplate === 'marisa' ? (
+                        <CartazPreviewMarisa data={cartazData} />
+                      ) : (
+                        <CartazPreview data={cartazData} />
+                      )
                     ) : (
-                      <CompiladoPreview data={compiladoData} />
+                      compiladoData.clientTemplate === 'marisa' ? (
+                        <CompiladoPreviewMarisa data={compiladoData} />
+                      ) : (
+                        <CompiladoPreview data={compiladoData} />
+                      )
                     )}
                   </div>
                 </div>

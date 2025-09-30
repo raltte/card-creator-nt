@@ -17,6 +17,7 @@ export interface CompiladoData {
   vagas: CompiladoVaga[];
   requisitos: string;
   isPcd: boolean;
+  clientTemplate: 'padrao' | 'marisa';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -106,6 +107,37 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Seleção de Cliente */}
+      <div className="space-y-4">
+        <Label className="text-base font-semibold">Template do Cliente</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'padrao')}
+            className={`p-4 border-2 rounded-lg text-left transition-colors ${
+              data.clientTemplate === 'padrao' 
+                ? 'border-nt-light bg-nt-light/5' 
+                : 'border-border hover:border-nt-light/50'
+            }`}
+          >
+            <div className="font-semibold">Padrão</div>
+            <div className="text-sm text-muted-foreground">Novo Tempo RH</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'marisa')}
+            className={`p-4 border-2 rounded-lg text-left transition-colors ${
+              data.clientTemplate === 'marisa' 
+                ? 'border-nt-light bg-nt-light/5' 
+                : 'border-border hover:border-nt-light/50'
+            }`}
+          >
+            <div className="font-semibold">Marisa</div>
+            <div className="text-sm text-muted-foreground">Layout personalizado</div>
+          </button>
+        </div>
+      </div>
+
       {/* Imagem */}
       <div className="space-y-4">
         <Label className="text-base font-semibold">Imagem Ilustrativa</Label>

@@ -50,6 +50,7 @@ export const RecrutadoraDashboard = () => {
       tipoContrato: dados.tipoContrato,
       requisitos: dados.requisitos.join('\n• '),
       isPcd: false,
+      clientTemplate: 'padrao',
       contato: contatoInfo
     };
   };
