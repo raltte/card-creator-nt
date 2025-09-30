@@ -121,22 +121,23 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       logo.onload = resolve;
     });
     // Calcular proporção correta com logo maior e margem equilibrada
+    const contentOffset = 60; // Offset interno para os textos (espaço para tarja PCD)
     const logoWidth = 360;
     const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 456, topOffset + 80, logoWidth, logoHeight);
+    ctx.drawImage(logo, 456, topOffset + contentOffset + 80, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal centralizado verticalmente
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 64px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 456, topOffset + 280);
-    ctx.fillText('emprego', 456, topOffset + 333);
+    ctx.fillText('Vaga de', 456, topOffset + contentOffset + 280);
+    ctx.fillText('emprego', 456, topOffset + contentOffset + 333);
 
     // Badge PCD ao lado do título (se for vaga PCD)
     if (data.isPcd) {
       const textWidth = ctx.measureText('emprego').width;
       const badgeX = 456 + textWidth + 24;
-      const badgeY = topOffset + 305;
+      const badgeY = topOffset + contentOffset + 305;
       
       ctx.fillStyle = '#3B5998';
       ctx.beginPath();
@@ -172,7 +173,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     };
 
     // Dados da vaga - começando na posição centralizada
-    let y = topOffset + 400;
+    let y = topOffset + contentOffset + 400;
     const maxTextWidth = 464; // Margem de 40px da direita (960 - 456 - 40)
     
     if (data.cargo) {
