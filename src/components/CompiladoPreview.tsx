@@ -80,8 +80,8 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     
     ctx.textAlign = 'left';
 
-    // Badge local e PCD
-    let y = topOffset + 360;
+    // Badge local e PCD - posicionar após o título com margem
+    let y = topOffset + 340;
     if (data.local) {
       ctx.fillStyle = '#20CE90';
       ctx.beginPath();
@@ -111,7 +111,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     }
 
     // Vagas - Fonte aumentada para 30px com espaçamento adequado após local
-    y = data.local ? topOffset + 420 : topOffset + 340;
+    y += data.local ? 60 : 0;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';

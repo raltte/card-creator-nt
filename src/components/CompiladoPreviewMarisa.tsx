@@ -88,8 +88,8 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     const textoHeight = (textoWidth * marisaTextoImg.height) / marisaTextoImg.width;
     ctx.drawImage(marisaTextoImg, 64, topOffset + 120, textoWidth, textoHeight);
 
-    // Badge local e PCD
-    let y = topOffset + 260;
+    // Badge local e PCD - posicionar após a imagem do texto com margem
+    let y = topOffset + 120 + textoHeight + 40;
     if (data.local) {
       ctx.fillStyle = '#E5007E';
       ctx.beginPath();
@@ -119,7 +119,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     }
 
     // Vagas - Fonte 30px com espaçamento adequado
-    y = data.local ? topOffset + 360 : topOffset + 280;
+    y += data.local ? 60 : 40;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#E5007E';
