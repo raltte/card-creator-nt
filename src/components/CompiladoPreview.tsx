@@ -138,14 +138,10 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fillText('Envie seu currículo:', 264, y + 36);
     ctx.textAlign = 'left';
 
-    // Contato para dúvidas - Fonte padronizada em 24px
-    y += 90;
+    // Contato direto sem label - Fonte padronizada em 24px
+    y += 80;
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 24px Montserrat, Arial';
-    ctx.fillText('Contato para dúvidas:', 64, y);
-    
-    y += 40;
-    ctx.font = '24px Montserrat, Arial';
     ctx.fillText(getContactDisplay(), 64, y);
 
     // Lado direito - imagem
