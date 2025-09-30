@@ -72,10 +72,19 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     // Posicionar textos sobre o PNG conforme referência
     
     // Cargo (onde está escrito "Líder de Vendas")
-    ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 52px Montserrat, Arial';
-    ctx.textAlign = 'center';
     const cargoText = data.cargo || 'Nome da Vaga';
+    const maxCargoLength = 17;
+    
+    // Ajustar tamanho da fonte baseado no comprimento do texto
+    let cargoFontSize = 52;
+    if (cargoText.length > maxCargoLength) {
+      // Reduzir proporcionalmente ao tamanho extra
+      cargoFontSize = Math.max(30, 52 * (maxCargoLength / cargoText.length));
+    }
+    
+    ctx.fillStyle = '#E5007E';
+    ctx.font = `bold ${cargoFontSize}px Montserrat, Arial`;
+    ctx.textAlign = 'center';
     ctx.fillText(cargoText, 480, 820);
 
     // Badges dinâmicos
