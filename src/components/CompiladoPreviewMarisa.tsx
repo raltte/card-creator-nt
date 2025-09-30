@@ -87,18 +87,6 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     const textoWidth = 400;
     const textoHeight = (textoWidth * marisaTextoImg.height) / marisaTextoImg.width;
     ctx.drawImage(marisaTextoImg, 64, topOffset + 120, textoWidth, textoHeight);
-    
-    // Ícone de seta (down arrow) após o texto
-    ctx.beginPath();
-    ctx.arc(64 + textoWidth + 30, topOffset + 120 + textoHeight - 30, 24, 0, Math.PI * 2);
-    ctx.fillStyle = '#E5007E';
-    ctx.fill();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 28px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('↓', 64 + textoWidth + 30, topOffset + 120 + textoHeight - 22);
-    
-    ctx.textAlign = 'left';
 
     // Badge local e PCD
     let y = topOffset + 360;
@@ -227,31 +215,20 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       });
     }
 
-    // Logo Marisa no topo direito
-    const logoMarisa = new Image();
-    logoMarisa.src = marisaLogo;
-    await new Promise((resolve) => {
-      logoMarisa.onload = resolve;
-    });
-    
-    const logoWidth = 280;
-    const logoHeight = (logoWidth * logoMarisa.height) / logoMarisa.width;
-    ctx.drawImage(logoMarisa, 600, topOffset + 40, logoWidth, logoHeight);
-
-    // Logo Novo Tempo pequeno abaixo da Marisa
+    // Logo Novo Tempo no topo direito
     const logoNT = new Image();
     logoNT.src = novoTempoLogo;
     await new Promise((resolve) => {
       logoNT.onload = resolve;
     });
     
-    const ntLogoWidth = 200;
-    const ntLogoHeight = (ntLogoWidth * logoNT.height) / logoNT.width;
-    ctx.drawImage(logoNT, 640, topOffset + 40 + logoHeight + 20, ntLogoWidth, ntLogoHeight);
+    const logoWidth = 320;
+    const logoHeight = (logoWidth * logoNT.height) / logoNT.width;
+    ctx.drawImage(logoNT, 576, topOffset + 40, logoWidth, logoHeight);
 
     // Desenhar imagem no lado direito com todas as bordas arredondadas
     const imageX = 528;
-    const imageY = topOffset + logoHeight + ntLogoHeight + 100;
+    const imageY = topOffset + logoHeight + 80;
     const imageWidth = 432;
     const imageHeight = 900;
 
