@@ -79,7 +79,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     ctx.fillText(cargoText, 480, 820);
 
     // Badges dinâmicos
-    const badgeY = 870; // Posição Y ajustada (mais acima)
+    const badgeY = 855; // Posição Y ajustada (mais acima)
     const badgePadding = 20;
     const badgeHeight = 40;
     const badgeRadius = 20;
@@ -150,7 +150,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     ctx.font = 'bold 26px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText('novotemporh.com.br/marisa', 490, 1000);
+    ctx.fillText('novotemporh.com.br/marisa', 490, 985);
   };
 
   useEffect(() => {
