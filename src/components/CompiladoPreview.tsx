@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CompiladoData } from "./CompiladoForm";
-import logoImage from "@/assets/novo-tempo-logo-v4.png";
+import logoImage from "@/assets/novo-tempo-logo-compilado.png";
 
 interface CompiladoPreviewProps {
   data: CompiladoData;
