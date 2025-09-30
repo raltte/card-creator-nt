@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { CompiladoData } from "./CompiladoForm";
 import marisaLogo from "@/assets/marisa-logo.png";
 import marisaLogoBranco from "@/assets/marisa-logo-branco.png";
+import marisaTexto from "@/assets/marisa-texto.png";
 import novoTempoLogo from "@/assets/novo-tempo-logo-v4.png";
 
 interface CompiladoPreviewMarisaProps {
@@ -35,167 +36,129 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       marisaLogoPattern.onerror = resolve;
     });
 
-    ctx.globalAlpha = 0.08;
-    for (let i = 0; i < 15; i++) {
-      const size = 80 + (i % 3) * 30;
-      const x = (i % 4) * 240 - 30;
-      const y = Math.floor(i / 4) * 250 + 20;
+    ctx.globalAlpha = 0.05;
+    for (let i = 0; i < 20; i++) {
+      const size = 100 + (i % 3) * 40;
+      const x = (i % 4) * 240 - 40;
+      const y = Math.floor(i / 4) * 240 + 20;
       ctx.drawImage(marisaLogoPattern, x, y, size, size * 0.3);
     }
     ctx.globalAlpha = 1.0;
 
-    // Lado esquerdo - Informações
-    let y = 100;
-
-    // Título "VEM TRABALHAR NA"
-    ctx.fillStyle = '#333333';
-    ctx.font = 'bold 42px Montserrat, Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText('VEM TRABALHAR NA', 60, y);
-    y += 60;
-
-    // Logo Marisa grande
-    const logoMarisa = new Image();
-    logoMarisa.src = marisaLogo;
-    await new Promise((resolve) => {
-      logoMarisa.onload = resolve;
-    });
-    
-    const marisaWidth = 320;
-    const marisaHeight = (marisaWidth * logoMarisa.height) / logoMarisa.width;
-    ctx.drawImage(logoMarisa, 60, y, marisaWidth, marisaHeight);
-    y += marisaHeight + 40;
-
-    // "CONFIRA NOSSAS VAGAS" com ícone
-    ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 28px Montserrat, Arial';
-    ctx.fillText('CONFIRA NOSSAS VAGAS', 60, y);
-    
-    // Ícone download
-    ctx.beginPath();
-    ctx.arc(370, y - 10, 18, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Arial';
-    ctx.fillText('↓', 370, y - 4);
-    y += 50;
-
-    // Local
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(60, y - 25, 360, 50);
-    ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 26px Montserrat, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(data.local || 'LOCAL', 240, y + 5);
-    ctx.textAlign = 'left';
-    y += 60;
-
-    // Lista de vagas
-    ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 22px Montserrat, Arial';
-    const vagas = data.vagas.slice(0, 7);
-    vagas.forEach((vaga) => {
-      if (vaga.codigo && vaga.cargo) {
-        ctx.fillText('CÓDIGO VAGA:', 60, y);
-        ctx.fillStyle = '#333333';
-        ctx.font = '22px Montserrat, Arial';
-        ctx.fillText(` ${vaga.codigo} - ${vaga.cargo}`, 230, y);
-        ctx.fillStyle = '#E5007E';
-        ctx.font = 'bold 22px Montserrat, Arial';
-        y += 35;
-      }
-    });
-
-    // Logo Novo Tempo (topo direito)
+    // Logo Novo Tempo (topo)
     const logoNT = new Image();
     logoNT.src = novoTempoLogo;
     await new Promise((resolve) => {
       logoNT.onload = resolve;
     });
     
-    const ntLogoWidth = 280;
+    const ntLogoWidth = 200;
     const ntLogoHeight = (ntLogoWidth * logoNT.height) / logoNT.width;
-    ctx.drawImage(logoNT, 620, 50, ntLogoWidth, ntLogoHeight);
+    ctx.drawImage(logoNT, 680, 40, ntLogoWidth, ntLogoHeight);
 
-    // Lado direito - Imagem com background rosa arredondado
+    // Imagem principal (topo)
+    let imageHeight = 420;
     if (data.image) {
-      const rightImage = new Image();
-      rightImage.crossOrigin = 'anonymous';
+      const mainImage = new Image();
+      mainImage.crossOrigin = 'anonymous';
       
       if (data.image instanceof File) {
-        rightImage.src = URL.createObjectURL(data.image);
+        mainImage.src = URL.createObjectURL(data.image);
       } else {
-        rightImage.src = data.image;
+        mainImage.src = data.image;
       }
       
       await new Promise((resolve) => {
-        rightImage.onload = resolve;
-        rightImage.onerror = resolve;
+        mainImage.onload = resolve;
+        mainImage.onerror = resolve;
       });
 
-      // Background rosa arredondado
-      ctx.fillStyle = '#FFC0E5';
-      ctx.beginPath();
-      ctx.roundRect(520, 200, 380, 500, 190);
-      ctx.fill();
-
-      // Clipar para desenhar imagem dentro do círculo rosa
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(520, 200, 380, 500, 190);
-      ctx.clip();
-
-      const imgAspect = rightImage.width / rightImage.height;
-      const targetAspect = 380 / 500;
+      // Desenhar imagem com cover
+      const imageAspect = mainImage.width / mainImage.height;
+      const canvasAspect = 960 / imageHeight;
       
       let drawWidth, drawHeight, offsetX, offsetY;
       
-      if (imgAspect > targetAspect) {
-        drawHeight = 500;
-        drawWidth = 500 * imgAspect;
-        offsetX = 520 - (drawWidth - 380) / 2;
-        offsetY = 200;
+      if (imageAspect > canvasAspect) {
+        drawHeight = imageHeight;
+        drawWidth = imageHeight * imageAspect;
+        offsetX = -(drawWidth - 960) / 2;
+        offsetY = 0;
       } else {
-        drawWidth = 380;
-        drawHeight = 380 / imgAspect;
-        offsetX = 520;
-        offsetY = 200 - (drawHeight - 500) / 2;
+        drawWidth = 960;
+        drawHeight = 960 / imageAspect;
+        offsetX = 0;
+        offsetY = -(drawHeight - imageHeight) / 2;
       }
       
-      ctx.drawImage(rightImage, offsetX, offsetY, drawWidth, drawHeight);
-      ctx.restore();
+      ctx.drawImage(mainImage, offsetX, offsetY, drawWidth, drawHeight);
     }
 
-    // Seção "Requisitos" (inferior esquerdo)
-    y = 880;
+    // Título "VEM TRABALHAR NA marisa" com imagem
+    const marisaTextoImg = new Image();
+    marisaTextoImg.src = marisaTexto;
+    await new Promise((resolve) => {
+      marisaTextoImg.onload = resolve;
+      marisaTextoImg.onerror = resolve;
+    });
+    
+    const textoWidth = 500;
+    const textoHeight = (textoWidth * marisaTextoImg.height) / marisaTextoImg.width;
+    ctx.drawImage(marisaTextoImg, 80, imageHeight + 40, textoWidth, textoHeight);
+
+    // Seção de vagas
+    let y = imageHeight + 40 + textoHeight + 50;
+    
+    // Badge com Local
     ctx.fillStyle = '#E5007E';
-    ctx.fillRect(60, y, 180, 50);
+    ctx.beginPath();
+    ctx.roundRect(80, y, 320, 50, 25);
+    ctx.fill();
+    
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 28px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Requisitos:', 150, y + 33);
+    ctx.fillText(data.local || 'LOCAL', 240, y + 35);
 
-    ctx.fillStyle = '#333333';
-    ctx.font = '18px Montserrat, Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText('Preencher requisitos aqui:', 60, y + 80);
+    y += 80;
 
-    // Seção "Envie seu currículo" (inferior direito)
+    // Lista de vagas
     ctx.fillStyle = '#E5007E';
-    ctx.fillRect(520, y, 280, 50);
+    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.textAlign = 'left';
+    const vagas = data.vagas.slice(0, 5);
+    vagas.forEach((vaga) => {
+      if (vaga.codigo && vaga.cargo) {
+        ctx.fillText('CÓDIGO VAGA:', 80, y);
+        ctx.fillStyle = '#333333';
+        ctx.font = '20px Montserrat, Arial';
+        ctx.fillText(` ${vaga.codigo} - ${vaga.cargo}`, 235, y);
+        ctx.fillStyle = '#E5007E';
+        ctx.font = 'bold 20px Montserrat, Arial';
+        y += 32;
+      }
+    });
+
+    // Footer rosa
+    const footerY = 1020;
+    ctx.fillStyle = '#E5007E';
+    ctx.fillRect(0, footerY, 960, 180);
+
+    // Texto "Envie seu currículo"
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 26px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo:', 660, y + 33);
+    ctx.fillText('Envie seu currículo:', 480, footerY + 50);
 
-    ctx.fillStyle = '#333333';
-    ctx.font = '18px Montserrat, Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText('Currículos devem ser', 520, y + 80);
-    ctx.fillText('enviados para', 520, y + 105);
+    // Badge branco com email
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(240, footerY + 70, 480, 50, 25);
+    ctx.fill();
+    
     ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 18px Montserrat, Arial';
-    ctx.fillText('rh@novotemporh.com.br', 520, y + 130);
+    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.fillText('rh@novotemporh.com.br', 480, footerY + 103);
   };
 
   useEffect(() => {
