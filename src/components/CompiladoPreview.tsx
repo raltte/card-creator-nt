@@ -12,12 +12,12 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
   const getContactDisplay = () => {
     switch (data.contato.tipo) {
       case 'whatsapp':
-        return `(12) 99617-9471`;
+        return `📱 ${data.contato.valor || '(xx) xxxxx-xxxx'}`;
       case 'email':
-        return `${data.contato.valor}`;
+        return `✉️ ${data.contato.valor}`;
       case 'site':
       default:
-        return 'novotemporh.com.br';
+        return '🌐 novotemporh.com.br';
     }
   };
 
@@ -80,25 +80,25 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.textAlign = 'left';
     }
 
-    // Vagas
+    // Vagas - Fonte padronizada em 28px
     y = 460;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';
-        ctx.font = 'bold 32px Montserrat, Arial';
+        ctx.font = 'bold 28px Montserrat, Arial';
         const codigoText = `${vaga.codigo}:`;
         ctx.fillText(codigoText, 64, y);
         
         const codigoWidth = ctx.measureText(codigoText).width;
         ctx.fillStyle = '#11332B';
-        ctx.font = '32px Montserrat, Arial';
+        ctx.font = '28px Montserrat, Arial';
         ctx.fillText(` ${vaga.cargo}`, 64 + codigoWidth, y);
         
-        y += 48;
+        y += 44;
       }
     });
 
-    // Requisitos
+    // Requisitos - Fonte padronizada em 24px
     y += 32;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
@@ -114,18 +114,18 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     y += 80;
     if (data.requisitos) {
       ctx.fillStyle = '#11332B';
-      ctx.font = '22px Montserrat, Arial';
+      ctx.font = '24px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
           ctx.fillText(lineWithBullet, 64, y);
-          y += 32;
+          y += 34;
         }
       });
     }
 
-    // Badge "Envie seu currículo:"
+    // Badge "Envie seu currículo:" - Fonte padronizada em 24px
     y = 1000;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
@@ -138,14 +138,14 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fillText('Envie seu currículo:', 264, y + 36);
     ctx.textAlign = 'left';
 
-    // Contato para dúvidas
+    // Contato para dúvidas - Fonte padronizada em 24px
     y += 90;
     ctx.fillStyle = '#11332B';
-    ctx.font = 'bold 22px Montserrat, Arial';
+    ctx.font = 'bold 24px Montserrat, Arial';
     ctx.fillText('Contato para dúvidas:', 64, y);
     
-    y += 36;
-    ctx.font = '22px Montserrat, Arial';
+    y += 40;
+    ctx.font = '24px Montserrat, Arial';
     ctx.fillText(getContactDisplay(), 64, y);
 
     // Lado direito - imagem
@@ -192,7 +192,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     const logoHeight = (logoWidth * logo.height) / logo.width;
     ctx.drawImage(logo, 576, 40, logoWidth, logoHeight);
 
-    // Desenhar imagem no lado direito com canto arredondado
+    // Desenhar imagem no lado direito com todas as bordas arredondadas
     const imageX = 528;
     const imageY = logoHeight + 80;
     const imageWidth = 432;
@@ -200,7 +200,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
 
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(imageX, imageY, imageWidth, imageHeight, [0, 0, 40, 0]);
+    ctx.roundRect(imageX, imageY, imageWidth, imageHeight, 40);
     ctx.clip();
 
     const imageAspect = rightImage.width / rightImage.height;

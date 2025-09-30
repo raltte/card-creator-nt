@@ -47,8 +47,8 @@ export const CartazGenerator = () => {
     vagas: [{ codigo: '', cargo: '' }],
     requisitos: "",
     contato: {
-      tipo: 'whatsapp',
-      valor: "(12) 99617-9471"
+      tipo: 'site',
+      valor: "novotemporh.com.br"
     }
   });
 
