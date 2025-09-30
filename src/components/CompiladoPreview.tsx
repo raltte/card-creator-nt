@@ -125,17 +125,17 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       });
     }
 
-    // Badge "Envie seu currículo:" - Fonte padronizada em 24px
+    // Badge "Envie seu currículo:" - Proporcional ao badge Requisitos
     y = 1000;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
-    ctx.roundRect(64, y, 400, 56, 28);
+    ctx.roundRect(64, y, 280, 48, 24);
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Montserrat, Arial';
+    ctx.font = 'bold 20px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo:', 264, y + 36);
+    ctx.fillText('Envie seu currículo:', 204, y + 30);
     ctx.textAlign = 'left';
 
     // Contato direto sem label - Fonte padronizada em 24px
