@@ -71,27 +71,85 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
     // Posicionar textos sobre o PNG conforme referência
     
-    // Cargo (onde está "Líder de Vendas")
+    // Cargo (onde está escrito "Líder de Vendas")
     ctx.fillStyle = '#E5007E';
     ctx.font = 'bold 52px Montserrat, Arial';
     ctx.textAlign = 'center';
     const cargoText = data.cargo || 'Nome da Vaga';
     ctx.fillText(cargoText, 480, 820);
 
-    // Tipo de contrato (badge rosa à esquerda - "Vaga efetiva")
+    // Badges dinâmicos
+    const badgeY = 870; // Posição Y ajustada (mais acima)
+    const badgePadding = 20;
+    const badgeHeight = 40;
+    const badgeRadius = 20;
+    const gapBetweenBadges = 30;
+
+    // Medir texto do tipo de contrato
+    ctx.font = 'bold 20px Montserrat, Arial';
+    const tipoContratoText = data.tipoContrato || 'Tipo de Contrato';
+    const tipoContratoWidth = ctx.measureText(tipoContratoText).width;
+    const badge1Width = tipoContratoWidth + (badgePadding * 2);
+
+    // Medir texto do local
+    const localText = data.local || 'Local';
+    const localWidth = ctx.measureText(localText).width;
+    const badge2Width = localWidth + (badgePadding * 2);
+
+    // Calcular posições centralizadas
+    const totalWidth = badge1Width + gapBetweenBadges + badge2Width;
+    const startX = (960 - totalWidth) / 2;
+
+    const badge1X = startX;
+    const badge1CenterX = badge1X + badge1Width / 2;
+    
+    const badge2X = badge1X + badge1Width + gapBetweenBadges;
+    const badge2CenterX = badge2X + badge2Width / 2;
+
+    // Desenhar badge 1 (rosa - tipo de contrato)
+    ctx.fillStyle = '#E5007E';
+    ctx.beginPath();
+    ctx.roundRect(badge1X, badgeY, badge1Width, badgeHeight, badgeRadius);
+    ctx.fill();
+
+    // Texto do badge 1 (branco)
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 20px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(data.tipoContrato, 377, 888);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tipoContratoText, badge1CenterX, badgeY + badgeHeight / 2);
 
-    // Local (badge branco à direita - "São Paulo - SP")
+    // Desenhar seta entre os badges
+    const arrowX = badge1X + badge1Width + (gapBetweenBadges / 2);
+    const arrowY = badgeY + badgeHeight / 2;
+    const arrowSize = 8;
+    
     ctx.fillStyle = '#E5007E';
-    ctx.fillText(data.local || 'Local', 553, 888);
+    ctx.beginPath();
+    ctx.moveTo(arrowX - arrowSize, arrowY - arrowSize);
+    ctx.lineTo(arrowX + arrowSize, arrowY);
+    ctx.lineTo(arrowX - arrowSize, arrowY + arrowSize);
+    ctx.closePath();
+    ctx.fill();
+
+    // Desenhar badge 2 (branco - local)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(badge2X, badgeY, badge2Width, badgeHeight, badgeRadius);
+    ctx.fill();
+
+    // Texto do badge 2 (rosa)
+    ctx.fillStyle = '#E5007E';
+    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(localText, badge2CenterX, badgeY + badgeHeight / 2);
 
     // Footer - texto
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 26px Montserrat, Arial';
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
     ctx.fillText('novotemporh.com.br/marisa', 490, 1000);
   };
 
