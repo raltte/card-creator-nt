@@ -121,7 +121,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       logo.onload = resolve;
     });
     // Calcular proporção correta com logo maior e margem equilibrada
-    const contentOffset = 60; // Offset interno para os textos (espaço para tarja PCD)
+    const contentOffset = 40; // Offset interno para os textos (espaço para tarja PCD)
     const logoWidth = 360;
     const logoHeight = (logoWidth * logo.height) / logo.width;
     ctx.drawImage(logo, 456, topOffset + contentOffset + 80, logoWidth, logoHeight);
