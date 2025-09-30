@@ -24,6 +24,8 @@ export const RecrutadoraDashboard = () => {
   const [dadosFormulario, setDadosFormulario] = useState<RecrutadoraData | null>(null);
   const [imagemSelecionada, setImagemSelecionada] = useState<string | null>(null);
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa'>('padrao');
+  const [isSendingToMonday, setIsSendingToMonday] = useState(false);
+  const [lastMondaySendTime, setLastMondaySendTime] = useState<number>(0);
   const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
     image: '',
     local: '',
@@ -254,6 +256,19 @@ export const RecrutadoraDashboard = () => {
       return;
     }
 
+    // Verificar se passou 5 segundos desde o último envio
+    const now = Date.now();
+    const timeSinceLastSend = now - lastMondaySendTime;
+    if (timeSinceLastSend < 5000) {
+      const remainingTime = Math.ceil((5000 - timeSinceLastSend) / 1000);
+      toast({
+        title: "Aguarde",
+        description: `Aguarde ${remainingTime} segundos para enviar novamente.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Envia diretamente para o board padrão 8717502047
     await handleSendToBoard(8717502047);
   };
@@ -262,7 +277,14 @@ export const RecrutadoraDashboard = () => {
     const dataAtual = tipoCartaz === 'compilado' ? compiladoGerado : cartazGerado;
     if (!dataAtual) return;
     
+    setIsSendingToMonday(true);
+    
     try {
+      toast({
+        title: "Enviando...",
+        description: "Preparando cartaz para enviar ao Monday.com...",
+      });
+
       // Converter canvas para base64
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
       const imageData = canvas ? canvas.toDataURL('image/png', 1.0) : getImagemAtual();
@@ -283,6 +305,8 @@ export const RecrutadoraDashboard = () => {
         throw error;
       }
 
+      setLastMondaySendTime(Date.now());
+      
       toast({
         title: "Sucesso!",
         description: "Cartaz enviado para Monday.com para aprovação!"
@@ -294,6 +318,8 @@ export const RecrutadoraDashboard = () => {
         description: error.message || "Falha ao enviar para Monday.com.",
         variant: "destructive"
       });
+    } finally {
+      setIsSendingToMonday(false);
     }
   };
 
@@ -308,6 +334,53 @@ export const RecrutadoraDashboard = () => {
           <p className="text-lg text-muted-foreground">
             Sistema de Geração de Cartazes - Novo Tempo RH
           </p>
+          
+          {/* Indicador de Etapa */}
+          {etapaAtual !== 'selecaoTipo' && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                etapaAtual === 'selecaoModelo' ? 'bg-nt-primary text-white' : 
+                ['formulario', 'selecaoImagem', 'ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
+                'bg-muted text-muted-foreground'
+              }`}>
+                1. Modelo
+              </div>
+              <div className="w-8 h-0.5 bg-border" />
+              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                etapaAtual === 'formulario' ? 'bg-nt-primary text-white' : 
+                ['selecaoImagem', 'ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
+                'bg-muted text-muted-foreground'
+              }`}>
+                2. Formulário
+              </div>
+              {tipoCartaz === 'individual' && (
+                <>
+                  <div className="w-8 h-0.5 bg-border" />
+                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                    etapaAtual === 'selecaoImagem' ? 'bg-nt-primary text-white' : 
+                    ['ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    3. Imagem
+                  </div>
+                  <div className="w-8 h-0.5 bg-border" />
+                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                    etapaAtual === 'ajusteImagem' ? 'bg-nt-primary text-white' : 
+                    etapaAtual === 'preview' ? 'bg-nt-primary/20 text-nt-primary' : 
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    4. Ajuste
+                  </div>
+                </>
+              )}
+              <div className="w-8 h-0.5 bg-border" />
+              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                etapaAtual === 'preview' ? 'bg-nt-primary text-white' : 'bg-muted text-muted-foreground'
+              }`}>
+                {tipoCartaz === 'individual' ? '5. Preview' : '3. Preview'}
+              </div>
+            </div>
+          )}
         </div>
 
         {etapaAtual === 'selecaoTipo' ? (
@@ -453,9 +526,14 @@ export const RecrutadoraDashboard = () => {
                 {tipoCartaz === 'compilado' ? 'Voltar ao Formulário' : 'Voltar ao Ajuste de Imagem'}
               </Button>
               <div className="flex gap-2 ml-auto">
-                <Button variant="outline" onClick={handleMondayIntegration}>
+                <Button 
+                  variant="outline" 
+                  onClick={handleMondayIntegration}
+                  disabled={isSendingToMonday}
+                  className="min-w-[220px]"
+                >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Enviar para Monday.com
+                  {isSendingToMonday ? 'Enviando...' : 'Enviar para Monday.com'}
                 </Button>
                 <Button variant="outline" onClick={handleShare}>
                   <Share2 className="w-4 h-4 mr-2" />
