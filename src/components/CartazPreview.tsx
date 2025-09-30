@@ -46,10 +46,14 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Tarja azul PCD no topo (se for vaga PCD)
+    // Espaço reservado para tarja PCD (sempre reservado)
+    const topOffset = 60;
+    const availableHeight = 1140;
+
+    // Desenhar tarja azul PCD no topo (apenas se for vaga PCD)
     if (data.isPcd) {
-      ctx.fillStyle = '#3B5998'; // Azul Facebook/Profissional
-      ctx.fillRect(0, 0, canvas.width, 60);
+      ctx.fillStyle = '#3B5998';
+      ctx.fillRect(0, 0, canvas.width, topOffset);
       
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 20px Montserrat, Arial';
@@ -57,10 +61,6 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
       ctx.textAlign = 'left';
     }
-
-    // Ajustar posições se for vaga PCD
-    const topOffset = data.isPcd ? 60 : 0;
-    const availableHeight = data.isPcd ? 1140 : 1200;
 
     // Lado esquerdo - imagem (45% da largura)
     let leftImage: HTMLImageElement;
@@ -120,7 +120,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
     // Lado direito - fundo verde escuro com canto superior direito arredondado
-    const rightHeight = data.isPcd ? 948 : 1008;
+    const rightHeight = 948;
     ctx.fillStyle = '#11332B';
     ctx.beginPath();
     ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);

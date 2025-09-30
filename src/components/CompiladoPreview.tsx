@@ -34,10 +34,11 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Tarja azul PCD no topo (se for vaga PCD)
-    let topOffset = 0;
+    // Espaço reservado para tarja PCD (sempre reservado)
+    const topOffset = 60;
+
+    // Desenhar tarja azul PCD no topo (apenas se for vaga PCD)
     if (data.isPcd) {
-      topOffset = 60;
       ctx.fillStyle = '#3B5998';
       ctx.fillRect(0, 0, canvas.width, topOffset);
       
