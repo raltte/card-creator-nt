@@ -5,8 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { Upload, Globe, MessageCircle, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Upload, Globe, MessageCircle, Mail, Wand2 } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { ImageFraming } from "./ImageFraming";
 
 interface CartazFormProps {
   data: CartazData;
@@ -14,6 +18,11 @@ interface CartazFormProps {
 }
 
 export const CartazForm = ({ data, onChange }: CartazFormProps) => {
+  const { toast } = useToast();
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [showFraming, setShowFraming] = useState(false);
+  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
+
   const updateData = (field: keyof CartazData | string, value: any) => {
     console.log('updateData called:', field, value);
     if (field === 'contato.tipo' || field === 'contato.valor') {
@@ -36,8 +45,62 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      updateData('image', file);
+      const url = URL.createObjectURL(file);
+      setTempImageUrl(url);
+      setShowFraming(true);
     }
+  };
+
+  const handleGenerateAIImage = async () => {
+    if (!data.cargo) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Preencha o cargo antes de gerar a imagem.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke('generate-job-images', {
+        body: {
+          jobTitle: data.cargo,
+          sector: "Geral",
+          contractType: data.tipoContrato,
+          requirements: [],
+        }
+      });
+
+      if (error) throw error;
+
+      if (result.images && result.images.length > 0) {
+        setTempImageUrl(result.images[0]);
+        setShowFraming(true);
+      } else {
+        throw new Error('Nenhuma imagem foi gerada');
+      }
+    } catch (error) {
+      console.error('Erro ao gerar imagem:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao gerar imagem. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const handleFramingComplete = (croppedImageData: string) => {
+    updateData('image', croppedImageData);
+    setShowFraming(false);
+    setTempImageUrl(null);
+  };
+
+  const handleBackFromFraming = () => {
+    setShowFraming(false);
+    setTempImageUrl(null);
   };
 
   const handleContactTypeChange = (tipo: 'site' | 'whatsapp' | 'email') => {
@@ -78,6 +141,18 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
     updateData('contato.valor', formatted);
   };
 
+  // Se estiver na tela de enquadramento
+  if (showFraming && tempImageUrl) {
+    return (
+      <ImageFraming
+        imageUrl={tempImageUrl}
+        onFramingComplete={handleFramingComplete}
+        onBack={handleBackFromFraming}
+        modelType={data.clientTemplate === 'marisa' ? 'tradicional-marisa' : 'tradicional-nt'}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Seleção de Cliente */}
@@ -115,24 +190,50 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       <div className="space-y-4">
         <Label className="text-base font-semibold">Imagem Ilustrativa</Label>
         
-        {/* Upload personalizado */}
-        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-nt-light transition-colors">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-            id="image-upload"
-          />
-          <label htmlFor="image-upload" className="cursor-pointer">
-            <div className="flex flex-col items-center gap-2 text-center">
-              <Upload className="w-8 h-8 text-muted-foreground" />
-              <div className="text-sm text-muted-foreground">
-                Clique para fazer upload de uma imagem
+        <div className="grid grid-cols-2 gap-2">
+          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-nt-light transition-colors">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <div className="flex flex-col items-center gap-2 text-center">
+                <Upload className="w-6 h-6 text-muted-foreground" />
+                <div className="text-xs text-muted-foreground">
+                  Upload
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGenerateAIImage}
+            disabled={isGeneratingImage || !data.cargo}
+            className="h-full"
+          >
+            <div className="flex flex-col items-center gap-2">
+              <Wand2 className="w-6 h-6" />
+              <div className="text-xs">
+                {isGeneratingImage ? 'Gerando...' : 'Gerar com IA'}
               </div>
             </div>
-          </label>
+          </Button>
         </div>
+
+        {data.image && (
+          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-nt-light">
+            <img
+              src={typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image)}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
       </div>
 
       {/* Vaga PCD */}

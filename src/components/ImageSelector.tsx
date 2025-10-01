@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageFraming } from "./ImageFraming";
 
 interface ImageSelectorProps {
   jobData: {
@@ -14,13 +15,15 @@ interface ImageSelectorProps {
   };
   onImageSelect: (imageUrl: string) => void;
   onBack: () => void;
+  clientTemplate?: 'padrao' | 'marisa';
 }
 
-export const ImageSelector = ({ jobData, onImageSelect, onBack }: ImageSelectorProps) => {
+export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate = 'padrao' }: ImageSelectorProps) => {
   const { toast } = useToast();
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showFraming, setShowFraming] = useState(false);
 
   const generateImages = async () => {
     setIsLoading(true);
@@ -55,14 +58,34 @@ export const ImageSelector = ({ jobData, onImageSelect, onBack }: ImageSelectorP
 
   const handleContinue = () => {
     if (selectedImage) {
-      onImageSelect(selectedImage);
+      setShowFraming(true);
     }
+  };
+
+  const handleFramingComplete = (croppedImageData: string) => {
+    onImageSelect(croppedImageData);
+  };
+
+  const handleBackFromFraming = () => {
+    setShowFraming(false);
   };
 
   // Gerar imagens automaticamente quando o componente é montado
   React.useEffect(() => {
     generateImages();
   }, []);
+
+  // Se estiver na tela de enquadramento
+  if (showFraming && selectedImage) {
+    return (
+      <ImageFraming
+        imageUrl={selectedImage}
+        onFramingComplete={handleFramingComplete}
+        onBack={handleBackFromFraming}
+        modelType={clientTemplate === 'marisa' ? 'tradicional-marisa' : 'tradicional-nt'}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">

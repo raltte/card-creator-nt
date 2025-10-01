@@ -11,7 +11,6 @@ import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { CartazData } from "./CartazGenerator";
 import { ImageSelector } from "./ImageSelector";
-import { ImageFraming } from "./ImageFraming";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,9 +19,8 @@ export const RecrutadoraDashboard = () => {
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado' | null>(null);
   const [cartazGerado, setCartazGerado] = useState<CartazData | null>(null);
   const [compiladoGerado, setCompiladoGerado] = useState<CompiladoData | null>(null);
-  const [etapaAtual, setEtapaAtual] = useState<'selecaoTipo' | 'selecaoModelo' | 'formulario' | 'selecaoImagem' | 'ajusteImagem' | 'preview'>('selecaoTipo');
+  const [etapaAtual, setEtapaAtual] = useState<'selecaoTipo' | 'selecaoModelo' | 'formulario' | 'selecaoImagem' | 'preview'>('selecaoTipo');
   const [dadosFormulario, setDadosFormulario] = useState<RecrutadoraData | null>(null);
-  const [imagemSelecionada, setImagemSelecionada] = useState<string | null>(null);
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa'>('padrao');
   const [isSendingToMonday, setIsSendingToMonday] = useState(false);
   const [lastMondaySendTime, setLastMondaySendTime] = useState<number>(0);
@@ -107,12 +105,8 @@ export const RecrutadoraDashboard = () => {
     });
   };
 
-  const handleImageSelect = (imagemUrl: string) => {
-    setImagemSelecionada(imagemUrl);
-    setEtapaAtual('ajusteImagem');
-  };
-
-  const handleFramingComplete = (croppedImageData: string) => {
+  const handleImageSelect = (croppedImageData: string) => {
+    // A imagem já vem enquadrada do ImageSelector
     if (dadosFormulario) {
       const cartazData = converterDados(dadosFormulario, croppedImageData);
       setCartazGerado(cartazData);
@@ -131,7 +125,6 @@ export const RecrutadoraDashboard = () => {
     setCartazGerado(null);
     setCompiladoGerado(null);
     setDadosFormulario(null);
-    setImagemSelecionada(null);
   };
 
   const voltarSelecaoModelo = () => {
@@ -139,7 +132,6 @@ export const RecrutadoraDashboard = () => {
     setCartazGerado(null);
     setCompiladoGerado(null);
     setDadosFormulario(null);
-    setImagemSelecionada(null);
   };
 
   const voltarFormulario = () => {
@@ -147,17 +139,10 @@ export const RecrutadoraDashboard = () => {
     setCartazGerado(null);
     setCompiladoGerado(null);
     setDadosFormulario(null);
-    setImagemSelecionada(null);
   };
 
   const voltarSelecaoImagem = () => {
     setEtapaAtual('selecaoImagem');
-    setImagemSelecionada(null);
-  };
-
-  const voltarAjusteImagem = () => {
-    setEtapaAtual('ajusteImagem');
-    setCartazGerado(null);
   };
 
   const getImagemAtual = () => {
@@ -340,7 +325,7 @@ export const RecrutadoraDashboard = () => {
             <div className="mt-6 flex items-center justify-center gap-2">
               <div className={`px-4 py-2 rounded-full text-sm font-medium ${
                 etapaAtual === 'selecaoModelo' ? 'bg-nt-primary text-white' : 
-                ['formulario', 'selecaoImagem', 'ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
+                ['formulario', 'selecaoImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
                 'bg-muted text-muted-foreground'
               }`}>
                 1. Modelo
@@ -348,7 +333,7 @@ export const RecrutadoraDashboard = () => {
               <div className="w-8 h-0.5 bg-border" />
               <div className={`px-4 py-2 rounded-full text-sm font-medium ${
                 etapaAtual === 'formulario' ? 'bg-nt-primary text-white' : 
-                ['selecaoImagem', 'ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
+                ['selecaoImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
                 'bg-muted text-muted-foreground'
               }`}>
                 2. Formulário
@@ -358,18 +343,10 @@ export const RecrutadoraDashboard = () => {
                   <div className="w-8 h-0.5 bg-border" />
                   <div className={`px-4 py-2 rounded-full text-sm font-medium ${
                     etapaAtual === 'selecaoImagem' ? 'bg-nt-primary text-white' : 
-                    ['ajusteImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
-                    'bg-muted text-muted-foreground'
-                  }`}>
-                    3. Imagem
-                  </div>
-                  <div className="w-8 h-0.5 bg-border" />
-                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    etapaAtual === 'ajusteImagem' ? 'bg-nt-primary text-white' : 
                     etapaAtual === 'preview' ? 'bg-nt-primary/20 text-nt-primary' : 
                     'bg-muted text-muted-foreground'
                   }`}>
-                    4. Ajuste
+                    3. Imagem & Ajuste
                   </div>
                 </>
               )}
@@ -500,17 +477,7 @@ export const RecrutadoraDashboard = () => {
                 jobData={dadosFormulario}
                 onImageSelect={handleImageSelect}
                 onBack={voltarFormulario}
-              />
-            </CardContent>
-          </Card>
-        ) : etapaAtual === 'ajusteImagem' && imagemSelecionada ? (
-          /* Ajuste de Enquadramento */
-          <Card className="max-w-4xl mx-auto">
-            <CardContent className="p-8">
-              <ImageFraming
-                imageUrl={imagemSelecionada}
-                onFramingComplete={handleFramingComplete}
-                onBack={voltarSelecaoImagem}
+                clientTemplate={modeloSelecionado}
               />
             </CardContent>
           </Card>
@@ -520,10 +487,10 @@ export const RecrutadoraDashboard = () => {
             <div className="flex items-center gap-4">
               <Button 
                 variant="outline" 
-                onClick={tipoCartaz === 'compilado' ? voltarFormulario : voltarAjusteImagem}
+                onClick={voltarFormulario}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {tipoCartaz === 'compilado' ? 'Voltar ao Formulário' : 'Voltar ao Ajuste de Imagem'}
+                Voltar ao Formulário
               </Button>
               <div className="flex gap-2 ml-auto">
                 <Button 

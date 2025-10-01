@@ -9,9 +9,19 @@ interface ImageFramingProps {
   imageUrl: string;
   onFramingComplete: (croppedImageData: string) => void;
   onBack: () => void;
+  cropWidth?: number;
+  cropHeight?: number;
+  modelType?: 'tradicional-nt' | 'tradicional-marisa' | 'compilado';
 }
 
-export const ImageFraming = ({ imageUrl, onFramingComplete, onBack }: ImageFramingProps) => {
+export const ImageFraming = ({ 
+  imageUrl, 
+  onFramingComplete, 
+  onBack, 
+  cropWidth, 
+  cropHeight, 
+  modelType = 'tradicional-nt' 
+}: ImageFramingProps) => {
   const { toast } = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -20,9 +30,24 @@ export const ImageFraming = ({ imageUrl, onFramingComplete, onBack }: ImageFrami
   const [imagePos, setImagePos] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState([100]);
 
-  // Dimensões da área de recorte (proporção do cartaz)
-  const CROP_WIDTH = 432;
-  const CROP_HEIGHT = 1200;
+  // Dimensões da área de recorte baseadas no modelo
+  const getDimensions = () => {
+    if (cropWidth && cropHeight) {
+      return { width: cropWidth, height: cropHeight };
+    }
+    
+    switch (modelType) {
+      case 'tradicional-marisa':
+        return { width: 960, height: 1200 }; // Full canvas
+      case 'compilado':
+        return { width: 432, height: 900 }; // Lado direito compilado
+      case 'tradicional-nt':
+      default:
+        return { width: 432, height: 1200 }; // Lado esquerdo tradicional
+    }
+  };
+
+  const { width: CROP_WIDTH, height: CROP_HEIGHT } = getDimensions();
   const CANVAS_SCALE = 0.3; // Escala para visualização
   const DISPLAY_WIDTH = CROP_WIDTH * CANVAS_SCALE;
   const DISPLAY_HEIGHT = CROP_HEIGHT * CANVAS_SCALE;
