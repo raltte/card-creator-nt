@@ -13,7 +13,8 @@ export interface RecrutadoraData {
   nomeVaga: string;
   codigoPS: string;
   tipoContrato: string;
-  cidadeEstado: string;
+  cidade: string;
+  estado: string;
   captacaoCurriculo: 'whatsapp' | 'email' | 'site';
   whatsappNumber?: string;
   emailCaptacao?: string;
@@ -40,7 +41,8 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     nomeVaga: "",
     codigoPS: "",
     tipoContrato: "",
-    cidadeEstado: "",
+    cidade: "",
+    estado: "",
     captacaoCurriculo: 'site',
     whatsappNumber: "",
     emailCaptacao: "email@novotemporh.com.br",
@@ -100,7 +102,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
   const handleSubmit = () => {
     // Validação básica
     if (!formData.nomeVaga || !formData.codigoPS || !formData.tipoContrato || 
-        !formData.cidadeEstado || !formData.emailSolicitante || !formData.setorAtuacao) {
+        !formData.cidade || !formData.estado || !formData.emailSolicitante || !formData.setorAtuacao) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos obrigatórios antes de enviar.",
@@ -166,15 +168,33 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
       </div>
 
       {/* Local da Vaga */}
-      <div>
-        <Label htmlFor="cidade-estado">Local da Vaga *</Label>
-        <Input
-          id="cidade-estado"
-          placeholder="Ex: São Paulo/SP"
-          value={formData.cidadeEstado}
-          onChange={(e) => updateFormData('cidadeEstado', e.target.value)}
-          className="mt-1"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="sm:col-span-2">
+          <Label htmlFor="cidade">Cidade *</Label>
+          <Input
+            id="cidade"
+            placeholder="Ex: São Paulo"
+            value={formData.cidade}
+            onChange={(e) => updateFormData('cidade', e.target.value)}
+            className="mt-1"
+          />
+        </div>
+        <div>
+          <Label htmlFor="estado">Estado * (Sigla)</Label>
+          <Input
+            id="estado"
+            placeholder="Ex: SP"
+            value={formData.estado}
+            onChange={(e) => {
+              const value = e.target.value.toUpperCase();
+              if (value.length <= 2) {
+                updateFormData('estado', value);
+              }
+            }}
+            maxLength={2}
+            className="mt-1 uppercase"
+          />
+        </div>
       </div>
 
       {/* Vaga PCD */}
