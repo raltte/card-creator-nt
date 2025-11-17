@@ -163,24 +163,38 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       });
     }
 
-    // Badge "Envie seu currículo:" - Fonte 22px
+    // Badge "Envie seu currículo:" - Dinâmico baseado no tamanho do texto
     y = 1000;
+    
+    // Medir o texto para criar badge dinâmico
+    ctx.font = 'bold 22px Montserrat, Arial';
+    const badgeTextMetrics = ctx.measureText('Envie seu currículo:');
+    const badgeWidth = badgeTextMetrics.width + 40; // adiciona padding
+    
     ctx.fillStyle = '#E5007E';
     ctx.beginPath();
-    ctx.roundRect(64, y, 280, 48, 24);
+    ctx.roundRect(64, y, badgeWidth, 48, 24);
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo:', 204, y + 30);
+    ctx.fillText('Envie seu currículo:', 64 + badgeWidth/2, y + 30);
     ctx.textAlign = 'left';
 
-    // Contato direto - Fonte 26px
+    // Contato dinâmico com ícone - Fonte aumentada para 26px
     y += 80;
+    const contactIcon = data.contato.tipo === 'whatsapp' ? '📱' 
+      : data.contato.tipo === 'email' ? '✉️' 
+      : '🌐';
+    const contactValue = data.contato.tipo === 'whatsapp'
+      ? data.contato.valor || '(xx) xxxxx-xxxx'
+      : data.contato.tipo === 'email'
+      ? data.contato.valor || 'email@exemplo.com'
+      : 'novotemporh.com.br/marisa';
+    
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 26px Montserrat, Arial';
-    ctx.fillText(getContactDisplay(), 64, y);
+    ctx.fillText(`${contactIcon} ${contactValue}`, 64, y);
 
     // Lado direito - imagem
     let rightImage: HTMLImageElement;

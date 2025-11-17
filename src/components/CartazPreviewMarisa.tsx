@@ -154,12 +154,18 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     ctx.textBaseline = 'middle';
     ctx.fillText(localText, badge2CenterX, badgeY + badgeHeight / 2);
 
-    // Footer - texto
+    // Footer - texto dinâmico baseado no tipo de contato
+    const footerText = data.contato?.tipo === 'whatsapp'
+      ? data.contato.valor || '(xx) xxxxx-xxxx'
+      : data.contato?.tipo === 'email'
+      ? data.contato.valor || 'email@exemplo.com'
+      : 'novotemporh.com.br/marisa';
+    
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 26px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText('novotemporh.com.br/marisa', 490, 962);
+    ctx.fillText(footerText, 480, 962);
   };
 
   useEffect(() => {
