@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CartazData } from "./CartazGenerator";
-import wegLogoImage from "@/assets/weg-logo-branco.png";
-import novoTempoLogoImage from "@/assets/novo-tempo-logo-branco.png";
+import wegNtLogoImage from "@/assets/weg-nt.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CartazPreviewWegProps {
@@ -93,43 +92,20 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
 
-    // Logos WEG & Novo Tempo (topo direito)
-    const wegLogo = new Image();
-    wegLogo.src = wegLogoImage;
+    // Logo WEG & NT unificado (topo direito)
+    const wegNtLogo = new Image();
+    wegNtLogo.src = wegNtLogoImage;
     await new Promise((resolve) => {
-      wegLogo.onload = resolve;
-      wegLogo.onerror = resolve;
-    });
-    
-    const ntLogo = new Image();
-    ntLogo.src = novoTempoLogoImage;
-    await new Promise((resolve) => {
-      ntLogo.onload = resolve;
-      ntLogo.onerror = resolve;
+      wegNtLogo.onload = resolve;
+      wegNtLogo.onerror = resolve;
     });
     
     const contentOffset = 40;
     
-    // WEG logo (esquerda)
-    const wegLogoWidth = 140;
-    const wegLogoHeight = (wegLogoWidth * wegLogo.height) / wegLogo.width;
-    ctx.drawImage(wegLogo, 480, topOffset + contentOffset + 60, wegLogoWidth, wegLogoHeight);
-    
-    // "&" símbolo
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 40px Montserrat, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('&', 680, topOffset + contentOffset + 105);
-    
-    // Novo Tempo logo (direita - circular)
-    const ntLogoSize = 90;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(740, topOffset + contentOffset + 95, ntLogoSize / 2, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(ntLogo, 740 - ntLogoSize / 2, topOffset + contentOffset + 50, ntLogoSize, ntLogoSize);
-    ctx.restore();
+    // Logo unificado com proporção mantida
+    const logoWidth = 360;
+    const logoHeight = (logoWidth * wegNtLogo.height) / wegNtLogo.width;
+    ctx.drawImage(wegNtLogo, 456, topOffset + contentOffset + 80, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal centralizado verticalmente
     ctx.fillStyle = '#FFFFFF';
