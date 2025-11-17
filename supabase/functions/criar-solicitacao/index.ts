@@ -47,9 +47,11 @@ serve(async (req) => {
 
     console.log('Solicitação criada:', solicitacao);
 
-    // Gerar link de finalização
-    const appUrl = Deno.env.get('APP_URL') || 'http://localhost:5173';
-    const finalizacaoUrl = `${appUrl}/finalizar/${solicitacao.id}`;
+    // Gerar link de finalização usando a URL de origem do request
+    const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || Deno.env.get('APP_URL') || 'https://jqpjcoitrmochijrgfbc.lovable.app';
+    const finalizacaoUrl = `${origin}/finalizar/${solicitacao.id}`;
+    
+    console.log('Link de finalização gerado:', finalizacaoUrl);
 
     // Enviar para Monday.com
     const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
