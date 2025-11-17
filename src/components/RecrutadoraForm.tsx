@@ -366,13 +366,6 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
       </div>
 
       {/* Botão de Envio */}
-      <Button 
-        onClick={handleSubmit}
-        className="w-full bg-nt-light hover:bg-nt-light/90"
-        size="lg"
-      >
-        Enviar Solicitação
-      </Button>
     </div>
   );
 };
