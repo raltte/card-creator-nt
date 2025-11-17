@@ -244,9 +244,9 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     ctx.font = '26px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', 456, y);
     
-    // Medir texto para posicionar "legenda" em amarelo
+    // Medir texto para posicionar "legenda" em branco
     const textWidth = ctx.measureText('Saiba mais na ').width;
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 26px Montserrat, Arial';
     ctx.fillText('legenda.', 456 + textWidth, y);
 
