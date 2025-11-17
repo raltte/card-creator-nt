@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { CartazData } from "./CartazGenerator";
+import wegLogoImage from "@/assets/weg-logo-branco.png";
+import novoTempoLogoImage from "@/assets/novo-tempo-logo-branco.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CartazPreviewWegProps {
@@ -23,6 +25,7 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Configurações padrão (sem offset para ocupar todo o espaço)
     const topOffset = 0;
     const availableHeight = 1200;
 
@@ -36,14 +39,15 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       if (data.image instanceof File) {
         leftImage.src = URL.createObjectURL(data.image);
       } else {
+        // Imagem da IA (URL ou base64)
         leftImage.src = data.image;
       }
       
-      await new Promise((resolve) => {
+      await new Promise((resolve, reject) => {
         leftImage.onload = resolve;
         leftImage.onerror = () => {
           console.error('Erro ao carregar imagem:', data.image);
-          resolve(null);
+          resolve(null); // Usar imagem padrão em caso de erro
         };
       });
     } else {
@@ -67,11 +71,13 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     let drawWidth, drawHeight, offsetX, offsetY;
     
     if (imageAspect > canvasAspect) {
+      // Imagem é mais larga - cortar nas laterais
       drawHeight = availableHeight;
       drawWidth = availableHeight * imageAspect;
       offsetX = -(drawWidth - 432) / 2;
       offsetY = topOffset;
     } else {
+      // Imagem é mais alta - cortar no topo/fundo
       drawWidth = 432;
       drawHeight = 432 / imageAspect;
       offsetX = 0;
@@ -80,197 +86,266 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
-    // Lado direito - fundo azul WEG (#2B5BA0)
+    // Lado direito - fundo azul WEG com canto superior direito arredondado
     const rightHeight = 1008;
     ctx.fillStyle = '#2B5BA0';
     ctx.beginPath();
     ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
 
-    // Logos WEG & NT (topo direito) - placeholder como SVG inline
+    // Logos WEG & Novo Tempo (topo direito)
     const wegLogo = new Image();
-    wegLogo.src = 'data:image/svg+xml;base64,' + btoa(`
-      <svg width="300" height="80" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="20" width="120" height="40" fill="white" rx="4"/>
-        <text x="70" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2B5BA0">WEG</text>
-        <text x="150" y="47" font-family="Arial, sans-serif" font-size="28" fill="white">&amp;</text>
-        <circle cx="220" cy="40" r="30" stroke="white" stroke-width="3" fill="none"/>
-        <text x="220" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">NT</text>
-      </svg>
-    `);
+    wegLogo.src = wegLogoImage;
     await new Promise((resolve) => {
       wegLogo.onload = resolve;
       wegLogo.onerror = resolve;
     });
-    ctx.drawImage(wegLogo, 480, 40, 300, 80);
-
-    // Caixa de conteúdo branca arredondada
-    const boxX = 480;
-    const boxY = 160;
-    const boxWidth = 400;
-    const boxHeight = 680;
     
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 16);
-    ctx.fill();
-
-    // "Vaga de emprego" - preto, negrito
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 48px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', boxX + 32, boxY + 60);
-    ctx.fillText('emprego', boxX + 32, boxY + 115);
-
-    // Job title
-    const jobTitle = data.cargo || 'Nome da Vaga';
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 26px Arial, sans-serif';
-    
-    // Quebrar texto se necessário
-    const maxWidth = boxWidth - 64;
-    const words = jobTitle.split(' ');
-    let line = '';
-    let y = boxY + 170;
-    
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = ctx.measureText(testLine);
-      
-      if (metrics.width > maxWidth && n > 0) {
-        ctx.fillText(line, boxX + 32, y);
-        line = words[n] + ' ';
-        y += 32;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, boxX + 32, y);
-    y += 10;
-
-    // Local
-    ctx.fillStyle = '#000000';
-    ctx.font = '18px Arial, sans-serif';
-    ctx.fillText(`Local: ${data.local || 'Cidade - Estado'}`, boxX + 32, y + 30);
-
-    // Código em badge azul
-    const codigoY = y + 60;
-    const codigoText = `Código: ${data.codigo || '00000'}`;
-    ctx.font = 'bold 18px Arial, sans-serif';
-    const codigoWidth = ctx.measureText(codigoText).width;
-    
-    ctx.fillStyle = '#2B5BA0';
-    ctx.beginPath();
-    ctx.roundRect(boxX + 32, codigoY, codigoWidth + 24, 32, 16);
-    ctx.fill();
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(codigoText, boxX + 44, codigoY + 22);
-
-    // Tipo de contrato
-    const contratoY = codigoY + 60;
-    ctx.fillStyle = '#2B5BA0';
-    ctx.font = 'bold 18px Arial, sans-serif';
-    ctx.fillText('Tipo de contrato:', boxX + 32, contratoY);
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = '18px Arial, sans-serif';
-    ctx.fillText(data.tipoContrato || 'Tipo de Contrato', boxX + 32, contratoY + 28);
-
-    // Requisitos e atividades
-    const reqY = contratoY + 70;
-    ctx.fillStyle = '#2B5BA0';
-    ctx.font = 'bold 18px Arial, sans-serif';
-    ctx.fillText('Requisitos e atividades:', boxX + 32, reqY);
-    
-    // Requisitos (primeiras linhas)
-    const requisitos = data.requisitos?.split('\n').slice(0, 3) || ['• Ensino fundamental completo', '• Experiência na função'];
-    ctx.fillStyle = '#000000';
-    ctx.font = '16px Arial, sans-serif';
-    let reqLineY = reqY + 28;
-    
-    requisitos.forEach((req) => {
-      ctx.fillText(req, boxX + 32, reqLineY);
-      reqLineY += 24;
+    const ntLogo = new Image();
+    ntLogo.src = novoTempoLogoImage;
+    await new Promise((resolve) => {
+      ntLogo.onload = resolve;
+      ntLogo.onerror = resolve;
     });
-
-    // "Saiba mais na legenda"
-    const legendaY = boxY + boxHeight - 40;
-    ctx.fillStyle = '#000000';
-    ctx.font = '16px Arial, sans-serif';
-    const saibaMaisText = 'Saiba mais na ';
-    const saibaMaisWidth = ctx.measureText(saibaMaisText).width;
-    ctx.fillText(saibaMaisText, boxX + 32, legendaY);
     
-    ctx.fillStyle = '#2B5BA0';
-    ctx.font = 'bold 16px Arial, sans-serif';
-    ctx.fillText('legenda.', boxX + 32 + saibaMaisWidth, legendaY);
-
-    // Footer preto com WhatsApp
-    const footerY = 880;
-    const footerHeight = 190;
+    const contentOffset = 40;
     
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(432, footerY, 528, footerHeight);
-
-    // "Envie seu currículo em:"
+    // WEG logo (esquerda)
+    const wegLogoWidth = 140;
+    const wegLogoHeight = (wegLogoWidth * wegLogo.height) / wegLogo.width;
+    ctx.drawImage(wegLogo, 480, topOffset + contentOffset + 60, wegLogoWidth, wegLogoHeight);
+    
+    // "&" símbolo
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '20px Arial, sans-serif';
+    ctx.font = 'bold 40px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo em:', 696, footerY + 50);
+    ctx.fillText('&', 680, topOffset + contentOffset + 105);
+    
+    // Novo Tempo logo (direita - circular)
+    const ntLogoSize = 90;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(740, topOffset + contentOffset + 95, ntLogoSize / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(ntLogo, 740 - ntLogoSize / 2, topOffset + contentOffset + 50, ntLogoSize, ntLogoSize);
+    ctx.restore();
 
-    // Badge branco com WhatsApp
-    if (data.contato?.tipo === 'whatsapp') {
-      const badgeY = footerY + 80;
-      const badgeHeight = 50;
-      const phoneNumber = data.contato.valor || '(xx) xxxxx-xxxx';
+    // "Vaga de emprego" - título principal centralizado verticalmente
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 64px Montserrat, Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('Vaga de', 456, topOffset + contentOffset + 280);
+    ctx.fillText('emprego', 456, topOffset + contentOffset + 333);
+
+    // Badge PCD ao lado do título (se for vaga PCD)
+    if (data.isPcd) {
+      const textWidth = ctx.measureText('emprego').width;
+      const badgeX = 456 + textWidth + 24;
+      const badgeY = topOffset + contentOffset + 305;
       
-      // Medir largura do badge
-      ctx.font = 'bold 20px Arial, sans-serif';
-      const iconSize = 30;
-      const spacing = 12;
-      const numberWidth = ctx.measureText(phoneNumber).width;
-      const badgeWidth = iconSize + spacing + numberWidth + 40;
-      
-      // Desenhar badge branco
-      const badgeX = 696 - badgeWidth / 2;
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#3B5998';
       ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 25);
+      ctx.roundRect(badgeX, badgeY, 100, 48, 24);
       ctx.fill();
       
-      // Ícone WhatsApp
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PCD', badgeX + 50, badgeY + 30);
+      ctx.textAlign = 'left';
+    }
+
+    // Função auxiliar para quebrar texto
+    const wrapText = (text: string, maxWidth: number, fontSize: string) => {
+      ctx.font = fontSize;
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + ' ' + word).width;
+        if (width < maxWidth) {
+          currentLine += ' ' + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    };
+
+    // Dados da vaga - começando na posição centralizada
+    let y = topOffset + contentOffset + 400;
+    const maxTextWidth = 464; // Margem de 40px da direita (960 - 456 - 40)
+    
+    if (data.cargo) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 30px Montserrat, Arial';
+      const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 30px Montserrat, Arial');
+      cargoLines.forEach(line => {
+        ctx.fillText(line, 456, y);
+        y += 36;
+      });
+    }
+    y += 16;
+
+    if (data.local) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.fillText('Local: ', 456, y);
+      
+      const localWidth = ctx.measureText('Local: ').width;
+      ctx.font = '26px Montserrat, Arial';
+      const localLines = wrapText(data.local, maxTextWidth - localWidth, '26px Montserrat, Arial');
+      localLines.forEach((line, index) => {
+        if (index === 0) {
+          ctx.fillText(line, 456 + localWidth, y);
+        } else {
+          ctx.fillText(line, 456, y);
+        }
+        y += 32;
+      });
+    }
+    y += 16;
+
+    if (data.codigo) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.fillText('Código: ', 456, y);
+      
+      const codigoWidth = ctx.measureText('Código: ').width;
+      ctx.font = '26px Montserrat, Arial';
+      ctx.fillText(data.codigo, 456 + codigoWidth, y);
+    }
+    y += 56;
+
+    // Tipo de contrato - texto amarelo/dourado para contraste com azul
+    if (data.tipoContrato) {
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold 28px Montserrat, Arial';
+      ctx.fillText('Tipo de contrato:', 456, y);
+      y += 40;
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '28px Montserrat, Arial';
+      ctx.fillText(data.tipoContrato, 456, y);
+    }
+    y += 56;
+
+    // Requisitos
+    if (data.requisitos) {
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold 28px Montserrat, Arial';
+      const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
+      ctx.fillText(requisitosTitle, 456, y);
+      y += 44;
+
+      // Quebrar texto dos requisitos com espaçamento correto
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '24px Montserrat, Arial';
+      const lines = data.requisitos.split('\n');
+      lines.forEach(line => {
+        if (line.trim()) {
+          // Adicionar bullet point se não existir
+          const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
+          const wrappedLines = wrapText(lineWithBullet, maxTextWidth, '24px Montserrat, Arial');
+          wrappedLines.forEach((wrappedLine, index) => {
+            // Para linhas continuadas, adicionar indentação
+            const x = index === 0 ? 456 : 476;
+            ctx.fillText(wrappedLine, x, y);
+            y += 32;
+          });
+        }
+      });
+    }
+
+    // "Saiba mais na legenda" - posicionamento exato
+    y += 32;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '26px Montserrat, Arial';
+    ctx.fillText('Saiba mais na ', 456, y);
+    
+    // Medir texto para posicionar "legenda" em amarelo
+    const textWidth = ctx.measureText('Saiba mais na ').width;
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 26px Montserrat, Arial';
+    ctx.fillText('legenda.', 456 + textWidth, y);
+
+    // Barra de contato preta na parte inferior
+    const footerY = topOffset + rightHeight;
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(432, footerY, 528, 192);
+
+    // Texto do contato
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 32px Montserrat, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Envie seu currículo em:', 696, footerY + 60);
+
+    // Obter informações de contato
+    const contactText = data.contato.tipo === 'whatsapp' 
+      ? data.contato.valor || '(xx) xxxxx-xxxx'
+      : data.contato.tipo === 'email'
+      ? data.contato.valor || 'email@exemplo.com'
+      : 'novotemporh.com.br';
+    
+    // Medir o texto do contato para criar o quadro dinâmico
+    ctx.font = 'bold 24px Montserrat, Arial';
+    const iconSize = 24;
+    const iconPadding = 8;
+    const contactTextMetrics = ctx.measureText(contactText);
+    const buttonWidth = iconSize + iconPadding + contactTextMetrics.width + 40;
+    const buttonHeight = 48;
+    const buttonY = footerY + 108;
+    
+    // Desenhar o fundo branco dinâmico centralizado
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(696 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
+    ctx.fill();
+    
+    // Desenhar ícone se for WhatsApp
+    if (data.contato.tipo === 'whatsapp') {
       const whatsappImg = new Image();
-      whatsappImg.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#25D366" d="m17.507 14.307-.009.075c-2.199-1.096-2.429-1.242-2.713-.816-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.293-.506.32-.578.878-1.634.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.576-.05-.997-.042-1.368.344-1.614 1.774-1.207 3.604.174 5.55 2.714 3.552 4.16 4.206 6.804 5.114.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345z"/>
-          <path fill="#25D366" d="m20.52 3.449c-7.689-7.433-20.414-2.042-20.419 8.444 0 2.096.549 4.14 1.595 5.945l-1.696 6.162 6.335-1.652c7.905 4.27 17.661-1.4 17.665-10.449 0-3.176-1.24-6.165-3.495-8.411zm1.482 8.417c-.006 7.633-8.385 12.4-15.012 8.504l-.36-.214-3.75.975 1.005-3.645-.239-.375c-4.124-6.565.614-15.145 8.426-15.145 2.654 0 5.145 1.035 7.021 2.91 1.875 1.859 2.909 4.35 2.909 6.99z"/>
-        </svg>
-      `);
+      whatsappImg.src = whatsappIcon;
       await new Promise((resolve) => {
         whatsappImg.onload = resolve;
         whatsappImg.onerror = resolve;
       });
       
-      const iconX = badgeX + 20;
-      const iconY = badgeY + (badgeHeight - iconSize) / 2;
+      const iconX = 696 - buttonWidth/2 + 20;
+      const iconY = buttonY - iconSize/2;
       ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
       
-      // Número
+      // Texto do contato ao lado do ícone
       ctx.fillStyle = '#2B5BA0';
-      ctx.font = 'bold 20px Arial, sans-serif';
+      ctx.font = 'bold 24px Montserrat, Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(phoneNumber, iconX + iconSize + spacing, badgeY + badgeHeight / 2 + 7);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
     } else {
-      // Email ou site
-      const contactText = data.contato?.tipo === 'email' 
-        ? data.contato.valor 
-        : 'novotemporh.com.br';
+      // Texto com emoji para email e site
+      const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
+      ctx.fillStyle = '#2B5BA0';
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(iconText + ' ' + contactText, 696, buttonY);
+    }
+
+    // Desenhar tarja azul PCD no topo (sobrepondo os elementos) se for vaga PCD
+    if (data.isPcd) {
+      ctx.fillStyle = '#3B5998';
+      ctx.fillRect(0, 0, canvas.width, 60);
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 22px Arial, sans-serif';
+      ctx.font = 'bold 20px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(contactText, 696, footerY + 120);
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.textAlign = 'left';
     }
   };
 
