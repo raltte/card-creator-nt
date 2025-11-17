@@ -280,28 +280,43 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.textAlign = 'center';
     ctx.fillText('Envie seu currículo em:', 696, footerY + 60);
 
-    // Texto fixo do contato: novotemporh.com.br
-    const contactText = getContactDisplay();
+    // Obter informações de contato
+    const contactText = data.contato.tipo === 'whatsapp' 
+      ? data.contato.valor || '(xx) xxxxx-xxxx'
+      : data.contato.tipo === 'email'
+      ? data.contato.valor || 'email@exemplo.com'
+      : 'novotemporh.com.br';
     
-    // Medir o texto "Envie seu currículo em:" para usar a mesma largura
-    ctx.font = 'bold 32px Montserrat, Arial';
-    const headerTextMetrics = ctx.measureText('Envie seu currículo em:');
-    const buttonWidth = headerTextMetrics.width;
+    // Determinar ícone baseado no tipo de contato
+    const getIconText = () => {
+      switch (data.contato.tipo) {
+        case 'whatsapp': return '📱';
+        case 'email': return '✉️';
+        case 'site': return '🌐';
+        default: return '🌐';
+      }
+    };
+    
+    // Medir o texto do contato para criar o quadro dinâmico
+    ctx.font = 'bold 24px Montserrat, Arial';
+    const iconTextMetrics = ctx.measureText(getIconText() + ' ');
+    const contactTextMetrics = ctx.measureText(contactText);
+    const buttonWidth = iconTextMetrics.width + contactTextMetrics.width + 40; // adiciona padding
     const buttonHeight = 48;
     const buttonY = footerY + 108;
     
-    // Desenhar o fundo branco centralizado
+    // Desenhar o fundo branco dinâmico centralizado
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.roundRect(696 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
     ctx.fill();
     
-    // Texto do contato centralizado verticalmente e horizontalmente
+    // Texto do contato com ícone centralizado
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 24px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(contactText, 696, buttonY);
+    ctx.fillText(getIconText() + ' ' + contactText, 696, buttonY);
 
     // Desenhar tarja azul PCD no topo (sobrepondo os elementos) se for vaga PCD
     if (data.isPcd) {
