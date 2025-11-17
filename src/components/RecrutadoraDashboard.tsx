@@ -133,18 +133,21 @@ export const RecrutadoraDashboard = () => {
 
               {/* Tabs de Modelo */}
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
+<h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
                 <Tabs 
                   defaultValue="padrao" 
                   onValueChange={(value) => {
                     setModeloSelecionado(value as 'padrao' | 'marisa');
+                    // Atualizar o template do cliente e contato para compilado
                     if (tipoCartaz === 'compilado') {
                       setDadosCompilado({
                         ...dadosCompilado,
                         clientTemplate: value as 'padrao' | 'marisa',
                         contato: { 
-                          ...dadosCompilado.contato,
-                          valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
+                          tipo: dadosCompilado.contato.tipo,
+                          valor: dadosCompilado.contato.tipo === 'site'
+                            ? (value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
+                            : dadosCompilado.contato.valor
                         }
                       });
                     }
