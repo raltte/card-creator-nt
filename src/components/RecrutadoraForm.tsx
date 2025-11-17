@@ -263,20 +263,26 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
           ))}
           
           {formData.requisitos.length < 3 && (
-            <div className="flex gap-2">
-              <Input
-                placeholder="Adicionar requisito..."
-                value={novoRequisito}
-                onChange={(e) => setNovoRequisito(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && adicionarRequisito()}
-              />
-              <Button
-                variant="outline"
-                onClick={adicionarRequisito}
-                disabled={!novoRequisito.trim()}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Adicionar requisito..."
+                  value={novoRequisito}
+                  onChange={(e) => setNovoRequisito(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && adicionarRequisito()}
+                  maxLength={50}
+                />
+                <Button
+                  variant="outline"
+                  onClick={adicionarRequisito}
+                  disabled={!novoRequisito.trim()}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Máximo 50 caracteres por requisito para garantir que tudo fique visível no cartaz
+              </p>
             </div>
           )}
         </div>
