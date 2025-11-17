@@ -309,29 +309,29 @@ export const RecrutadoraDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
+    <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-2 sm:p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-nt-dark mb-2">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-nt-dark mb-2">
             Dashboard de Recrutadoras
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
             Sistema de Geração de Cartazes - Novo Tempo RH
           </p>
           
           {/* Indicador de Etapa */}
           {etapaAtual !== 'selecaoTipo' && (
-            <div className="mt-6 flex items-center justify-center gap-2">
-              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+            <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto pb-2">
+              <div className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${
                 etapaAtual === 'selecaoModelo' ? 'bg-nt-primary text-white' : 
                 ['formulario', 'selecaoImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
                 'bg-muted text-muted-foreground'
               }`}>
                 1. Modelo
               </div>
-              <div className="w-8 h-0.5 bg-border" />
-              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+              <div className="w-4 sm:w-8 h-0.5 bg-border flex-shrink-0" />
+              <div className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${
                 etapaAtual === 'formulario' ? 'bg-nt-primary text-white' : 
                 ['selecaoImagem', 'preview'].includes(etapaAtual) ? 'bg-nt-primary/20 text-nt-primary' : 
                 'bg-muted text-muted-foreground'
@@ -340,21 +340,21 @@ export const RecrutadoraDashboard = () => {
               </div>
               {tipoCartaz === 'individual' && (
                 <>
-                  <div className="w-8 h-0.5 bg-border" />
-                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  <div className="w-4 sm:w-8 h-0.5 bg-border flex-shrink-0" />
+                  <div className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${
                     etapaAtual === 'selecaoImagem' ? 'bg-nt-primary text-white' : 
                     etapaAtual === 'preview' ? 'bg-nt-primary/20 text-nt-primary' : 
                     'bg-muted text-muted-foreground'
                   }`}>
-                    3. Imagem & Ajuste
+                    3. Imagem
                   </div>
                 </>
               )}
-              <div className="w-8 h-0.5 bg-border" />
-              <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+              <div className="w-4 sm:w-8 h-0.5 bg-border flex-shrink-0" />
+              <div className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${
                 etapaAtual === 'preview' ? 'bg-nt-primary text-white' : 'bg-muted text-muted-foreground'
               }`}>
-                {tipoCartaz === 'individual' ? '5. Preview' : '3. Preview'}
+                {tipoCartaz === 'individual' ? '4. Preview' : '3. Preview'}
               </div>
             </div>
           )}
@@ -367,15 +367,15 @@ export const RecrutadoraDashboard = () => {
               <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
                 O que você deseja criar?
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <Card 
                   className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-nt-primary"
                   onClick={() => handleTipoSelect('individual')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <FileText className="w-12 h-12 mx-auto mb-4 text-nt-primary" />
-                    <h3 className="text-xl font-bold text-nt-dark mb-2">Cartaz Individual</h3>
-                    <p className="text-muted-foreground">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <FileText className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-nt-primary" />
+                    <h3 className="text-lg sm:text-xl font-bold text-nt-dark mb-2">Cartaz Individual</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Cartaz para uma única vaga com foto e informações específicas
                     </p>
                   </CardContent>
@@ -385,10 +385,10 @@ export const RecrutadoraDashboard = () => {
                   className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-nt-primary"
                   onClick={() => handleTipoSelect('compilado')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <Layers className="w-12 h-12 mx-auto mb-4 text-nt-primary" />
-                    <h3 className="text-xl font-bold text-nt-dark mb-2">Compilado de Vagas</h3>
-                    <p className="text-muted-foreground">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <Layers className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-nt-primary" />
+                    <h3 className="text-lg sm:text-xl font-bold text-nt-dark mb-2">Compilado de Vagas</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Lista múltiplas vagas em um único cartaz
                     </p>
                   </CardContent>
@@ -407,15 +407,15 @@ export const RecrutadoraDashboard = () => {
               <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
                 Selecione o Modelo do {tipoCartaz === 'compilado' ? 'Compilado' : 'Cartaz'}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <Card 
                   className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-nt-primary"
                   onClick={() => handleModeloSelect('padrao')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4 text-4xl">📋</div>
-                    <h3 className="text-xl font-bold text-nt-dark mb-2">Modelo Tradicional</h3>
-                    <p className="text-muted-foreground">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className="mb-3 sm:mb-4 text-3xl sm:text-4xl">📋</div>
+                    <h3 className="text-lg sm:text-xl font-bold text-nt-dark mb-2">Modelo Tradicional</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Cartaz padrão Novo Tempo RH com design verde e moderno
                     </p>
                   </CardContent>
@@ -425,10 +425,10 @@ export const RecrutadoraDashboard = () => {
                   className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-[#E5007E]"
                   onClick={() => handleModeloSelect('marisa')}
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4 text-4xl">💼</div>
-                    <h3 className="text-xl font-bold text-[#E5007E] mb-2">Modelo Marisa</h3>
-                    <p className="text-muted-foreground">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className="mb-3 sm:mb-4 text-3xl sm:text-4xl">💼</div>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#E5007E] mb-2">Modelo Marisa</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Cartaz personalizado para vagas Marisa com design rosa
                     </p>
                   </CardContent>
@@ -483,30 +483,31 @@ export const RecrutadoraDashboard = () => {
           </Card>
         ) : (
           /* Visualização do Cartaz/Compilado Gerado */
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <Button 
                 variant="outline" 
                 onClick={voltarFormulario}
+                className="w-full sm:w-auto"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar ao Formulário
               </Button>
-              <div className="flex gap-2 ml-auto">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
                 <Button 
                   variant="outline" 
                   onClick={handleMondayIntegration}
                   disabled={isSendingToMonday}
-                  className="min-w-[220px]"
+                  className="w-full sm:w-auto sm:min-w-[220px]"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   {isSendingToMonday ? 'Enviando...' : 'Enviar para Monday.com'}
                 </Button>
-                <Button variant="outline" onClick={handleShare}>
+                <Button variant="outline" onClick={handleShare} className="w-full sm:w-auto">
                   <Share2 className="w-4 h-4 mr-2" />
                   Compartilhar
                 </Button>
-                <Button onClick={handleDownload}>
+                <Button onClick={handleDownload} className="w-full sm:w-auto">
                   <Download className="w-4 h-4 mr-2" />
                   Baixar PNG
                 </Button>
@@ -514,18 +515,18 @@ export const RecrutadoraDashboard = () => {
             </div>
 
             <Tabs defaultValue="preview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="preview">Visualização</TabsTrigger>
-                <TabsTrigger value="fullscreen">Tela Cheia</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
+                <TabsTrigger value="preview" className="text-xs sm:text-sm">Visualização</TabsTrigger>
+                <TabsTrigger value="fullscreen" className="text-xs sm:text-sm">Tela Cheia</TabsTrigger>
               </TabsList>
 
               <TabsContent value="preview">
                 <Card>
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-semibold text-nt-dark mb-6 text-center">
+                  <CardContent className="p-4 sm:p-8">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-nt-dark mb-4 sm:mb-6 text-center">
                       {tipoCartaz === 'compilado' ? 'Compilado' : 'Cartaz'} Gerado
                     </h2>
-                    <div className="flex justify-center">
+                    <div className="flex justify-center overflow-x-auto">
                       {tipoCartaz === 'compilado' ? (
                         modeloSelecionado === 'marisa' ? (
                           <CompiladoPreviewMarisa data={compiladoGerado!} />
@@ -546,12 +547,12 @@ export const RecrutadoraDashboard = () => {
 
               <TabsContent value="fullscreen">
                 <Card>
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-semibold text-nt-dark mb-8 text-center">
+                  <CardContent className="p-4 sm:p-8">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-nt-dark mb-4 sm:mb-8 text-center">
                       Visualização em Tela Cheia
                     </h2>
-                    <div className="flex justify-center">
-                      <div className="scale-125 origin-top">
+                    <div className="flex justify-center overflow-x-auto">
+                      <div className="scale-100 sm:scale-125 origin-top">
                         {tipoCartaz === 'compilado' ? (
                           modeloSelecionado === 'marisa' ? (
                             <CompiladoPreviewMarisa data={compiladoGerado!} />

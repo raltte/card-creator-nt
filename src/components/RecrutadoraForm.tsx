@@ -116,9 +116,8 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
         />
       </div>
 
-
       {/* Código PS e Tipo de Contrato */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="codigo-ps">Código PS *</Label>
           <Input
