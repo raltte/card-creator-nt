@@ -152,48 +152,6 @@ export const RecrutadoraDashboard = () => {
                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
                   </TabsList>
-
-                  <TabsContent value="padrao" className="mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card className="overflow-hidden">
-                        <div className="aspect-[432/1200] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                          <img src={novoTempoLogo} alt="Exemplo Tradicional Individual" className="w-32" />
-                        </div>
-                        <CardContent className="p-3">
-                          <p className="text-xs text-center text-muted-foreground">Individual Tradicional</p>
-                        </CardContent>
-                      </Card>
-                      <Card className="overflow-hidden">
-                        <div className="aspect-[432/900] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                          <img src={novoTempoLogo} alt="Exemplo Tradicional Compilado" className="w-32" />
-                        </div>
-                        <CardContent className="p-3">
-                          <p className="text-xs text-center text-muted-foreground">Compilado Tradicional</p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="marisa" className="mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card className="overflow-hidden">
-                        <div className="aspect-[960/1200] bg-[#E5007E] flex items-center justify-center">
-                          <img src={marisaLogo} alt="Exemplo Marisa Individual" className="w-32" />
-                        </div>
-                        <CardContent className="p-3">
-                          <p className="text-xs text-center text-muted-foreground">Individual Marisa</p>
-                        </CardContent>
-                      </Card>
-                      <Card className="overflow-hidden">
-                        <div className="aspect-[432/900] bg-[#E5007E] flex items-center justify-center">
-                          <img src={marisaLogo} alt="Exemplo Marisa Compilado" className="w-32" />
-                        </div>
-                        <CardContent className="p-3">
-                          <p className="text-xs text-center text-muted-foreground">Compilado Marisa</p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
                 </Tabs>
               </div>
 
