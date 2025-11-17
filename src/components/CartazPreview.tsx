@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Phone, Globe, Mail, User, MessageCircle } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 import logoImage from "@/assets/novo-tempo-logo-v4.png";
+import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CartazPreviewProps {
   data: CartazData;
@@ -287,21 +288,12 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br';
     
-    // Determinar ícone baseado no tipo de contato
-    const getIconText = () => {
-      switch (data.contato.tipo) {
-        case 'whatsapp': return '📱';
-        case 'email': return '✉️';
-        case 'site': return '🌐';
-        default: return '🌐';
-      }
-    };
-    
     // Medir o texto do contato para criar o quadro dinâmico
     ctx.font = 'bold 24px Montserrat, Arial';
-    const iconTextMetrics = ctx.measureText(getIconText() + ' ');
+    const iconSize = 24;
+    const iconPadding = 8;
     const contactTextMetrics = ctx.measureText(contactText);
-    const buttonWidth = iconTextMetrics.width + contactTextMetrics.width + 40; // adiciona padding
+    const buttonWidth = iconSize + iconPadding + contactTextMetrics.width + 40; // ícone + espaço + texto + padding
     const buttonHeight = 48;
     const buttonY = footerY + 108;
     
@@ -311,12 +303,34 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     ctx.roundRect(696 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
     ctx.fill();
     
-    // Texto do contato com ícone centralizado
-    ctx.fillStyle = '#11332B';
-    ctx.font = 'bold 24px Montserrat, Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(getIconText() + ' ' + contactText, 696, buttonY);
+    // Desenhar ícone se for WhatsApp
+    if (data.contato.tipo === 'whatsapp') {
+      const whatsappImg = new Image();
+      whatsappImg.src = whatsappIcon;
+      await new Promise((resolve) => {
+        whatsappImg.onload = resolve;
+        whatsappImg.onerror = resolve;
+      });
+      
+      const iconX = 696 - buttonWidth/2 + 20;
+      const iconY = buttonY - iconSize/2;
+      ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
+      
+      // Texto do contato ao lado do ícone
+      ctx.fillStyle = '#11332B';
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
+    } else {
+      // Texto com emoji para email e site
+      const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
+      ctx.fillStyle = '#11332B';
+      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(iconText + ' ' + contactText, 696, buttonY);
+    }
 
     // Desenhar tarja azul PCD no topo (sobrepondo os elementos) se for vaga PCD
     if (data.isPcd) {
