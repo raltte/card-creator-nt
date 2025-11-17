@@ -102,10 +102,10 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     
     const contentOffset = 40;
     
-    // Logo unificado com proporção mantida
-    const logoWidth = 360;
+    // Logo unificado com proporção mantida (reduzido)
+    const logoWidth = 280;
     const logoHeight = (logoWidth * wegNtLogo.height) / wegNtLogo.width;
-    ctx.drawImage(wegNtLogo, 456, topOffset + contentOffset + 80, logoWidth, logoHeight);
+    ctx.drawImage(wegNtLogo, 480, topOffset + contentOffset + 80, logoWidth, logoHeight);
 
     // "Vaga de emprego" - título principal centralizado verticalmente
     ctx.fillStyle = '#FFFFFF';
