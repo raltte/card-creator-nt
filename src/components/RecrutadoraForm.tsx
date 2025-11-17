@@ -23,11 +23,13 @@ export interface RecrutadoraData {
 
 interface RecrutadoraFormProps {
   onSubmit: (data: RecrutadoraData) => void;
+  data?: RecrutadoraData;
+  onChange?: (data: RecrutadoraData) => void;
 }
 
-export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
+export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: RecrutadoraFormProps) => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<RecrutadoraData>({
+  const [formData, setFormData] = useState<RecrutadoraData>(externalData || {
     nomeVaga: "",
     codigoPS: "",
     tipoContrato: "",
@@ -43,10 +45,12 @@ export const RecrutadoraForm = ({ onSubmit }: RecrutadoraFormProps) => {
   const [novoRequisito, setNovoRequisito] = useState("");
 
   const updateFormData = (field: keyof RecrutadoraData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
+    const newData = {
+      ...formData,
       [field]: value
-    }));
+    };
+    setFormData(newData);
+    onChange?.(newData);
   };
 
 

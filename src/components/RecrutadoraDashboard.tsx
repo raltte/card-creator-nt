@@ -13,6 +13,19 @@ export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa'>('padrao');
+  const [dadosIndividual, setDadosIndividual] = useState<any>({
+    nomeVaga: "",
+    codigoPS: "",
+    tipoContrato: "",
+    cidadeEstado: "",
+    captacaoCurriculo: 'site',
+    whatsappNumber: "",
+    emailCaptacao: "email@novotemporh.com.br",
+    requisitos: [],
+    setorAtuacao: "",
+    emailSolicitante: "",
+    image: ''
+  });
   const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
     image: '',
     local: '',
@@ -186,14 +199,74 @@ export const RecrutadoraDashboard = () => {
 
               {/* Formulários */}
               <TabsContent value="individual" className="space-y-6 mt-6">
-                <RecrutadoraForm onSubmit={handleFormSubmit} />
-                <Button onClick={() => {}} className="w-full" size="lg">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <RecrutadoraForm 
+                      onSubmit={handleFormSubmit} 
+                      data={dadosIndividual}
+                      onChange={setDadosIndividual}
+                    />
+                  </div>
+                  <div className="sticky top-6">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
+                    {modeloSelecionado === 'padrao' ? (
+                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="aspect-[432/1200] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">
+                          <div className="text-center space-y-2">
+                            <p className="text-sm text-muted-foreground">Preview: {dadosIndividual.nomeVaga || 'Nome da Vaga'}</p>
+                            <p className="text-xs text-muted-foreground">{dadosIndividual.cidadeEstado || 'Localização'}</p>
+                            <p className="text-xs text-muted-foreground">{dadosIndividual.tipoContrato || 'Tipo de Contrato'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="aspect-[960/1200] bg-[#E5007E] flex items-center justify-center p-4">
+                          <div className="text-center space-y-2">
+                            <p className="text-sm text-white">Preview: {dadosIndividual.nomeVaga || 'Nome da Vaga'}</p>
+                            <p className="text-xs text-white">{dadosIndividual.cidadeEstado || 'Localização'}</p>
+                            <p className="text-xs text-white">{dadosIndividual.tipoContrato || 'Tipo de Contrato'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
                   Enviar Solicitação
                 </Button>
               </TabsContent>
 
               <TabsContent value="compilado" className="space-y-6 mt-6">
-                <CompiladoForm data={dadosCompilado} onChange={setDadosCompilado} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <CompiladoForm data={dadosCompilado} onChange={setDadosCompilado} />
+                  </div>
+                  <div className="sticky top-6">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
+                    {dadosCompilado.clientTemplate === 'padrao' ? (
+                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="aspect-[432/900] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">
+                          <div className="text-center space-y-2">
+                            <p className="text-sm text-muted-foreground">Preview Compilado</p>
+                            <p className="text-xs text-muted-foreground">{dadosCompilado.local || 'Localização'}</p>
+                            <p className="text-xs text-muted-foreground">{dadosCompilado.vagas.length} vaga(s)</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="aspect-[432/900] bg-[#E5007E] flex items-center justify-center p-4">
+                          <div className="text-center space-y-2">
+                            <p className="text-sm text-white">Preview Compilado</p>
+                            <p className="text-xs text-white">{dadosCompilado.local || 'Localização'}</p>
+                            <p className="text-xs text-white">{dadosCompilado.vagas.length} vaga(s)</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
                   Enviar Solicitação
                 </Button>
