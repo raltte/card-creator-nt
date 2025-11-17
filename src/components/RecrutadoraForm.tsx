@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Upload, Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,6 +21,7 @@ export interface RecrutadoraData {
   setorAtuacao: string;
   emailSolicitante: string;
   sugestaoImagem?: string;
+  isPCD?: boolean;
 }
 
 interface RecrutadoraFormProps {
@@ -45,7 +47,8 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     requisitos: [],
     setorAtuacao: "",
     emailSolicitante: "",
-    sugestaoImagem: ""
+    sugestaoImagem: "",
+    isPCD: false
   });
 
   const formData = isControlled ? externalData : internalFormData;
@@ -171,6 +174,20 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
           value={formData.cidadeEstado}
           onChange={(e) => updateFormData('cidadeEstado', e.target.value)}
           className="mt-1"
+        />
+      </div>
+
+      {/* Vaga PCD */}
+      <div className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="space-y-0.5">
+          <Label className="text-base font-semibold">Vaga PCD</Label>
+          <p className="text-sm text-muted-foreground">
+            Esta vaga é exclusiva para Pessoas com Deficiência?
+          </p>
+        </div>
+        <Switch
+          checked={formData.isPCD}
+          onCheckedChange={(checked) => updateFormData('isPCD', checked)}
         />
       </div>
 
