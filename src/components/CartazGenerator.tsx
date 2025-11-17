@@ -21,7 +21,7 @@ export interface CartazData {
   tipoContrato: string;
   requisitos: string;
   isPcd: boolean;
-  clientTemplate: 'padrao' | 'marisa';
+  clientTemplate: 'padrao' | 'marisa' | 'weg';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;

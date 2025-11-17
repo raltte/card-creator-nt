@@ -6,6 +6,7 @@ import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
+import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
-  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa'>('padrao');
+  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
     codigoPS: "",
@@ -134,16 +135,16 @@ export const RecrutadoraDashboard = () => {
 
               {/* Tabs de Modelo */}
               <div className="space-y-2">
-<h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
                 <Tabs 
                   defaultValue="padrao" 
                   onValueChange={(value) => {
-                    setModeloSelecionado(value as 'padrao' | 'marisa');
+                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg');
                     // Atualizar o template do cliente e contato para compilado
                     if (tipoCartaz === 'compilado') {
                       setDadosCompilado({
                         ...dadosCompilado,
-                        clientTemplate: value as 'padrao' | 'marisa',
+                        clientTemplate: value as 'padrao' | 'marisa' | 'weg',
                         contato: { 
                           tipo: dadosCompilado.contato.tipo,
                           valor: dadosCompilado.contato.tipo === 'site'
@@ -154,8 +155,9 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                    <TabsTrigger value="weg">WEG</TabsTrigger>
                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -184,6 +186,24 @@ export const RecrutadoraDashboard = () => {
                           requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
                           isPcd: false,
                           clientTemplate: 'padrao',
+                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
+                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
+                            : dadosIndividual.captacaoCurriculo === 'email'
+                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br' }
+                        }}
+                      />
+                    ) : modeloSelecionado === 'weg' ? (
+                      <CartazPreviewWeg 
+                        data={{
+                          image: dadosIndividual.image || '',
+                          cargo: dadosIndividual.nomeVaga || '',
+                          local: dadosIndividual.cidadeEstado || '',
+                          codigo: dadosIndividual.codigoPS || '',
+                          tipoContrato: dadosIndividual.tipoContrato || '',
+                          requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
+                          isPcd: false,
+                          clientTemplate: 'weg',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
                             : dadosIndividual.captacaoCurriculo === 'email'
