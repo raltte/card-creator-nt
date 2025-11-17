@@ -2,3 +2,9 @@ project_id = "jqpjcoitrmochijrgfbc"
 
 [functions.monday-integration]
 verify_jwt = false
+
+[functions.criar-solicitacao]
+verify_jwt = false
+
+[functions.finalizar-cartaz]
+verify_jwt = false

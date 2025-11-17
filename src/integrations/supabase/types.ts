@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      solicitacoes_cartaz: {
+        Row: {
+          atividades: string | null
+          cargo: string
+          codigo: string
+          contato_tipo: string | null
+          contato_valor: string | null
+          created_at: string
+          email_solicitante: string | null
+          id: string
+          imagem_url: string | null
+          link_vaga: string | null
+          local: string | null
+          modelo_cartaz: string
+          monday_item_id: string | null
+          requisitos: string | null
+          status: string | null
+          tipo_contrato: string
+          updated_at: string
+        }
+        Insert: {
+          atividades?: string | null
+          cargo: string
+          codigo: string
+          contato_tipo?: string | null
+          contato_valor?: string | null
+          created_at?: string
+          email_solicitante?: string | null
+          id?: string
+          imagem_url?: string | null
+          link_vaga?: string | null
+          local?: string | null
+          modelo_cartaz: string
+          monday_item_id?: string | null
+          requisitos?: string | null
+          status?: string | null
+          tipo_contrato: string
+          updated_at?: string
+        }
+        Update: {
+          atividades?: string | null
+          cargo?: string
+          codigo?: string
+          contato_tipo?: string | null
+          contato_valor?: string | null
+          created_at?: string
+          email_solicitante?: string | null
+          id?: string
+          imagem_url?: string | null
+          link_vaga?: string | null
+          local?: string | null
+          modelo_cartaz?: string
+          monday_item_id?: string | null
+          requisitos?: string | null
+          status?: string | null
+          tipo_contrato?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
