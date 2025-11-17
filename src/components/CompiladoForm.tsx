@@ -21,7 +21,7 @@ export interface CompiladoData {
   vagas: CompiladoVaga[];
   requisitos: string;
   isPcd: boolean;
-  clientTemplate: 'padrao' | 'marisa';
+  clientTemplate: 'padrao' | 'marisa' | 'weg';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
