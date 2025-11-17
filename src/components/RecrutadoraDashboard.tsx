@@ -215,7 +215,15 @@ export const RecrutadoraDashboard = () => {
               <TabsContent value="compilado" className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <CompiladoForm data={dadosCompilado} onChange={setDadosCompilado} />
+                    <CompiladoForm 
+                      data={{
+                        ...dadosCompilado,
+                        clientTemplate: modeloSelecionado
+                      }} 
+                      onChange={(newData) => {
+                        setDadosCompilado(newData);
+                      }}
+                    />
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
