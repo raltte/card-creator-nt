@@ -156,7 +156,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
     // Footer - texto dinâmico baseado no tipo de contato
     const footerText = data.contato?.tipo === 'whatsapp'
-      ? data.contato.valor || '(xx) xxxxx-xxxx'
+      ? `Candidate-se através do WhatsApp: ${data.contato.valor || '(xx) xxxxx-xxxx'}`
       : data.contato?.tipo === 'email'
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br/marisa';
