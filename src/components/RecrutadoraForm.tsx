@@ -29,7 +29,11 @@ interface RecrutadoraFormProps {
 
 export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: RecrutadoraFormProps) => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<RecrutadoraData>(externalData || {
+  
+  // Use external data if provided, otherwise use internal state
+  const isControlled = externalData !== undefined && onChange !== undefined;
+  
+  const [internalFormData, setInternalFormData] = useState<RecrutadoraData>({
     nomeVaga: "",
     codigoPS: "",
     tipoContrato: "",
@@ -42,6 +46,8 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     emailSolicitante: ""
   });
 
+  const formData = isControlled ? externalData : internalFormData;
+
   const [novoRequisito, setNovoRequisito] = useState("");
 
   const updateFormData = (field: keyof RecrutadoraData, value: any) => {
@@ -49,8 +55,12 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
       ...formData,
       [field]: value
     };
-    setFormData(newData);
-    onChange?.(newData);
+    
+    if (isControlled && onChange) {
+      onChange(newData);
+    } else {
+      setInternalFormData(newData);
+    }
   };
 
 
