@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
+import { CartazPreview } from "./CartazPreview";
+import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
+import { CompiladoPreview } from "./CompiladoPreview";
+import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import novoTempoLogo from "@/assets/novo-tempo-logo-v4.png";
-import marisaLogo from "@/assets/marisa-logo-branco.png";
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
@@ -168,25 +170,37 @@ export const RecrutadoraDashboard = () => {
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
                     {modeloSelecionado === 'padrao' ? (
-                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
-                        <div className="aspect-[432/1200] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">
-                          <div className="text-center space-y-2">
-                            <p className="text-sm text-muted-foreground">Preview: {dadosIndividual.nomeVaga || 'Nome da Vaga'}</p>
-                            <p className="text-xs text-muted-foreground">{dadosIndividual.cidadeEstado || 'Localização'}</p>
-                            <p className="text-xs text-muted-foreground">{dadosIndividual.tipoContrato || 'Tipo de Contrato'}</p>
-                          </div>
-                        </div>
-                      </div>
+                      <CartazPreview 
+                        data={{
+                          image: dadosIndividual.image || '',
+                          cargo: dadosIndividual.nomeVaga || '',
+                          local: dadosIndividual.cidadeEstado || '',
+                          codigo: dadosIndividual.codigoPS || '',
+                          tipoContrato: dadosIndividual.tipoContrato || '',
+                          requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
+                          isPcd: false,
+                          clientTemplate: 'padrao',
+                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
+                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
+                            : dadosIndividual.captacaoCurriculo === 'email'
+                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br' }
+                        }}
+                      />
                     ) : (
-                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
-                        <div className="aspect-[960/1200] bg-[#E5007E] flex items-center justify-center p-4">
-                          <div className="text-center space-y-2">
-                            <p className="text-sm text-white">Preview: {dadosIndividual.nomeVaga || 'Nome da Vaga'}</p>
-                            <p className="text-xs text-white">{dadosIndividual.cidadeEstado || 'Localização'}</p>
-                            <p className="text-xs text-white">{dadosIndividual.tipoContrato || 'Tipo de Contrato'}</p>
-                          </div>
-                        </div>
-                      </div>
+                      <CartazPreviewMarisa 
+                        data={{
+                          image: dadosIndividual.image || '',
+                          cargo: dadosIndividual.nomeVaga || '',
+                          local: dadosIndividual.cidadeEstado || '',
+                          codigo: dadosIndividual.codigoPS || '',
+                          tipoContrato: dadosIndividual.tipoContrato || '',
+                          requisitos: '',
+                          isPcd: false,
+                          clientTemplate: 'marisa',
+                          contato: { tipo: 'site', valor: 'novotemporh.com.br/marisa' }
+                        }}
+                      />
                     )}
                   </div>
                 </div>
@@ -203,25 +217,9 @@ export const RecrutadoraDashboard = () => {
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
                     {dadosCompilado.clientTemplate === 'padrao' ? (
-                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
-                        <div className="aspect-[432/900] bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">
-                          <div className="text-center space-y-2">
-                            <p className="text-sm text-muted-foreground">Preview Compilado</p>
-                            <p className="text-xs text-muted-foreground">{dadosCompilado.local || 'Localização'}</p>
-                            <p className="text-xs text-muted-foreground">{dadosCompilado.vagas.length} vaga(s)</p>
-                          </div>
-                        </div>
-                      </div>
+                      <CompiladoPreview data={dadosCompilado} />
                     ) : (
-                      <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
-                        <div className="aspect-[432/900] bg-[#E5007E] flex items-center justify-center p-4">
-                          <div className="text-center space-y-2">
-                            <p className="text-sm text-white">Preview Compilado</p>
-                            <p className="text-xs text-white">{dadosCompilado.local || 'Localização'}</p>
-                            <p className="text-xs text-white">{dadosCompilado.vagas.length} vaga(s)</p>
-                          </div>
-                        </div>
-                      </div>
+                      <CompiladoPreviewMarisa data={dadosCompilado} />
                     )}
                   </div>
                 </div>
