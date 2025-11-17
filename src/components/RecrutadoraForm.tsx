@@ -354,7 +354,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
         className="w-full bg-nt-light hover:bg-nt-light/90"
         size="lg"
       >
-        Continuar - Selecionar Imagem
+        Enviar Solicitação
       </Button>
     </div>
   );
