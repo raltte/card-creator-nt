@@ -4,6 +4,7 @@ import marisaLogo from "@/assets/marisa-logo.png";
 import marisaLogoBranco from "@/assets/marisa-logo-branco.png";
 import marisaTexto from "@/assets/marisa-texto.png";
 import novoTempoLogo from "@/assets/novo-tempo-logo-light-bg.png";
+import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CompiladoPreviewMarisaProps {
   data: CompiladoData;
@@ -183,9 +184,6 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
 
     // Contato dinâmico com ícone - Fonte aumentada para 26px
     y += 80;
-    const contactIcon = data.contato.tipo === 'whatsapp' ? '📱' 
-      : data.contato.tipo === 'email' ? '✉️' 
-      : '🌐';
     const contactValue = data.contato.tipo === 'whatsapp'
       ? data.contato.valor || '(xx) xxxxx-xxxx'
       : data.contato.tipo === 'email'
@@ -194,7 +192,22 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     
     ctx.fillStyle = '#11332B';
     ctx.font = 'bold 26px Montserrat, Arial';
-    ctx.fillText(`${contactIcon} ${contactValue}`, 64, y);
+    
+    if (data.contato.tipo === 'whatsapp') {
+      const whatsappImg = new Image();
+      whatsappImg.src = whatsappIcon;
+      await new Promise((resolve) => {
+        whatsappImg.onload = resolve;
+        whatsappImg.onerror = resolve;
+      });
+      
+      const iconSize = 26;
+      ctx.drawImage(whatsappImg, 64, y - iconSize, iconSize, iconSize);
+      ctx.fillText(contactValue, 64 + iconSize + 8, y);
+    } else {
+      const contactIcon = data.contato.tipo === 'email' ? '✉️' : '🌐';
+      ctx.fillText(`${contactIcon} ${contactValue}`, 64, y);
+    }
 
     // Lado direito - imagem
     let rightImage: HTMLImageElement;
