@@ -19,6 +19,7 @@ export interface RecrutadoraData {
   requisitos: string[];
   setorAtuacao: string;
   emailSolicitante: string;
+  sugestaoImagem?: string;
 }
 
 interface RecrutadoraFormProps {
@@ -43,7 +44,8 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     emailCaptacao: "email@novotemporh.com.br",
     requisitos: [],
     setorAtuacao: "",
-    emailSolicitante: ""
+    emailSolicitante: "",
+    sugestaoImagem: ""
   });
 
   const formData = isControlled ? externalData : internalFormData;
@@ -285,6 +287,23 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Sugestão de Imagem */}
+      <div>
+        <Label htmlFor="sugestao-imagem">Sugestão de Imagem (opcional)</Label>
+        <Textarea
+          id="sugestao-imagem"
+          placeholder="Descreva a imagem que gostaria de ver no cartaz. Ex: Pessoa trabalhando em um escritório moderno, ambiente industrial com máquinas, etc."
+          value={formData.sugestaoImagem || ""}
+          onChange={(e) => updateFormData('sugestaoImagem', e.target.value)}
+          maxLength={200}
+          rows={3}
+          className="mt-1 resize-none"
+        />
+        <div className="text-xs text-muted-foreground mt-1">
+          {(formData.sugestaoImagem || "").length}/200 caracteres - Esta sugestão será usada ao gerar a imagem com IA
         </div>
       </div>
 

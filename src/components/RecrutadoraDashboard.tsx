@@ -26,7 +26,8 @@ export const RecrutadoraDashboard = () => {
     requisitos: [],
     setorAtuacao: "",
     emailSolicitante: "",
-    image: ''
+    image: '',
+    sugestaoImagem: ''
   });
   const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
     image: '',

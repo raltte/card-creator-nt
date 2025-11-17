@@ -11,15 +11,15 @@ serve(async (req) => {
   }
 
   try {
-    const { jobTitle, sector, contractType, requirements } = await req.json();
+    const { jobTitle, sector, contractType, requirements, imageSuggestion } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY não configurada');
     }
 
-    // Gerar 3 imagens com prompts diferentes baseados no setor e vaga
-    const prompts = generateImagePrompts(jobTitle, sector, contractType, requirements);
+    // Gerar 3 imagens com prompts diferentes baseados no setor, vaga e sugestão do usuário
+    const prompts = generateImagePrompts(jobTitle, sector, contractType, requirements, imageSuggestion);
     const imagePromises = prompts.map(async (prompt) => {
       const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
@@ -66,10 +66,21 @@ serve(async (req) => {
   }
 });
 
-function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[]): string[] {
+function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string): string[] {
   const baseStyle = "Professional portrait photo, high quality, corporate style, bright lighting, clean background";
   
-  // Mapear setores para contextos visuais
+  // Se houver sugestão do usuário, priorizá-la
+  if (imageSuggestion && imageSuggestion.trim()) {
+    return [
+      `${baseStyle}, ${imageSuggestion}, related to ${jobTitle} position, ultra high resolution`,
+      
+      `${baseStyle}, ${imageSuggestion}, professional working as ${jobTitle}, diverse representation, ultra high resolution`,
+      
+      `${baseStyle}, ${imageSuggestion}, workplace setting for ${jobTitle} role, modern environment, ultra high resolution`
+    ];
+  }
+  
+  // Caso contrário, usar contexto baseado no setor
   const sectorContexts: Record<string, string> = {
     "Produção": "industrial warehouse or factory setting with safety equipment",
     "Administração": "modern office environment with computer and documents",

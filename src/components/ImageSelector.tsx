@@ -12,6 +12,7 @@ interface ImageSelectorProps {
     setorAtuacao: string;
     tipoContrato: string;
     requisitos: string[];
+    sugestaoImagem?: string;
   };
   onImageSelect: (imageUrl: string) => void;
   onBack: () => void;
@@ -34,6 +35,7 @@ export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate =
           sector: jobData.setorAtuacao,
           contractType: jobData.tipoContrato,
           requirements: jobData.requisitos,
+          imageSuggestion: jobData.sugestaoImagem || undefined,
         }
       });
 
