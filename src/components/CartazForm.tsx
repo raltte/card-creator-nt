@@ -69,6 +69,7 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
           sector: "Geral",
           contractType: data.tipoContrato,
           requirements: [],
+          clientTemplate: data.clientTemplate,
         }
       });
 

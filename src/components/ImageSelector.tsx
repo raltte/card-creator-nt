@@ -36,6 +36,7 @@ export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate =
           contractType: jobData.tipoContrato,
           requirements: jobData.requisitos,
           imageSuggestion: jobData.sugestaoImagem || undefined,
+          clientTemplate: clientTemplate,
         }
       });
 

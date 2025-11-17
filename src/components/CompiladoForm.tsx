@@ -84,6 +84,7 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
           sector: "Geral",
           contractType: "Diversos",
           requirements: [],
+          clientTemplate: data.clientTemplate,
         }
       });
 
