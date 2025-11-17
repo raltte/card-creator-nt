@@ -189,7 +189,7 @@ export const RecrutadoraDashboard = () => {
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: dadosIndividual.isPCD || false,
+                          isPcd: dadosIndividual.isPcd || false,
                           clientTemplate: 'padrao',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
@@ -211,7 +211,7 @@ export const RecrutadoraDashboard = () => {
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: dadosIndividual.isPCD || false,
+                          isPcd: dadosIndividual.isPcd || false,
                           clientTemplate: 'weg',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
@@ -233,7 +233,7 @@ export const RecrutadoraDashboard = () => {
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: '',
-                          isPcd: dadosIndividual.isPCD || false,
+                          isPcd: dadosIndividual.isPcd || false,
                           clientTemplate: 'marisa',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
