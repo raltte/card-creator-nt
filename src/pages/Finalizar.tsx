@@ -78,9 +78,11 @@ const Finalizar = () => {
 
     if (isCompilado) {
       // Dados do compilado
+      const localParts = (solicitacao.local || '').split(' - ');
       const dados: CompiladoData = {
         image: imagemUrl,
-        local: solicitacao.local || '',
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
         vagas: [{ codigo: solicitacao.codigo, cargo: solicitacao.cargo }],
         requisitos: solicitacao.requisitos || solicitacao.atividades || '',
         isPcd: false,
@@ -88,15 +90,20 @@ const Finalizar = () => {
         contato: {
           tipo: solicitacao.contato_tipo || 'site',
           valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz.includes('marisa') ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
+        },
+        get local() {
+          return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
       };
       setCompiladoData(dados);
     } else {
       // Dados do cartaz tradicional
+      const localParts = (solicitacao.local || '').split(' - ');
       const dados: CartazData = {
         image: imagemUrl,
         cargo: solicitacao.cargo,
-        local: solicitacao.local || '',
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
         codigo: solicitacao.codigo,
         tipoContrato: solicitacao.tipo_contrato,
         requisitos: solicitacao.requisitos || '',
@@ -105,6 +112,9 @@ const Finalizar = () => {
         contato: {
           tipo: solicitacao.contato_tipo || 'site',
           valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
+        },
+        get local() {
+          return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
       };
       setCartazData(dados);

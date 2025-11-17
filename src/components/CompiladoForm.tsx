@@ -17,7 +17,8 @@ export interface CompiladoVaga {
 
 export interface CompiladoData {
   image?: File | string;
-  local: string;
+  cidade: string;
+  estado: string;
   vagas: CompiladoVaga[];
   requisitos: string;
   isPcd: boolean;
@@ -26,6 +27,8 @@ export interface CompiladoData {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
   };
+  // Computed field for backward compatibility
+  get local(): string;
 }
 
 interface CompiladoFormProps {
@@ -199,15 +202,33 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
       </div>
 
       {/* Local */}
-      <div>
-        <Label htmlFor="local">Local *</Label>
-        <Input
-          id="local"
-          placeholder="Ex: Arujá - SP"
-          value={data.local}
-          onChange={(e) => updateData('local', e.target.value)}
-          className="mt-1"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="sm:col-span-2">
+          <Label htmlFor="cidade">Cidade *</Label>
+          <Input
+            id="cidade"
+            placeholder="Ex: Arujá"
+            value={data.cidade}
+            onChange={(e) => updateData('cidade', e.target.value)}
+            className="mt-1"
+          />
+        </div>
+        <div>
+          <Label htmlFor="estado">Estado * (Sigla)</Label>
+          <Input
+            id="estado"
+            placeholder="Ex: SP"
+            value={data.estado}
+            onChange={(e) => {
+              const value = e.target.value.toUpperCase();
+              if (value.length <= 2) {
+                updateData('estado', value);
+              }
+            }}
+            maxLength={2}
+            className="mt-1 uppercase"
+          />
+        </div>
       </div>
 
       {/* Vagas */}

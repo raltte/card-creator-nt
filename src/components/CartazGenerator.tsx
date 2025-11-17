@@ -16,7 +16,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 export interface CartazData {
   image?: File | string;
   cargo: string;
-  local: string;
+  cidade: string;
+  estado: string;
   codigo: string;
   tipoContrato: string;
   requisitos: string;
@@ -26,6 +27,8 @@ export interface CartazData {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
   };
+  // Computed field for backward compatibility
+  get local(): string;
 }
 
 export const CartazGenerator = () => {
@@ -35,7 +38,8 @@ export const CartazGenerator = () => {
   const [cartazData, setCartazData] = useState<CartazData>({
     image: undefined,
     cargo: "",
-    local: "",
+    cidade: "",
+    estado: "",
     codigo: "",
     tipoContrato: "Efetivo",
     requisitos: "",
@@ -44,12 +48,16 @@ export const CartazGenerator = () => {
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
+    },
+    get local() {
+      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
     }
   });
 
   const [compiladoData, setCompiladoData] = useState<CompiladoData>({
     image: undefined,
-    local: "",
+    cidade: "",
+    estado: "",
     vagas: [{ codigo: '', cargo: '' }],
     requisitos: "",
     isPcd: false,
@@ -57,6 +65,9 @@ export const CartazGenerator = () => {
     contato: {
       tipo: 'site',
       valor: "novotemporh.com.br"
+    },
+    get local() {
+      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
     }
   });
 

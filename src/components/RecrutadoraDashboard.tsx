@@ -32,12 +32,16 @@ export const RecrutadoraDashboard = () => {
   });
   const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
     image: '',
-    local: '',
+    cidade: '',
+    estado: '',
     vagas: [{ codigo: '', cargo: '' }],
     requisitos: '',
     isPcd: false,
     clientTemplate: 'padrao',
-    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
+    contato: { tipo: 'site', valor: 'novotemporh.com.br' },
+    get local() {
+      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+    }
   });
 
 
@@ -51,7 +55,7 @@ export const RecrutadoraDashboard = () => {
           cargo: dados.nomeVaga,
           tipoContrato: dados.tipoContrato,
           modeloCartaz: tipoCartaz === 'compilado' ? `compilado-${modeloSelecionado}` : modeloSelecionado,
-          local: dados.cidadeEstado,
+          local: `${dados.cidade} - ${dados.estado}`,
           contato: dados.captacaoCurriculo === 'whatsapp' 
             ? { tipo: 'whatsapp', valor: dados.whatsappNumber || '' }
             : dados.captacaoCurriculo === 'email'
@@ -180,17 +184,21 @@ export const RecrutadoraDashboard = () => {
                         data={{
                           image: dadosIndividual.image || '',
                           cargo: dadosIndividual.nomeVaga || '',
-                          local: dadosIndividual.cidadeEstado || '',
+                          cidade: dadosIndividual.cidade || '',
+                          estado: dadosIndividual.estado || '',
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: false,
+                          isPcd: dadosIndividual.isPCD || false,
                           clientTemplate: 'padrao',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
                             : dadosIndividual.captacaoCurriculo === 'email'
                             ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br' },
+                          get local() {
+                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+                          }
                         }}
                       />
                     ) : modeloSelecionado === 'weg' ? (
@@ -198,17 +206,21 @@ export const RecrutadoraDashboard = () => {
                         data={{
                           image: dadosIndividual.image || '',
                           cargo: dadosIndividual.nomeVaga || '',
-                          local: dadosIndividual.cidadeEstado || '',
+                          cidade: dadosIndividual.cidade || '',
+                          estado: dadosIndividual.estado || '',
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: false,
+                          isPcd: dadosIndividual.isPCD || false,
                           clientTemplate: 'weg',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
                             : dadosIndividual.captacaoCurriculo === 'email'
                             ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br' },
+                          get local() {
+                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+                          }
                         }}
                       />
                     ) : (
@@ -216,17 +228,21 @@ export const RecrutadoraDashboard = () => {
                         data={{
                           image: dadosIndividual.image || '',
                           cargo: dadosIndividual.nomeVaga || '',
-                          local: dadosIndividual.cidadeEstado || '',
+                          cidade: dadosIndividual.cidade || '',
+                          estado: dadosIndividual.estado || '',
                           codigo: dadosIndividual.codigoPS || '',
                           tipoContrato: dadosIndividual.tipoContrato || '',
                           requisitos: '',
-                          isPcd: false,
+                          isPcd: dadosIndividual.isPCD || false,
                           clientTemplate: 'marisa',
                           contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
                             ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
                             : dadosIndividual.captacaoCurriculo === 'email'
                             ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br/marisa' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br/marisa' },
+                          get local() {
+                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+                          }
                         }}
                       />
                     )}
