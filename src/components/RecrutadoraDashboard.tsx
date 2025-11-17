@@ -155,9 +155,9 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-3'}>
                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
-                    <TabsTrigger value="weg">WEG</TabsTrigger>
+                    {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
                   </TabsList>
                 </Tabs>
