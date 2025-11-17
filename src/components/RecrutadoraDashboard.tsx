@@ -202,7 +202,11 @@ export const RecrutadoraDashboard = () => {
                           requisitos: '',
                           isPcd: false,
                           clientTemplate: 'marisa',
-                          contato: { tipo: 'site', valor: 'novotemporh.com.br/marisa' }
+                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
+                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
+                            : dadosIndividual.captacaoCurriculo === 'email'
+                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
+                            : { tipo: 'site', valor: 'novotemporh.com.br/marisa' }
                         }}
                       />
                     )}
