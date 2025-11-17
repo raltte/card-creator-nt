@@ -48,8 +48,8 @@ serve(async (req) => {
     console.log('Solicitação criada:', solicitacao);
 
     // Gerar link de finalização
-    const baseUrl = Deno.env.get('SUPABASE_URL')?.replace('/supabase', '') || '';
-    const finalizacaoUrl = `${baseUrl}/finalizar/${solicitacao.id}`;
+    const appUrl = Deno.env.get('APP_URL') || 'http://localhost:5173';
+    const finalizacaoUrl = `${appUrl}/finalizar/${solicitacao.id}`;
 
     // Enviar para Monday.com
     const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
