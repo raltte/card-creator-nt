@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.finalizar-cartaz]
 verify_jwt = false
+
+[functions.atualizar-link-monday]
+verify_jwt = false
