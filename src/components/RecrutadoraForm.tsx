@@ -22,7 +22,7 @@ export interface RecrutadoraData {
   setorAtuacao: string;
   emailSolicitante: string;
   sugestaoImagem?: string;
-  isPCD?: boolean;
+  isPcd?: boolean;
 }
 
 interface RecrutadoraFormProps {
@@ -50,7 +50,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     setorAtuacao: "",
     emailSolicitante: "",
     sugestaoImagem: "",
-    isPCD: false
+    isPcd: false
   });
 
   const formData = isControlled ? externalData : internalFormData;
@@ -206,8 +206,8 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
           </p>
         </div>
         <Switch
-          checked={formData.isPCD}
-          onCheckedChange={(checked) => updateFormData('isPCD', checked)}
+          checked={formData.isPcd}
+          onCheckedChange={(checked) => updateFormData('isPcd', checked)}
         />
       </div>
 
