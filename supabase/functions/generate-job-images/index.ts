@@ -11,15 +11,15 @@ serve(async (req) => {
   }
 
   try {
-    const { jobTitle, sector, contractType, requirements, imageSuggestion } = await req.json();
+    const { jobTitle, sector, contractType, requirements, imageSuggestion, clientTemplate } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY não configurada');
     }
 
-    // Gerar 3 imagens com prompts diferentes baseados no setor, vaga e sugestão do usuário
-    const prompts = generateImagePrompts(jobTitle, sector, contractType, requirements, imageSuggestion);
+    // Gerar 3 imagens com prompts diferentes baseados no setor, vaga, sugestão do usuário e template do cliente
+    const prompts = generateImagePrompts(jobTitle, sector, contractType, requirements, imageSuggestion, clientTemplate);
     const imagePromises = prompts.map(async (prompt) => {
       const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
@@ -66,10 +66,34 @@ serve(async (req) => {
   }
 });
 
-function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string): string[] {
+function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string, clientTemplate?: string): string[] {
   const baseStyle = "Professional portrait photo, high quality, corporate style, bright lighting, clean background";
   
-  // Se houver sugestão do usuário, priorizá-la
+  // Prompts específicos para Marisa
+  if (clientTemplate === 'marisa') {
+    const marisaStyle = "Professional photo in Marisa retail store environment, modern fashion retail setting, bright lighting, clothing racks and fashion displays in background";
+    const marisaPinkAccent = "wearing professional attire with at least one pink clothing item or accessory (pink shirt, pink blouse, pink scarf, pink tie, or pink jacket)";
+    
+    if (imageSuggestion && imageSuggestion.trim()) {
+      return [
+        `${marisaStyle}, ${imageSuggestion}, ${marisaPinkAccent}, Marisa store branding visible, diverse representation, age 25-35, ultra high resolution`,
+        
+        `${marisaStyle}, ${imageSuggestion}, professional working as ${jobTitle}, ${marisaPinkAccent}, friendly smile, engaging with retail environment, age 30-40, ultra high resolution`,
+        
+        `${marisaStyle}, ${imageSuggestion}, ${jobTitle} position, ${marisaPinkAccent}, modern retail workspace, fashion store setting, age 25-45, ultra high resolution`
+      ];
+    }
+    
+    return [
+      `${marisaStyle}, happy diverse professional working as ${jobTitle} in Marisa fashion retail store, ${marisaPinkAccent}, smiling person, age 25-35, modern store environment with clothing displays, ultra high resolution`,
+      
+      `${marisaStyle}, confident professional in ${jobTitle} role at Marisa store, ${marisaPinkAccent}, diverse ethnicity, professional appearance, engaging with fashion retail environment, age 30-40, ultra high resolution`,
+      
+      `${marisaStyle}, skilled worker as ${jobTitle} in Marisa retail setting, ${marisaPinkAccent}, friendly demeanor, fashion store in background with pink branding elements, age 25-45, ultra high resolution`
+    ];
+  }
+  
+  // Se houver sugestão do usuário para outros templates, priorizá-la
   if (imageSuggestion && imageSuggestion.trim()) {
     return [
       `${baseStyle}, ${imageSuggestion}, related to ${jobTitle} position, ultra high resolution`,
