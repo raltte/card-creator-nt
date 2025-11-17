@@ -12,139 +12,22 @@ serve(async (req) => {
   }
 
   try {
-    const { action, cartazData, boardId, groupId } = await req.json();
+    const { action, cartazData } = await req.json();
     const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
 
     if (!mondayApiToken) {
       throw new Error('Monday.com API token não configurado');
     }
 
-    // Se a ação for criar quadro
-    if (action === 'create_board') {
-      console.log('Criando quadro de aprovação de cartazes no Monday.com');
-      
-      const createBoardMutation = `
-        mutation {
-          create_board (
-            board_name: "Aprovação de Cartazes - Novo Tempo RH",
-            board_kind: private,
-            description: "Quadro para aprovação de cartazes de vagas gerados automaticamente"
-          ) {
-            id
-            name
-          }
-        }
-      `;
+    // Usar o quadro fixo configurado
+    const BOARD_ID = "7854209602";
 
-      const boardResponse = await fetch('https://api.monday.com/v2', {
-        method: 'POST',
-        headers: {
-          'Authorization': mondayApiToken,
-          'Content-Type': 'application/json',
-          'API-Version': '2024-01'
-        },
-        body: JSON.stringify({
-          query: createBoardMutation
-        })
-      });
-
-      const boardResult = await boardResponse.json();
-      console.log('Quadro criado:', boardResult);
-
-      if (boardResult.errors) {
-        throw new Error(`Erro ao criar quadro: ${boardResult.errors[0].message}`);
-      }
-
-      const newBoardId = boardResult.data.create_board.id;
-
-      // Criar colunas personalizadas
-      const columns = [
-        {
-          title: "Status",
-          column_type: "color",
-          defaults: `{"labels":{"0":"Pendente","1":"Aprovado","11":"Rejeitado","14":"Em Revisão"}}`
-        },
-        {
-          title: "Código PS",
-          column_type: "text"
-        },
-        {
-          title: "Tipo Contrato",
-          column_type: "dropdown",
-          defaults: `{"labels":{"1":"Efetivo","2":"Temporário","3":"Estágio","4":"PCD","5":"Freelancer"}}`
-        },
-        {
-          title: "Local",
-          column_type: "text"
-        },
-        {
-          title: "Contato",
-          column_type: "text"
-        },
-        {
-          title: "Tipo Contato",
-          column_type: "dropdown",
-          defaults: `{"labels":{"1":"WhatsApp","2":"Email","3":"Site"}}`
-        },
-        {
-          title: "Requisitos",
-          column_type: "long_text"
-        },
-        {
-          title: "Cartaz",
-          column_type: "file"
-        },
-        {
-          title: "Data Criação",
-          column_type: "date"
-        }
-      ];
-
-      // Criar cada coluna
-      for (const column of columns) {
-        const createColumnMutation = `
-          mutation {
-            create_column (
-              board_id: ${newBoardId},
-              title: "${column.title}",
-              column_type: ${column.column_type}
-              ${column.defaults ? `, defaults: "${column.defaults.replace(/"/g, '\\"')}"` : ''}
-            ) {
-              id
-              title
-            }
-          }
-        `;
-
-        await fetch('https://api.monday.com/v2', {
-          method: 'POST',
-          headers: {
-            'Authorization': mondayApiToken,
-            'Content-Type': 'application/json',
-            'API-Version': '2024-01'
-          },
-          body: JSON.stringify({
-            query: createColumnMutation
-          })
-        });
-      }
-
-      return new Response(JSON.stringify({ 
-        success: true, 
-        boardId: newBoardId,
-        message: 'Quadro de aprovação criado com sucesso!'
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Ação de enviar cartaz
     console.log('Enviando cartaz para Monday.com:', cartazData);
 
     // Buscar as colunas e grupos do quadro
     const boardQuery = `
       query {
-        boards (ids: [${boardId}]) {
+        boards (ids: [${BOARD_ID}]) {
           columns {
             id
             title
@@ -182,106 +65,99 @@ serve(async (req) => {
     const columns = boardInfo.data?.boards?.[0]?.columns || [];
     const groups = boardInfo.data?.boards?.[0]?.groups || [];
     
-    // Selecionar grupo baseado no tipo de contrato
-    let selectedGroupId = groupId;
-    if (!selectedGroupId && groups.length > 0) {
-      const tipoContrato = cartazData.tipoContrato?.toLowerCase();
-      const foundGroup = groups.find((group: any) => 
-        group.title.toLowerCase().includes(tipoContrato || '') ||
-        group.title.toLowerCase().includes('vaga') ||
-        group.title.toLowerCase().includes('cartaz')
-      );
-      selectedGroupId = foundGroup?.id || groups[0].id;
-    }
+    // Selecionar o primeiro grupo disponível
+    const selectedGroupId = groups.length > 0 ? groups[0].id : undefined;
     
-    // Mapear valores para as colunas corretas de forma mais robusta
+    // Mapear valores para as colunas corretas
     const columnValues: Record<string, any> = {};
     
     columns.forEach((col: any) => {
-      const colTitle = col.title.toLowerCase().trim();
+      const colId = col.id.toLowerCase().trim();
       
-      switch(colTitle) {
-        case "status":
-        case "situação":
-          if (col.type === "color") {
-            columnValues[col.id] = {"label": "Pendente"};
-          } else if (col.type === "dropdown") {
-            columnValues[col.id] = {"labels": ["Pendente"]};
-          } else {
-            columnValues[col.id] = "Pendente";
-          }
-          break;
-        case "código ps":
-        case "codigo ps":
-        case "código":
-        case "codigo":
+      switch(colId) {
+        // enviar_arquivo__1 - receberá a vaga final em .png (será enviado depois via upload)
+        
+        // texto6__1 - codigo vaga
+        case "texto6__1":
           if (cartazData.codigo) {
             columnValues[col.id] = cartazData.codigo;
           }
           break;
-        case "tipo contrato":
-        case "tipo_contrato":
-        case "contrato":
+          
+        // status0__1 - tipo de cartaz (tradicional, compilado, weg, marisa)
+        case "status0__1":
+          if (cartazData.modeloCartaz) {
+            const tipoMap: Record<string, string> = {
+              "padrao": "tradicional",
+              "marisa": "marisa",
+              "compilado-padrao": "compilado",
+              "compilado-marisa": "compilado"
+            };
+            const tipo = tipoMap[cartazData.modeloCartaz] || "tradicional";
+            if (col.type === "dropdown" || col.type === "color") {
+              columnValues[col.id] = {"labels": [tipo]};
+            } else {
+              columnValues[col.id] = tipo;
+            }
+          }
+          break;
+          
+        // status__1 - tipo de contrato
+        case "status__1":
           if (cartazData.tipoContrato) {
-            if (col.type === "dropdown") {
+            if (col.type === "dropdown" || col.type === "color") {
               columnValues[col.id] = {"labels": [cartazData.tipoContrato]};
             } else {
               columnValues[col.id] = cartazData.tipoContrato;
             }
           }
           break;
-        case "local":
-        case "localização":
-        case "cidade":
+          
+        // texto8__1 - cidade estado
+        case "texto8__1":
           if (cartazData.local) {
             columnValues[col.id] = cartazData.local;
           }
           break;
-        case "contato":
-        case "telefone":
-        case "email":
+          
+        // texto_longo__1 - e-mail whatsapp caso informado
+        case "texto_longo__1":
           if (cartazData.contato?.valor) {
-            columnValues[col.id] = cartazData.contato.valor;
+            const contatoTexto = cartazData.contato.tipo 
+              ? `${cartazData.contato.tipo}: ${cartazData.contato.valor}`
+              : cartazData.contato.valor;
+            columnValues[col.id] = contatoTexto;
           }
           break;
-        case "tipo contato":
-        case "tipo_contato":
-        case "forma contato":
-          if (cartazData.contato?.tipo) {
-            if (col.type === "dropdown") {
-              const tipoMap: Record<string, string> = {
-                "whatsapp": "WhatsApp",
-                "email": "Email", 
-                "site": "Site"
-              };
-              columnValues[col.id] = {"labels": [tipoMap[cartazData.contato.tipo] || cartazData.contato.tipo]};
-            } else {
-              columnValues[col.id] = cartazData.contato.tipo;
-            }
-          }
-          break;
-        case "requisitos":
-        case "descricão":
-        case "descrição":
+          
+        // texto_longo9__1 - requisitos e atividades
+        case "texto_longo9__1":
           if (cartazData.requisitos) {
             columnValues[col.id] = cartazData.requisitos;
+          } else if (cartazData.atividades) {
+            columnValues[col.id] = cartazData.atividades;
+          } else if (cartazData.requisitos && cartazData.atividades) {
+            columnValues[col.id] = `Requisitos: ${cartazData.requisitos}\n\nAtividades: ${cartazData.atividades}`;
           }
           break;
-        case "data criação":
-        case "data_criacao":
-        case "created_at":
-        case "data":
-          if (col.type === "date") {
-            columnValues[col.id] = {"date": new Date().toISOString().split('T')[0]};
-          } else {
-            columnValues[col.id] = new Date().toLocaleDateString('pt-BR');
+          
+        // link__1 - link da vaga
+        case "link__1":
+          if (cartazData.linkVaga) {
+            columnValues[col.id] = {
+              "url": cartazData.linkVaga,
+              "text": "Link da Vaga"
+            };
           }
           break;
-        case "cargo":
-        case "vaga":
-        case "posição":
-          if (cartazData.cargo) {
-            columnValues[col.id] = cartazData.cargo;
+          
+        // e_mail__1 - e-mail solicitante
+        case "e_mail__1":
+          if (cartazData.emailSolicitante) {
+            columnValues[col.id] = {
+              "email": cartazData.emailSolicitante,
+              "text": cartazData.emailSolicitante
+            };
           }
           break;
       }
@@ -293,9 +169,9 @@ serve(async (req) => {
     const mutation = `
       mutation {
         create_item (
-          board_id: ${boardId},
+          board_id: ${BOARD_ID},
           ${selectedGroupId ? `group_id: "${selectedGroupId}",` : ''}
-          item_name: "${cartazData.cargo} - ${cartazData.local}",
+          item_name: "${cartazData.cargo || 'Cartaz'} - ${cartazData.local || ''}",
           column_values: ${JSON.stringify(JSON.stringify(columnValues))}
         ) {
           id
@@ -340,8 +216,8 @@ serve(async (req) => {
           imageBlob = await imageResponse.blob();
         }
 
-        // Encontrar a coluna de arquivo
-        const fileColumn = columns.find((col: any) => col.title === "Cartaz" || col.type === "file");
+        // Encontrar a coluna de arquivo (enviar_arquivo__1)
+        const fileColumn = columns.find((col: any) => col.id === "enviar_arquivo__1" || col.type === "file");
         
         if (fileColumn) {
           const uploadMutation = `
