@@ -232,13 +232,13 @@ export const ImageFraming = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-semibold text-nt-dark mb-2">
+        <h2 className="text-xl sm:text-2xl font-semibold text-nt-dark mb-2">
           Ajustar Enquadramento
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Arraste a imagem e ajuste o zoom para posicionar o elemento principal no centro
         </p>
       </div>
@@ -263,7 +263,7 @@ export const ImageFraming = ({
 
       {/* Controles */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 sm:p-6">
           <div className="space-y-4">
             {/* Zoom */}
             <div>
@@ -283,7 +283,7 @@ export const ImageFraming = ({
             </div>
 
             {/* Instruções */}
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               <p>• Arraste a imagem para reposicionar</p>
               <p>• Use o zoom para ajustar o tamanho</p>
               <p>• As linhas verdes mostram a regra dos terços para melhor composição</p>
@@ -293,24 +293,25 @@ export const ImageFraming = ({
       </Card>
 
       {/* Botões de ação */}
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-center gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
           <Button
             variant="outline"
             onClick={resetPosition}
+            className="w-full sm:w-auto"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Resetar Posição
           </Button>
           <Button
             onClick={handleComplete}
-            className="bg-nt-light hover:bg-nt-light/90"
+            className="w-full sm:w-auto bg-nt-light hover:bg-nt-light/90"
           >
             Aplicar Enquadramento
           </Button>
         </div>
         <div className="flex justify-center">
-          <Button variant="ghost" onClick={onBack}>
+          <Button variant="ghost" onClick={onBack} className="w-full sm:w-auto">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar à Seleção de Imagem
           </Button>
