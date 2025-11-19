@@ -91,7 +91,8 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
 
     // Badge local e PCD - posicionar após a imagem do texto com margem
     let y = topOffset + 120 + textoHeight + 40;
-    if (data.local) {
+    const local = data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : '';
+    if (local) {
       ctx.fillStyle = '#E5007E';
       ctx.beginPath();
       ctx.roundRect(64, y, 200, 48, 24);
@@ -100,7 +101,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(data.local, 164, y + 30);
+      ctx.fillText(local, 164, y + 30);
       ctx.textAlign = 'left';
       
       // Badge PCD ao lado do local (se for vaga PCD)
@@ -120,7 +121,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     }
 
     // Vagas - Fonte 30px com espaçamento adequado
-    y += data.local ? 120 : 40;
+    y += local ? 120 : 40;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#E5007E';
