@@ -67,68 +67,111 @@ serve(async (req) => {
 });
 
 function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string, clientTemplate?: string): string[] {
-  const baseStyle = "Professional portrait photo, high quality, corporate style, bright lighting, clean background";
-  
+  // Contextos detalhados por setor com ambientes e características específicas
+  const sectorDetails: Record<string, { environment: string, tools: string, style: string }> = {
+    "Produção": {
+      environment: "industrial factory floor, production line, manufacturing facility with machinery",
+      tools: "safety helmet, safety vest, work gloves, manufacturing equipment",
+      style: "industrial setting, bright overhead lighting, professional safety attire"
+    },
+    "Administração": {
+      environment: "modern corporate office, desk with computer, organized workspace",
+      tools: "laptop, documents, office supplies, organized files",
+      style: "clean professional office, natural window lighting, business casual attire"
+    },
+    "Vendas": {
+      environment: "retail store, sales floor, customer interaction area, product displays",
+      tools: "tablet or smartphone, product samples, presentation materials",
+      style: "dynamic sales environment, bright retail lighting, professional but approachable attire"
+    },
+    "Tecnologia": {
+      environment: "modern tech office, multiple monitors, collaborative workspace, tech lab",
+      tools: "computer, coding screens, tech equipment, innovative tools",
+      style: "contemporary tech setting, ambient lighting, casual professional tech attire"
+    },
+    "Saúde": {
+      environment: "healthcare facility, medical office, clinical setting, hospital environment",
+      tools: "medical equipment, stethoscope, clipboard, healthcare tools",
+      style: "clean clinical setting, professional medical attire, bright clinical lighting"
+    },
+    "Educação": {
+      environment: "classroom, educational space, teaching environment, learning area",
+      tools: "books, educational materials, whiteboard, teaching resources",
+      style: "educational setting, natural lighting, professional educator attire"
+    },
+    "Logística": {
+      environment: "warehouse, distribution center, loading dock, inventory area",
+      tools: "forklift, scanner, pallet jack, logistics equipment",
+      style: "large warehouse space, industrial lighting, work uniform with safety gear"
+    },
+    "Atendimento ao Cliente": {
+      environment: "customer service desk, reception area, call center, service counter",
+      tools: "headset, computer, phone, customer service tools",
+      style: "welcoming service environment, professional friendly appearance"
+    },
+    "Limpeza": {
+      environment: "professional facility, clean workspace, maintenance area",
+      tools: "professional cleaning equipment, organized supplies",
+      style: "clean professional setting, work uniform, bright lighting"
+    },
+    "Manutenção": {
+      environment: "technical workshop, maintenance facility, equipment room",
+      tools: "tools, technical equipment, maintenance gear",
+      style: "technical workspace, work uniform, industrial lighting"
+    }
+  };
+
+  const details = sectorDetails[sector] || {
+    environment: "professional workplace, modern office setting",
+    tools: "work equipment, professional tools",
+    style: "professional environment, business attire"
+  };
+
   // Prompts específicos para Marisa
   if (clientTemplate === 'marisa') {
-    const marisaStyle = "Professional photo in Marisa retail store environment, modern fashion retail setting, bright lighting, clothing racks and fashion displays in background";
-    const marisaPinkAccent = "wearing professional attire with at least one pink clothing item or accessory (pink shirt, pink blouse, pink scarf, pink tie, or pink jacket)";
+    const marisaBase = "Professional photo in Marisa fashion retail store, modern retail environment with clothing displays and fashion merchandise";
+    const marisaPink = "wearing professional attire with visible pink clothing item or accessory (pink blouse, pink shirt, pink scarf, or pink jacket)";
     
     if (imageSuggestion && imageSuggestion.trim()) {
       return [
-        `${marisaStyle}, ${imageSuggestion}, ${marisaPinkAccent}, Marisa store branding visible, diverse representation, age 25-35, ultra high resolution`,
+        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian person working as ${jobTitle}, friendly smile, Marisa branding elements visible, diverse representation, age 25-35, high quality portrait, ultra high resolution`,
         
-        `${marisaStyle}, ${imageSuggestion}, professional working as ${jobTitle}, ${marisaPinkAccent}, friendly smile, engaging with retail environment, age 30-40, ultra high resolution`,
+        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian professional in ${jobTitle} role, interacting with fashion retail environment, warm welcoming expression, age 30-40, photorealistic, ultra high resolution`,
         
-        `${marisaStyle}, ${imageSuggestion}, ${jobTitle} position, ${marisaPinkAccent}, modern retail workspace, fashion store setting, age 25-45, ultra high resolution`
+        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian ${jobTitle} professional, fashion store background with pink brand colors, confident demeanor, age 25-45, professional portrait, ultra high resolution`
       ];
     }
     
     return [
-      `${marisaStyle}, happy diverse professional working as ${jobTitle} in Marisa fashion retail store, ${marisaPinkAccent}, smiling person, age 25-35, modern store environment with clothing displays, ultra high resolution`,
+      `${marisaBase}, happy Brazilian professional as ${jobTitle}, ${marisaPink}, smiling warmly, engaging with customers, Marisa store displays visible, diverse representation, age 25-35, photorealistic portrait, ultra high resolution`,
       
-      `${marisaStyle}, confident professional in ${jobTitle} role at Marisa store, ${marisaPinkAccent}, diverse ethnicity, professional appearance, engaging with fashion retail environment, age 30-40, ultra high resolution`,
+      `${marisaBase}, confident Brazilian ${jobTitle}, ${marisaPink}, organizing fashion displays, friendly professional demeanor, modern retail space, age 30-40, high quality photo, ultra high resolution`,
       
-      `${marisaStyle}, skilled worker as ${jobTitle} in Marisa retail setting, ${marisaPinkAccent}, friendly demeanor, fashion store in background with pink branding elements, age 25-45, ultra high resolution`
+      `${marisaBase}, skilled Brazilian retail worker as ${jobTitle}, ${marisaPink}, helping customers, fashion merchandise background, welcoming smile, age 25-45, professional portrait, ultra high resolution`
     ];
   }
-  
-  // Se houver sugestão do usuário para outros templates, priorizá-la
+
+  // Para outros templates: priorizar sugestão da recrutadora
   if (imageSuggestion && imageSuggestion.trim()) {
     return [
-      `${baseStyle}, ${imageSuggestion}, related to ${jobTitle} position, ultra high resolution`,
+      `Professional portrait photo, Brazilian person working as ${jobTitle}, ${imageSuggestion}, ${details.environment}, realistic ${details.tools} visible, ${details.style}, diverse representation, age 25-35, natural expression, high quality, ultra high resolution`,
       
-      `${baseStyle}, ${imageSuggestion}, professional working as ${jobTitle}, diverse representation, ultra high resolution`,
+      `High quality portrait, Brazilian professional in ${jobTitle} position, ${imageSuggestion}, realistic workplace setting: ${details.environment}, using ${details.tools}, ${details.style}, confident demeanor, age 30-40, photorealistic, ultra high resolution`,
       
-      `${baseStyle}, ${imageSuggestion}, workplace setting for ${jobTitle} role, modern environment, ultra high resolution`
+      `Professional photo, Brazilian worker as ${jobTitle}, ${imageSuggestion}, authentic ${details.environment}, relevant ${details.tools} in scene, ${details.style}, friendly approachable look, age 25-45, realistic portrait, ultra high resolution`
     ];
   }
-  
-  // Caso contrário, usar contexto baseado no setor
-  const sectorContexts: Record<string, string> = {
-    "Produção": "industrial warehouse or factory setting with safety equipment",
-    "Administração": "modern office environment with computer and documents",
-    "Vendas": "professional sales environment with products or meeting room",
-    "Tecnologia": "tech office with computers, monitors, and modern workspace",
-    "Saúde": "healthcare facility or medical office setting",
-    "Educação": "classroom or educational environment",
-    "Financeiro": "corporate office with financial documents and charts",
-    "Recursos Humanos": "office meeting room or HR department setting",
-    "Logística": "warehouse or distribution center environment",
-    "Marketing": "creative office space with marketing materials",
-    "Atendimento ao Cliente": "customer service desk or call center",
-    "Segurança": "security checkpoint or monitoring station",
-    "Limpeza": "professional cleaning in corporate environment",
-    "Manutenção": "maintenance workshop or technical facility"
-  };
 
-  const context = sectorContexts[sector] || "professional office environment";
-  
+  // Prompts padrão sem sugestão: mais detalhados e específicos
+  const requirementsContext = requirements.length > 0 
+    ? `specialized in: ${requirements.slice(0, 2).join(', ')}` 
+    : `experienced professional`;
+
   return [
-    `${baseStyle}, happy diverse professional working as ${jobTitle} in ${context}, smiling person, age 25-35, wearing appropriate work attire, holding relevant work tools or equipment, ultra high resolution`,
+    `Professional portrait, Brazilian person working as ${jobTitle} in ${sector} sector, ${requirementsContext}, realistic ${details.environment}, actively using ${details.tools}, ${details.style}, warm smile, diverse representation, age 25-35, photorealistic, ultra high resolution`,
     
-    `${baseStyle}, confident professional in ${jobTitle} role, ${context}, diverse ethnicity, professional appearance, engaging with work environment, modern workplace, age 30-40, ultra high resolution`,
+    `High quality photo, confident Brazilian ${jobTitle} professional in ${sector}, ${requirementsContext}, authentic workplace: ${details.environment}, ${details.tools} visible in hands or nearby, ${details.style}, professional demeanor, age 30-40, realistic portrait, ultra high resolution`,
     
-    `${baseStyle}, skilled worker as ${jobTitle}, ${context}, friendly demeanor, professional uniform or business attire, workplace in background, diverse representation, age 25-45, ultra high resolution`
+    `Realistic portrait, skilled Brazilian worker as ${jobTitle} in ${sector} field, ${requirementsContext}, genuine ${details.environment}, working with ${details.tools}, ${details.style}, friendly focused expression, age 25-45, photorealistic, ultra high resolution`
   ];
 }
