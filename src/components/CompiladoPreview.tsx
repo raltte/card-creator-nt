@@ -83,7 +83,8 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
 
     // Badge local e PCD - posicionar após o título com margem
     let y = topOffset + 340;
-    if (data.local) {
+    const local = data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : '';
+    if (local) {
       ctx.fillStyle = '#20CE90';
       ctx.beginPath();
       ctx.roundRect(64, y, 200, 48, 24);
@@ -92,7 +93,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(data.local, 164, y + 30);
+      ctx.fillText(local, 164, y + 30);
       ctx.textAlign = 'left';
       
       // Badge PCD ao lado do local (se for vaga PCD)
@@ -112,7 +113,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     }
 
     // Vagas - Fonte aumentada para 30px com espaçamento adequado após local
-    y += data.local ? 120 : 0;
+    y += local ? 120 : 0;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';
