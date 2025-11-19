@@ -72,7 +72,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
 
 
   const adicionarRequisito = () => {
-    if (novoRequisito.trim() && formData.requisitos.length < 3) {
+    if (novoRequisito.trim() && formData.requisitos.length < 5) {
       updateFormData('requisitos', [...formData.requisitos, novoRequisito.trim()]);
       setNovoRequisito("");
     }
@@ -280,11 +280,11 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
 
       {/* Descrição será gerada automaticamente baseada nos requisitos */}
 
-      {/* Requisitos */}
+      {/* Requisitos e Atividades */}
       <div>
-        <Label className="text-base font-semibold">Requisitos * (máximo 3)</Label>
+        <Label className="text-base font-semibold">Requisitos e Atividades * (máximo 5)</Label>
         <p className="text-xs text-muted-foreground mb-2">
-          Selecione no máximo três tópicos essenciais (curtos)
+          Selecione no máximo cinco tópicos essenciais (curtos)
         </p>
         
         <div className="space-y-2">
@@ -301,7 +301,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
             </div>
           ))}
           
-          {formData.requisitos.length < 3 && (
+          {formData.requisitos.length < 5 && (
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input

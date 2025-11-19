@@ -275,20 +275,20 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
         ))}
       </div>
 
-      {/* Requisitos */}
+      {/* Requisitos e Atividades */}
       <div>
-        <Label htmlFor="requisitos">Requisitos *</Label>
+        <Label htmlFor="requisitos">Requisitos e Atividades *</Label>
         <Textarea
           id="requisitos"
-          placeholder="• Ensino Médio Completo;&#10;• Disponibilidade para atuar em turnos."
+          placeholder="• Ensino Médio Completo;&#10;• Disponibilidade para atuar em turnos;&#10;• Experiência em atendimento ao cliente."
           value={data.requisitos}
           onChange={(e) => updateData('requisitos', e.target.value)}
-          maxLength={180}
-          rows={4}
+          maxLength={250}
+          rows={5}
           className="mt-1 resize-none"
         />
         <div className="text-xs text-muted-foreground mt-1">
-          {data.requisitos.length}/180 caracteres
+          {data.requisitos.length}/250 caracteres
         </div>
       </div>
 
