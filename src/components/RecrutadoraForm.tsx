@@ -309,7 +309,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
                   value={novoRequisito}
                   onChange={(e) => setNovoRequisito(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && adicionarRequisito()}
-                  maxLength={50}
+                  maxLength={60}
                 />
                 <Button
                   variant="outline"
@@ -320,7 +320,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Máximo 50 caracteres por requisito para garantir que tudo fique visível no cartaz
+                Máximo 60 caracteres por requisito para garantir que tudo fique visível no cartaz
               </p>
             </div>
           )}
