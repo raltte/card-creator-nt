@@ -67,227 +67,338 @@ serve(async (req) => {
 });
 
 function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string, clientTemplate?: string): string[] {
-  // Análise inteligente do cargo para determinar contexto
-  const jobContext = analyzeJobContext(jobTitle);
+  // Determinar ambiente baseado no cargo e setor
+  const workContext = determineWorkContext(jobTitle, sector);
   
-  // Contextos detalhados por setor com ambientes e características específicas
-  const sectorDetails: Record<string, { environment: string, tools: string, style: string, activities: string[] }> = {
-    "Produção": {
-      environment: "industrial factory floor, production line, manufacturing facility with machinery",
-      tools: "safety helmet, safety vest, work gloves, manufacturing equipment",
-      style: "industrial setting, bright overhead lighting, professional safety attire",
-      activities: ["operating machinery", "quality inspection", "assembling products", "monitoring production line"]
-    },
-    "Indústria": {
-      environment: "large industrial plant, heavy machinery area, factory floor with conveyor belts, steel and metal structures",
-      tools: "hard hat, safety goggles, industrial gloves, heavy equipment, control panels",
-      style: "industrial manufacturing setting, metal structures, safety equipment prominent, blue collar work environment",
-      activities: ["operating industrial equipment", "welding or metalwork", "machinery maintenance", "quality control inspection", "supervising production"]
-    },
-    "Administração": {
-      environment: "modern corporate office, desk with computer, organized workspace",
-      tools: "laptop, documents, office supplies, organized files",
-      style: "clean professional office, natural window lighting, business casual attire",
-      activities: ["working on computer", "organizing documents", "attending meeting", "phone call"]
-    },
-    "Vendas": {
-      environment: "retail store, sales floor, customer interaction area, product displays",
-      tools: "tablet or smartphone, product samples, presentation materials",
-      style: "dynamic sales environment, bright retail lighting, professional but approachable attire",
-      activities: ["presenting products", "helping customer", "demonstrating items", "closing sale"]
-    },
-    "Tecnologia": {
-      environment: "modern tech office, multiple monitors, collaborative workspace, tech lab",
-      tools: "computer, coding screens, tech equipment, innovative tools",
-      style: "contemporary tech setting, ambient lighting, casual professional tech attire",
-      activities: ["coding on computer", "team collaboration", "debugging software", "tech meeting"]
-    },
-    "Saúde": {
-      environment: "healthcare facility, medical office, clinical setting, hospital environment",
-      tools: "medical equipment, stethoscope, clipboard, healthcare tools",
-      style: "clean clinical setting, professional medical attire, bright clinical lighting",
-      activities: ["patient care", "medical consultation", "health assessment", "clinical procedure"]
-    },
-    "Educação": {
-      environment: "classroom, educational space, teaching environment, learning area",
-      tools: "books, educational materials, whiteboard, teaching resources",
-      style: "educational setting, natural lighting, professional educator attire",
-      activities: ["teaching students", "presenting lesson", "helping student", "classroom interaction"]
-    },
-    "Logística": {
-      environment: "warehouse, distribution center, loading dock, inventory area",
-      tools: "forklift, scanner, pallet jack, logistics equipment",
-      style: "large warehouse space, industrial lighting, work uniform with safety gear",
-      activities: ["organizing inventory", "loading packages", "scanning items", "operating forklift"]
-    },
-    "Atendimento ao Cliente": {
-      environment: "customer service desk, reception area, call center, service counter",
-      tools: "headset, computer, phone, customer service tools",
-      style: "welcoming service environment, professional friendly appearance",
-      activities: ["assisting customer", "phone support", "solving problem", "greeting client"]
-    },
-    "Limpeza": {
-      environment: "professional facility, clean workspace, maintenance area",
-      tools: "professional cleaning equipment, organized supplies",
-      style: "clean professional setting, work uniform, bright lighting",
-      activities: ["cleaning surfaces", "organizing space", "maintenance work", "sanitation duties"]
-    },
-    "Manutenção": {
-      environment: "technical workshop, maintenance facility, equipment room",
-      tools: "tools, technical equipment, maintenance gear",
-      style: "technical workspace, work uniform, industrial lighting",
-      activities: ["repairing equipment", "technical inspection", "using power tools", "preventive maintenance"]
-    }
-  };
-
-  const details = sectorDetails[sector] || {
-    environment: "professional workplace, modern office setting",
-    tools: "work equipment, professional tools",
-    style: "professional environment, business attire",
-    activities: ["working professionally", "collaborating with team", "focused on task"]
-  };
-
-  // Selecionar atividade aleatória para variação
-  const randomActivity = (activities: string[]) => activities[Math.floor(Math.random() * activities.length)];
-
-  // Prompts específicos para Marisa
+  // Base do prompt - NUNCA mencionar escritório a menos que seja explicitamente administrativo
+  const basePrompt = `Professional workplace photo, Brazilian worker, realistic lighting, high quality portrait, ultra high resolution`;
+  
+  // Prompts específicos para Marisa (varejo/loja)
   if (clientTemplate === 'marisa') {
-    const marisaBase = "Professional photo in Marisa fashion retail store, modern retail environment with clothing displays and fashion merchandise";
-    const marisaPink = "wearing professional attire with visible pink clothing item or accessory (pink blouse, pink shirt, pink scarf, or pink jacket)";
+    const marisaEnvironment = "inside Marisa fashion retail store with clothing racks and displays visible";
+    const marisaPink = "wearing pink clothing item (pink blouse, pink shirt, or pink vest)";
     
     if (imageSuggestion && imageSuggestion.trim()) {
       return [
-        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian person working as ${jobTitle}, ${jobContext.action}, friendly smile, Marisa branding elements visible, diverse representation, age 25-35, high quality portrait, ultra high resolution`,
-        
-        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian professional in ${jobTitle} role, ${jobContext.alternateAction}, warm welcoming expression, age 30-40, photorealistic, ultra high resolution`,
-        
-        `${marisaBase}, ${imageSuggestion}, ${marisaPink}, Brazilian ${jobTitle} professional, ${jobContext.setting}, confident demeanor, age 25-45, professional portrait, ultra high resolution`
+        `${basePrompt}, ${marisaEnvironment}, Brazilian ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.action}, friendly expression, age 25-35`,
+        `${basePrompt}, ${marisaEnvironment}, Brazilian professional as ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.alternateAction}, age 30-40`,
+        `${basePrompt}, ${marisaEnvironment}, Brazilian retail worker ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.setting}, age 25-45`
       ];
     }
     
     return [
-      `${marisaBase}, happy Brazilian professional as ${jobTitle}, ${marisaPink}, ${jobContext.action}, Marisa store displays visible, diverse representation, age 25-35, photorealistic portrait, ultra high resolution`,
-      
-      `${marisaBase}, confident Brazilian ${jobTitle}, ${marisaPink}, ${jobContext.alternateAction}, modern retail space, age 30-40, high quality photo, ultra high resolution`,
-      
-      `${marisaBase}, skilled Brazilian retail worker as ${jobTitle}, ${marisaPink}, ${jobContext.setting}, welcoming smile, age 25-45, professional portrait, ultra high resolution`
+      `${basePrompt}, ${marisaEnvironment}, Brazilian ${jobTitle}, ${marisaPink}, ${workContext.action}, helping customer or organizing products, friendly smile, age 25-35`,
+      `${basePrompt}, ${marisaEnvironment}, Brazilian professional as ${jobTitle}, ${marisaPink}, ${workContext.alternateAction}, near clothing displays, age 30-40`,
+      `${basePrompt}, ${marisaEnvironment}, Brazilian retail worker ${jobTitle}, ${marisaPink}, ${workContext.setting}, welcoming expression, age 25-45`
     ];
   }
 
-  // Para outros templates: priorizar sugestão da recrutadora
+  // Priorizar sugestão da recrutadora se fornecida
   if (imageSuggestion && imageSuggestion.trim()) {
     return [
-      `Professional portrait photo, Brazilian person working as ${jobTitle}, ${imageSuggestion}, ${details.environment}, ${randomActivity(details.activities)}, realistic ${details.tools} visible, ${details.style}, diverse representation, age 25-35, natural expression, high quality, ultra high resolution`,
-      
-      `High quality portrait, Brazilian professional in ${jobTitle} position, ${imageSuggestion}, realistic workplace setting: ${details.environment}, ${randomActivity(details.activities)}, ${details.style}, confident demeanor, age 30-40, photorealistic, ultra high resolution`,
-      
-      `Professional photo, Brazilian worker as ${jobTitle}, ${imageSuggestion}, authentic ${details.environment}, ${randomActivity(details.activities)}, ${details.style}, friendly approachable look, age 25-45, realistic portrait, ultra high resolution`
+      `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle}, ${imageSuggestion}, ${workContext.action}, wearing ${workContext.attire}, using ${workContext.tools}, age 25-35`,
+      `${basePrompt}, ${workContext.environment}, Brazilian professional as ${jobTitle}, ${imageSuggestion}, ${workContext.alternateAction}, ${workContext.attire}, age 30-40`,
+      `${basePrompt}, ${workContext.environment}, Brazilian worker ${jobTitle}, ${imageSuggestion}, ${workContext.setting}, age 25-45`
     ];
   }
 
-  // Prompts padrão sem sugestão: mais detalhados e específicos ao cargo
-  const requirementsContext = requirements.length > 0 
-    ? `specialized in: ${requirements.slice(0, 2).join(', ')}` 
-    : `experienced professional`;
-
+  // Prompts padrão baseados no contexto do trabalho
   return [
-    `Professional portrait, Brazilian person working as ${jobTitle} in ${sector} sector, ${jobContext.action}, ${requirementsContext}, realistic ${details.environment}, actively using ${details.tools}, ${details.style}, warm smile, diverse representation, age 25-35, photorealistic, ultra high resolution`,
-    
-    `High quality photo, confident Brazilian ${jobTitle} professional in ${sector}, ${jobContext.alternateAction}, ${requirementsContext}, authentic workplace: ${details.environment}, ${randomActivity(details.activities)}, ${details.style}, professional demeanor, age 30-40, realistic portrait, ultra high resolution`,
-    
-    `Realistic portrait, skilled Brazilian worker as ${jobTitle} in ${sector} field, ${jobContext.setting}, ${requirementsContext}, genuine ${details.environment}, ${randomActivity(details.activities)}, ${details.style}, friendly focused expression, age 25-45, photorealistic, ultra high resolution`
+    `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle} in ${sector} sector, ${workContext.action}, wearing ${workContext.attire}, using ${workContext.tools}, focused expression, age 25-35`,
+    `${basePrompt}, ${workContext.environment}, Brazilian professional working as ${jobTitle}, ${workContext.alternateAction}, ${workContext.attire}, ${workContext.tools} nearby, confident demeanor, age 30-40`,
+    `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle}, ${workContext.setting}, ${workContext.attire}, ${workContext.tools} visible, natural pose, age 25-45`
   ];
 }
 
-// Análise inteligente do cargo para determinar ações e contextos específicos
-function analyzeJobContext(jobTitle: string): { action: string, alternateAction: string, setting: string } {
+// Determina o contexto de trabalho baseado no cargo e setor - CRÍTICO para ambiente correto
+function determineWorkContext(jobTitle: string, sector: string): { 
+  environment: string, 
+  action: string, 
+  alternateAction: string, 
+  setting: string, 
+  attire: string, 
+  tools: string 
+} {
   const jobLower = jobTitle.toLowerCase();
+  const sectorLower = sector.toLowerCase();
   
-  // Cargos de liderança/gestão
-  if (jobLower.includes('gerente') || jobLower.includes('coordenador') || jobLower.includes('supervisor') || jobLower.includes('líder') || jobLower.includes('diretor') || jobLower.includes('chefe')) {
+  // === CARGOS INDUSTRIAIS/PRODUÇÃO - NUNCA ESCRITÓRIO ===
+  if (
+    jobLower.includes('operador') || 
+    jobLower.includes('produção') || 
+    jobLower.includes('montador') || 
+    jobLower.includes('alimentador') ||
+    jobLower.includes('soldador') ||
+    jobLower.includes('torneiro') ||
+    jobLower.includes('fresador') ||
+    jobLower.includes('prensista') ||
+    jobLower.includes('ajudante de produção') ||
+    jobLower.includes('auxiliar de produção') ||
+    sectorLower.includes('produção') ||
+    sectorLower.includes('indústria')
+  ) {
     return {
-      action: "leading team meeting or giving directions to staff",
-      alternateAction: "reviewing reports and making strategic decisions",
-      setting: "in leadership position, overseeing team activities"
+      environment: "inside industrial factory floor with machinery, conveyor belts, and metal structures visible, industrial lighting, NO OFFICE",
+      action: "operating industrial machinery or inspecting products on production line",
+      alternateAction: "checking quality of manufactured parts near conveyor belt",
+      setting: "standing near large industrial equipment on factory floor",
+      attire: "safety helmet, high-visibility vest, safety glasses, work uniform",
+      tools: "industrial machinery, control panels, production equipment"
     };
   }
   
-  // Cargos técnicos/engenharia
-  if (jobLower.includes('técnico') || jobLower.includes('engenheiro') || jobLower.includes('mecânico') || jobLower.includes('eletricista') || jobLower.includes('soldador')) {
+  // === CARGOS DE ESTOQUE/LOGÍSTICA - ARMAZÉM ===
+  if (
+    jobLower.includes('estoquista') || 
+    jobLower.includes('almoxarife') || 
+    jobLower.includes('conferente') ||
+    jobLower.includes('separador') ||
+    jobLower.includes('empilhadeira') ||
+    jobLower.includes('logística') ||
+    jobLower.includes('expedição') ||
+    jobLower.includes('recebimento') ||
+    sectorLower.includes('logística')
+  ) {
     return {
-      action: "performing technical work with specialized equipment",
-      alternateAction: "analyzing technical diagrams or blueprints",
-      setting: "in technical environment with specialized tools and equipment"
+      environment: "inside large warehouse with high shelving racks full of boxes and packages, concrete floor, NO OFFICE",
+      action: "organizing boxes on warehouse shelves or scanning packages with handheld device",
+      alternateAction: "operating forklift or moving pallets in warehouse aisle",
+      setting: "in warehouse surrounded by inventory shelves and cardboard boxes",
+      attire: "work uniform, safety shoes, high-visibility vest",
+      tools: "pallet jack, barcode scanner, forklift, inventory boxes"
     };
   }
   
-  // Cargos operacionais/produção
-  if (jobLower.includes('operador') || jobLower.includes('auxiliar de produção') || jobLower.includes('montador') || jobLower.includes('alimentador')) {
+  // === CARGOS DE MANUTENÇÃO - ÁREA TÉCNICA ===
+  if (
+    jobLower.includes('manutenção') || 
+    jobLower.includes('mecânico') || 
+    jobLower.includes('eletricista') ||
+    jobLower.includes('técnico') ||
+    jobLower.includes('encanador') ||
+    jobLower.includes('serralheiro') ||
+    sectorLower.includes('manutenção')
+  ) {
     return {
-      action: "operating industrial machinery with safety equipment",
-      alternateAction: "inspecting products on production line",
-      setting: "on factory floor near production equipment"
+      environment: "in industrial maintenance area or technical workshop with equipment and tools visible, NO OFFICE",
+      action: "repairing machinery or performing electrical work with tools",
+      alternateAction: "inspecting equipment with diagnostic tools in hand",
+      setting: "near industrial equipment being repaired or maintained",
+      attire: "work uniform, safety glasses, tool belt, work gloves",
+      tools: "wrenches, screwdrivers, multimeter, power tools, toolbox"
     };
   }
   
-  // Cargos de atendimento/vendas
-  if (jobLower.includes('vendedor') || jobLower.includes('atendente') || jobLower.includes('consultor') || jobLower.includes('balconista') || jobLower.includes('caixa')) {
+  // === CARGOS DE CONSTRUÇÃO CIVIL - OBRA ===
+  if (
+    jobLower.includes('pedreiro') || 
+    jobLower.includes('pintor') || 
+    jobLower.includes('carpinteiro') ||
+    jobLower.includes('servente') ||
+    jobLower.includes('mestre de obras') ||
+    jobLower.includes('encarregado de obra') ||
+    jobLower.includes('azulejista') ||
+    jobLower.includes('gesseiro')
+  ) {
     return {
-      action: "helping customer with friendly smile",
-      alternateAction: "demonstrating product to interested client",
-      setting: "at service counter or sales floor assisting customers"
+      environment: "at construction site with building structure, scaffolding, and construction materials visible, outdoor, NO OFFICE",
+      action: "working on building construction with tools and materials",
+      alternateAction: "measuring or installing building components",
+      setting: "on construction site with concrete, bricks, and scaffolding around",
+      attire: "hard hat, work boots, work clothes, safety vest",
+      tools: "construction tools, trowel, level, power drill, cement mixer"
     };
   }
   
-  // Cargos administrativos
-  if (jobLower.includes('administrativo') || jobLower.includes('secretário') || jobLower.includes('recepcionista') || jobLower.includes('assistente') || jobLower.includes('analista')) {
+  // === CARGOS DE LIMPEZA - AMBIENTE GERAL ===
+  if (
+    jobLower.includes('limpeza') || 
+    jobLower.includes('faxineiro') || 
+    jobLower.includes('zelador') ||
+    jobLower.includes('copeiro') ||
+    jobLower.includes('serviços gerais') ||
+    sectorLower.includes('limpeza')
+  ) {
     return {
-      action: "working on computer organizing documents",
-      alternateAction: "attending to phone call professionally",
-      setting: "at organized desk in modern office environment"
+      environment: "in clean commercial building hallway or common area with professional cleaning equipment, NO OFFICE DESK",
+      action: "cleaning surfaces with professional cleaning equipment",
+      alternateAction: "organizing cleaning supplies and maintaining cleanliness",
+      setting: "in professional facility performing cleaning duties",
+      attire: "clean work uniform, professional cleaning attire",
+      tools: "cleaning cart, mop, professional cleaning supplies"
     };
   }
   
-  // Cargos de logística/armazém
-  if (jobLower.includes('estoquista') || jobLower.includes('almoxarife') || jobLower.includes('conferente') || jobLower.includes('separador') || jobLower.includes('motorista')) {
+  // === CARGOS DE COZINHA/ALIMENTAÇÃO - COZINHA ===
+  if (
+    jobLower.includes('cozinheiro') || 
+    jobLower.includes('auxiliar de cozinha') || 
+    jobLower.includes('padeiro') ||
+    jobLower.includes('confeiteiro') ||
+    jobLower.includes('churrasqueiro') ||
+    jobLower.includes('copeiro') ||
+    jobLower.includes('garçom') ||
+    sectorLower.includes('alimentação')
+  ) {
     return {
-      action: "organizing inventory in warehouse",
-      alternateAction: "scanning packages with handheld device",
-      setting: "in large warehouse environment with shelving"
+      environment: "in professional commercial kitchen with stainless steel equipment, stoves, and food prep areas, NO OFFICE",
+      action: "preparing food or cooking in commercial kitchen",
+      alternateAction: "plating dishes or organizing kitchen station",
+      setting: "at cooking station in professional kitchen environment",
+      attire: "chef hat or cap, white chef coat, apron, kitchen uniform",
+      tools: "pots and pans, cooking utensils, stove, cutting board"
     };
   }
   
-  // Cargos de limpeza/serviços gerais
-  if (jobLower.includes('limpeza') || jobLower.includes('zelador') || jobLower.includes('serviços gerais') || jobLower.includes('faxineiro') || jobLower.includes('copeiro')) {
+  // === CARGOS DE VENDAS/VAREJO - LOJA ===
+  if (
+    jobLower.includes('vendedor') || 
+    jobLower.includes('balconista') || 
+    jobLower.includes('atendente') ||
+    jobLower.includes('caixa') ||
+    jobLower.includes('promotor') ||
+    sectorLower.includes('vendas') ||
+    sectorLower.includes('varejo') ||
+    sectorLower.includes('atendimento')
+  ) {
     return {
-      action: "performing cleaning duties professionally",
-      alternateAction: "maintaining clean organized environment",
-      setting: "in clean professional facility"
+      environment: "inside retail store with product shelves and displays visible, store lighting, NO OFFICE",
+      action: "helping customer or presenting products on sales floor",
+      alternateAction: "organizing merchandise on store shelves",
+      setting: "at sales counter or among product displays in store",
+      attire: "professional retail uniform, name badge, clean appearance",
+      tools: "product displays, cash register, tablet or smartphone"
     };
   }
   
-  // Cargos de alimentação/cozinha
-  if (jobLower.includes('cozinheiro') || jobLower.includes('padeiro') || jobLower.includes('confeiteiro') || jobLower.includes('churrasqueiro') || jobLower.includes('auxiliar de cozinha')) {
+  // === CARGOS DE MOTORISTA/TRANSPORTE ===
+  if (
+    jobLower.includes('motorista') || 
+    jobLower.includes('entregador') || 
+    jobLower.includes('motoboy')
+  ) {
     return {
-      action: "preparing food in professional kitchen",
-      alternateAction: "cooking with specialized equipment",
-      setting: "in commercial kitchen with professional cooking equipment"
+      environment: "near delivery truck or vehicle in loading area or parking lot, outdoor, NO OFFICE",
+      action: "loading packages into delivery vehicle or checking delivery route",
+      alternateAction: "organizing cargo in truck or signing delivery documents",
+      setting: "standing beside delivery vehicle or truck",
+      attire: "driver uniform, comfortable work clothes",
+      tools: "delivery truck, packages, delivery clipboard, vehicle keys"
     };
   }
   
-  // Cargos de construção civil
-  if (jobLower.includes('pedreiro') || jobLower.includes('pintor') || jobLower.includes('eletricista') || jobLower.includes('encanador') || jobLower.includes('carpinteiro') || jobLower.includes('servente')) {
+  // === CARGOS DE SEGURANÇA ===
+  if (
+    jobLower.includes('vigilante') || 
+    jobLower.includes('porteiro') || 
+    jobLower.includes('segurança')
+  ) {
     return {
-      action: "performing construction work with proper safety gear",
-      alternateAction: "using construction tools and equipment",
-      setting: "at construction site with building materials"
+      environment: "at building entrance, security post, or monitoring station, NO OFFICE DESK",
+      action: "monitoring entrance or checking credentials",
+      alternateAction: "patrolling facility or watching security monitors",
+      setting: "at security checkpoint or entrance gate",
+      attire: "security uniform, professional guard attire",
+      tools: "radio communicator, monitoring screens, clipboard"
     };
   }
   
-  // Padrão para cargos não mapeados
+  // === CARGOS ADMINISTRATIVOS - ESCRITÓRIO (único caso) ===
+  if (
+    jobLower.includes('administrativo') || 
+    jobLower.includes('secretário') || 
+    jobLower.includes('secretária') ||
+    jobLower.includes('recepcionista') ||
+    jobLower.includes('assistente') ||
+    jobLower.includes('analista') ||
+    jobLower.includes('auxiliar administrativo') ||
+    jobLower.includes('escritório') ||
+    jobLower.includes('financeiro') ||
+    jobLower.includes('contábil') ||
+    jobLower.includes('rh') ||
+    jobLower.includes('recursos humanos') ||
+    sectorLower.includes('administração') ||
+    sectorLower.includes('financeiro')
+  ) {
+    return {
+      environment: "in modern office space with desk, computer, and organized workspace",
+      action: "working on computer or organizing documents at desk",
+      alternateAction: "attending to phone call or reviewing paperwork",
+      setting: "at organized desk in professional office environment",
+      attire: "business casual attire, professional office clothing",
+      tools: "computer, documents, office supplies, telephone"
+    };
+  }
+  
+  // === CARGOS DE LIDERANÇA/GESTÃO ===
+  if (
+    jobLower.includes('gerente') || 
+    jobLower.includes('supervisor') || 
+    jobLower.includes('coordenador') ||
+    jobLower.includes('líder') ||
+    jobLower.includes('encarregado') ||
+    jobLower.includes('chefe')
+  ) {
+    // Liderança industrial vs administrativa
+    if (sectorLower.includes('produção') || sectorLower.includes('indústria') || sectorLower.includes('logística')) {
+      return {
+        environment: "on factory floor or warehouse supervising team, industrial setting visible, NO OFFICE",
+        action: "directing team members or inspecting production process",
+        alternateAction: "reviewing production metrics with team on factory floor",
+        setting: "standing among workers in industrial environment",
+        attire: "safety helmet, professional work attire, clipboard",
+        tools: "clipboard, radio, tablet for production tracking"
+      };
+    }
+    return {
+      environment: "in modern office or meeting room with professional decor",
+      action: "leading team meeting or reviewing reports",
+      alternateAction: "discussing strategy with team members",
+      setting: "in meeting room or office with leadership presence",
+      attire: "business professional attire",
+      tools: "laptop, presentation materials, meeting documents"
+    };
+  }
+  
+  // === CARGOS DE SAÚDE ===
+  if (
+    jobLower.includes('enfermeiro') || 
+    jobLower.includes('técnico de enfermagem') || 
+    jobLower.includes('auxiliar de enfermagem') ||
+    jobLower.includes('médico') ||
+    jobLower.includes('farmacêutico') ||
+    sectorLower.includes('saúde')
+  ) {
+    return {
+      environment: "in healthcare facility, hospital corridor, or clinical setting with medical equipment",
+      action: "attending to patient or reviewing medical charts",
+      alternateAction: "preparing medical equipment or medication",
+      setting: "in clinical environment with medical equipment visible",
+      attire: "medical scrubs, lab coat, stethoscope, healthcare uniform",
+      tools: "medical equipment, stethoscope, clipboard, medical supplies"
+    };
+  }
+  
+  // === PADRÃO - baseado no setor ===
+  // Se não identificou o cargo, usa o setor para decidir
+  if (sectorLower.includes('produção') || sectorLower.includes('indústria')) {
+    return {
+      environment: "inside industrial facility with machinery and equipment visible, NO OFFICE",
+      action: "working with industrial equipment",
+      alternateAction: "inspecting or operating machinery",
+      setting: "on factory floor or industrial workspace",
+      attire: "safety equipment, work uniform, protective gear",
+      tools: "industrial equipment, safety gear"
+    };
+  }
+  
+  // Fallback genérico - NÃO usar escritório por padrão
   return {
-    action: "performing professional duties with dedication",
-    alternateAction: "collaborating with colleagues effectively",
-    setting: "in appropriate professional work environment"
+    environment: "in professional workplace appropriate for the job role",
+    action: "performing job duties with professionalism",
+    alternateAction: "working efficiently on assigned tasks",
+    setting: "in suitable work environment for the position",
+    attire: "appropriate work attire for the role",
+    tools: "relevant work equipment and tools"
   };
 }
