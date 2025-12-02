@@ -71,22 +71,15 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
   
   const workContext = determineWorkContext(jobTitle, sector);
   
-  // Diferentes poses/ângulos para variedade
-  const poses = [
-    "medium shot, front view, looking at camera with confident smile",
-    "three-quarter view, candid working pose, natural expression",
-    "slightly low angle, dynamic working pose, determined look"
+  // Pessoas brasileiras diversas
+  const subjects = [
+    "Brazilian man, age 30",
+    "Brazilian woman, age 32", 
+    "Brazilian person, age 35"
   ];
   
-  // Diferentes iluminações para variedade
-  const lightings = [
-    "warm natural lighting from side, soft shadows",
-    "bright overhead industrial lighting, clear visibility",
-    "dramatic rim lighting, professional studio quality"
-  ];
-  
-  // Diferentes idades para diversidade
-  const ages = ["Brazilian man age 28-32", "Brazilian woman age 30-38", "Brazilian person age 35-45"];
+  // Instrução base para imagens LIMPAS
+  const cleanStyle = "clean simple background, solid color or soft gradient backdrop, studio lighting, no text, no logos, no clutter, professional portrait style, sharp focus on person";
   
   // === SE TEM SUGESTÃO DO USUÁRIO - PRIORIDADE MÁXIMA ===
   if (imageSuggestion && imageSuggestion.trim()) {
@@ -95,42 +88,34 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
     // Marisa com sugestão
     if (clientTemplate === 'marisa') {
       return [
-        `IMPORTANT: ${imageSuggestion}. Professional photo of ${ages[0]} working as ${jobTitle} inside Marisa fashion retail store. Wearing pink clothing (pink blouse or pink vest). ${poses[0]}, ${lightings[0]}. Background shows clothing racks and fashion displays. Photorealistic, 8K quality, ultra detailed.`,
-        
-        `IMPORTANT: ${imageSuggestion}. Portrait of ${ages[1]} as ${jobTitle} in Marisa store environment. Must wear pink apparel item. ${poses[1]}, ${lightings[1]}. Visible store merchandise and displays. High resolution professional photography.`,
-        
-        `IMPORTANT: ${imageSuggestion}. ${ages[2]} employed as ${jobTitle} at Marisa retail location. Pink uniform or pink clothing accessory required. ${poses[2]}, ${lightings[2]}. Fashion retail setting clearly visible. Commercial quality portrait.`
+        `${subjects[0]} as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Wearing pink shirt. ${cleanStyle}, hint of retail store in blurred background. Friendly smile.`,
+        `${subjects[1]} working as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Pink clothing visible. ${cleanStyle}, subtle fashion retail context. Confident expression.`,
+        `${subjects[2]} employed as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Pink uniform element. ${cleanStyle}, minimal store background. Professional demeanor.`
       ];
     }
     
     // Outros templates com sugestão
     return [
-      `CRITICAL INSTRUCTION: ${imageSuggestion}. Professional photograph of ${ages[0]} working as ${jobTitle}. Environment: ${workContext.environment}. Wearing: ${workContext.attire}. Activity: ${workContext.action}. ${poses[0]}, ${lightings[0]}. Photorealistic, 8K quality, highly detailed, professional corporate photography.`,
-      
-      `CRITICAL INSTRUCTION: ${imageSuggestion}. Portrait of ${ages[1]} in role of ${jobTitle}. Setting: ${workContext.environment}. Dressed in: ${workContext.attire}. Doing: ${workContext.alternateAction}. ${poses[1]}, ${lightings[1]}. Ultra high resolution, realistic lighting, detailed textures.`,
-      
-      `CRITICAL INSTRUCTION: ${imageSuggestion}. ${ages[2]} as ${jobTitle}. Location: ${workContext.setting}. Equipment visible: ${workContext.tools}. Clothing: ${workContext.attire}. ${poses[2]}, ${lightings[2]}. Professional quality, sharp focus, authentic workplace atmosphere.`
+      `${subjects[0]} as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Wearing ${workContext.attire}. ${cleanStyle}, subtle ${workContext.simpleBackground}. Confident smile.`,
+      `${subjects[1]} working as ${jobTitle}. USER REQUEST: ${imageSuggestion}. ${workContext.attire}. ${cleanStyle}, hint of ${workContext.simpleBackground}. Natural expression.`,
+      `${subjects[2]} employed as ${jobTitle}. USER REQUEST: ${imageSuggestion}. ${workContext.attire}. ${cleanStyle}, minimal ${workContext.simpleBackground}. Professional look.`
     ];
   }
   
   // === MARISA SEM SUGESTÃO ===
   if (clientTemplate === 'marisa') {
     return [
-      `Professional portrait of ${ages[0]} working as ${jobTitle} inside Marisa fashion retail store. MUST be wearing pink clothing item (pink blouse, pink polo shirt, or pink vest). ${poses[0]}, ${lightings[0]}. Background shows colorful clothing racks, fashion merchandise, and store displays. Interacting with products or customers. Friendly welcoming expression. Photorealistic, 8K quality, commercial photography style.`,
-      
-      `Candid workplace photo of ${ages[1]} employed as ${jobTitle} at Marisa store. Required: pink apparel (shirt, blouse, or uniform with pink). ${poses[1]}, ${lightings[1]}. Store environment with women's fashion visible, organized displays, bright retail atmosphere. Natural genuine smile. High resolution, professional retail photography.`,
-      
-      `Dynamic portrait of ${ages[2]} in ${jobTitle} position at Marisa retail location. Essential: wearing pink colored clothing piece prominently visible. ${poses[2]}, ${lightings[2]}. Fashion store setting with mannequins, clothing racks, promotional displays visible. Engaged in work activity. Commercial quality, sharp focus, vibrant colors.`
+      `${subjects[0]} as ${jobTitle} in retail. Wearing pink polo shirt or pink blouse. ${cleanStyle}, soft blurred fashion store background. Friendly welcoming smile, professional portrait.`,
+      `${subjects[1]} working as ${jobTitle}. Pink clothing prominent. ${cleanStyle}, subtle retail environment hint. Confident warm expression.`,
+      `${subjects[2]} employed as ${jobTitle}. Pink uniform shirt visible. ${cleanStyle}, minimal store background. Natural professional demeanor.`
     ];
   }
   
-  // === PROMPTS PADRÃO - MUITO DETALHADOS E VARIADOS ===
+  // === PROMPTS PADRÃO - LIMPOS E SIMPLES ===
   return [
-    `Highly detailed professional photograph of ${ages[0]} working as ${jobTitle} in ${sector} sector. ENVIRONMENT: ${workContext.environment}. WEARING: ${workContext.attire}. ACTIVITY: ${workContext.action}. TOOLS/EQUIPMENT: ${workContext.tools}. ${poses[0]}, ${lightings[0]}. Photorealistic quality, 8K resolution, authentic workplace setting, genuine expression, professional corporate photography style. The person should look competent and engaged in their work.`,
-    
-    `Realistic workplace portrait of ${ages[1]} employed as ${jobTitle}. SETTING: ${workContext.setting}. DRESS CODE: ${workContext.attire}. TASK: ${workContext.alternateAction}. VISIBLE EQUIPMENT: ${workContext.tools}. ${poses[1]}, ${lightings[1]}. Ultra high definition, sharp focus on subject, blurred background depth of field, commercial photography quality. Natural authentic pose showing expertise in their role.`,
-    
-    `Professional headshot style photo of ${ages[2]} as ${jobTitle} in ${sector} field. LOCATION DETAILS: ${workContext.environment}. UNIFORM/CLOTHING: ${workContext.attire}. WORK CONTEXT: ${workContext.setting}. ${poses[2]}, ${lightings[2]}. Crisp high resolution image, realistic skin texture, appropriate workplace background, confident professional demeanor. Should clearly represent the ${sector} industry and ${jobTitle} role.`
+    `${subjects[0]} as ${jobTitle}. Wearing ${workContext.attire}. ${cleanStyle}, subtle ${workContext.simpleBackground}. Confident professional expression, natural pose.`,
+    `${subjects[1]} working as ${jobTitle}. ${workContext.attire}. ${cleanStyle}, hint of ${workContext.simpleBackground}. Friendly smile, engaged look.`,
+    `${subjects[2]} employed as ${jobTitle}. ${workContext.attire}. ${cleanStyle}, minimal ${workContext.simpleBackground}. Determined professional expression.`
   ];
 }
 
@@ -141,7 +126,8 @@ function determineWorkContext(jobTitle: string, sector: string): {
   alternateAction: string, 
   setting: string, 
   attire: string, 
-  tools: string 
+  tools: string,
+  simpleBackground: string
 } {
   const jobLower = jobTitle.toLowerCase();
   const sectorLower = sector.toLowerCase();
@@ -162,12 +148,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('indústria')
   ) {
     return {
-      environment: "inside industrial factory floor with machinery, conveyor belts, and metal structures visible, industrial lighting, NO OFFICE",
-      action: "operating industrial machinery or inspecting products on production line",
-      alternateAction: "checking quality of manufactured parts near conveyor belt",
-      setting: "standing near large industrial equipment on factory floor",
-      attire: "safety helmet, high-visibility vest, safety glasses, work uniform",
-      tools: "industrial machinery, control panels, production equipment"
+      environment: "industrial factory floor",
+      action: "operating machinery",
+      alternateAction: "inspecting products",
+      setting: "factory floor",
+      attire: "safety helmet, high-visibility vest, safety glasses",
+      tools: "industrial machinery",
+      simpleBackground: "industrial gray gradient"
     };
   }
   
@@ -184,12 +171,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('logística')
   ) {
     return {
-      environment: "inside large warehouse with high shelving racks full of boxes and packages, concrete floor, NO OFFICE",
-      action: "organizing boxes on warehouse shelves or scanning packages with handheld device",
-      alternateAction: "operating forklift or moving pallets in warehouse aisle",
-      setting: "in warehouse surrounded by inventory shelves and cardboard boxes",
-      attire: "work uniform, safety shoes, high-visibility vest",
-      tools: "pallet jack, barcode scanner, forklift, inventory boxes"
+      environment: "warehouse",
+      action: "organizing inventory",
+      alternateAction: "scanning packages",
+      setting: "warehouse",
+      attire: "work uniform, high-visibility vest",
+      tools: "scanner, boxes",
+      simpleBackground: "warehouse beige gradient"
     };
   }
   
@@ -204,12 +192,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('manutenção')
   ) {
     return {
-      environment: "in industrial maintenance area or technical workshop with equipment and tools visible, NO OFFICE",
-      action: "repairing machinery or performing electrical work with tools",
-      alternateAction: "inspecting equipment with diagnostic tools in hand",
-      setting: "near industrial equipment being repaired or maintained",
-      attire: "work uniform, safety glasses, tool belt, work gloves",
-      tools: "wrenches, screwdrivers, multimeter, power tools, toolbox"
+      environment: "technical workshop",
+      action: "repairing equipment",
+      alternateAction: "using diagnostic tools",
+      setting: "maintenance area",
+      attire: "work uniform, safety glasses, tool belt",
+      tools: "tools, multimeter",
+      simpleBackground: "blue-gray workshop gradient"
     };
   }
   
@@ -225,12 +214,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     jobLower.includes('gesseiro')
   ) {
     return {
-      environment: "at construction site with building structure, scaffolding, and construction materials visible, outdoor, NO OFFICE",
-      action: "working on building construction with tools and materials",
-      alternateAction: "measuring or installing building components",
-      setting: "on construction site with concrete, bricks, and scaffolding around",
-      attire: "hard hat, work boots, work clothes, safety vest",
-      tools: "construction tools, trowel, level, power drill, cement mixer"
+      environment: "construction site",
+      action: "building construction",
+      alternateAction: "measuring components",
+      setting: "construction area",
+      attire: "hard hat, work boots, safety vest",
+      tools: "construction tools",
+      simpleBackground: "outdoor construction gradient"
     };
   }
   
@@ -244,12 +234,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('limpeza')
   ) {
     return {
-      environment: "in clean commercial building hallway or common area with professional cleaning equipment, NO OFFICE DESK",
-      action: "cleaning surfaces with professional cleaning equipment",
-      alternateAction: "organizing cleaning supplies and maintaining cleanliness",
-      setting: "in professional facility performing cleaning duties",
-      attire: "clean work uniform, professional cleaning attire",
-      tools: "cleaning cart, mop, professional cleaning supplies"
+      environment: "commercial building",
+      action: "cleaning surfaces",
+      alternateAction: "organizing supplies",
+      setting: "clean facility",
+      attire: "clean work uniform",
+      tools: "cleaning supplies",
+      simpleBackground: "clean white-blue gradient"
     };
   }
   
@@ -265,12 +256,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('alimentação')
   ) {
     return {
-      environment: "in professional commercial kitchen with stainless steel equipment, stoves, and food prep areas, NO OFFICE",
-      action: "preparing food or cooking in commercial kitchen",
-      alternateAction: "plating dishes or organizing kitchen station",
-      setting: "at cooking station in professional kitchen environment",
-      attire: "chef hat or cap, white chef coat, apron, kitchen uniform",
-      tools: "pots and pans, cooking utensils, stove, cutting board"
+      environment: "commercial kitchen",
+      action: "preparing food",
+      alternateAction: "cooking",
+      setting: "kitchen station",
+      attire: "chef hat, white chef coat, apron",
+      tools: "cooking utensils",
+      simpleBackground: "stainless steel kitchen gradient"
     };
   }
   
@@ -286,12 +278,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('atendimento')
   ) {
     return {
-      environment: "inside retail store with product shelves and displays visible, store lighting, NO OFFICE",
-      action: "helping customer or presenting products on sales floor",
-      alternateAction: "organizing merchandise on store shelves",
-      setting: "at sales counter or among product displays in store",
-      attire: "professional retail uniform, name badge, clean appearance",
-      tools: "product displays, cash register, tablet or smartphone"
+      environment: "retail store",
+      action: "helping customer",
+      alternateAction: "organizing products",
+      setting: "sales floor",
+      attire: "professional retail uniform",
+      tools: "tablet, products",
+      simpleBackground: "bright retail store gradient"
     };
   }
   
@@ -302,12 +295,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     jobLower.includes('motoboy')
   ) {
     return {
-      environment: "near delivery truck or vehicle in loading area or parking lot, outdoor, NO OFFICE",
-      action: "loading packages into delivery vehicle or checking delivery route",
-      alternateAction: "organizing cargo in truck or signing delivery documents",
-      setting: "standing beside delivery vehicle or truck",
-      attire: "driver uniform, comfortable work clothes",
-      tools: "delivery truck, packages, delivery clipboard, vehicle keys"
+      environment: "loading area",
+      action: "loading vehicle",
+      alternateAction: "checking delivery route",
+      setting: "near vehicle",
+      attire: "driver uniform",
+      tools: "delivery truck, packages",
+      simpleBackground: "outdoor transportation gradient"
     };
   }
   
@@ -318,12 +312,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     jobLower.includes('segurança')
   ) {
     return {
-      environment: "at building entrance, security post, or monitoring station, NO OFFICE DESK",
-      action: "monitoring entrance or checking credentials",
-      alternateAction: "patrolling facility or watching security monitors",
-      setting: "at security checkpoint or entrance gate",
-      attire: "security uniform, professional guard attire",
-      tools: "radio communicator, monitoring screens, clipboard"
+      environment: "security post",
+      action: "monitoring entrance",
+      alternateAction: "patrolling facility",
+      setting: "security checkpoint",
+      attire: "security uniform",
+      tools: "radio communicator",
+      simpleBackground: "dark professional gradient"
     };
   }
   
@@ -345,12 +340,13 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('financeiro')
   ) {
     return {
-      environment: "in modern office space with desk, computer, and organized workspace",
-      action: "working on computer or organizing documents at desk",
-      alternateAction: "attending to phone call or reviewing paperwork",
-      setting: "at organized desk in professional office environment",
-      attire: "business casual attire, professional office clothing",
-      tools: "computer, documents, office supplies, telephone"
+      environment: "modern office",
+      action: "working on computer",
+      alternateAction: "reviewing documents",
+      setting: "office desk",
+      attire: "business casual attire",
+      tools: "computer, documents",
+      simpleBackground: "soft office blue gradient"
     };
   }
   
@@ -363,24 +359,25 @@ function determineWorkContext(jobTitle: string, sector: string): {
     jobLower.includes('encarregado') ||
     jobLower.includes('chefe')
   ) {
-    // Liderança industrial vs administrativa
     if (sectorLower.includes('produção') || sectorLower.includes('indústria') || sectorLower.includes('logística')) {
       return {
-        environment: "on factory floor or warehouse supervising team, industrial setting visible, NO OFFICE",
-        action: "directing team members or inspecting production process",
-        alternateAction: "reviewing production metrics with team on factory floor",
-        setting: "standing among workers in industrial environment",
-        attire: "safety helmet, professional work attire, clipboard",
-        tools: "clipboard, radio, tablet for production tracking"
+        environment: "factory floor supervision",
+        action: "directing team",
+        alternateAction: "reviewing production",
+        setting: "industrial supervision",
+        attire: "safety helmet, professional attire",
+        tools: "clipboard, tablet",
+        simpleBackground: "industrial leadership gradient"
       };
     }
     return {
-      environment: "in modern office or meeting room with professional decor",
-      action: "leading team meeting or reviewing reports",
-      alternateAction: "discussing strategy with team members",
-      setting: "in meeting room or office with leadership presence",
+      environment: "meeting room",
+      action: "leading meeting",
+      alternateAction: "reviewing reports",
+      setting: "professional office",
       attire: "business professional attire",
-      tools: "laptop, presentation materials, meeting documents"
+      tools: "laptop, documents",
+      simpleBackground: "corporate blue gradient"
     };
   }
   
@@ -394,35 +391,37 @@ function determineWorkContext(jobTitle: string, sector: string): {
     sectorLower.includes('saúde')
   ) {
     return {
-      environment: "in healthcare facility, hospital corridor, or clinical setting with medical equipment",
-      action: "attending to patient or reviewing medical charts",
-      alternateAction: "preparing medical equipment or medication",
-      setting: "in clinical environment with medical equipment visible",
-      attire: "medical scrubs, lab coat, stethoscope, healthcare uniform",
-      tools: "medical equipment, stethoscope, clipboard, medical supplies"
+      environment: "healthcare facility",
+      action: "patient care",
+      alternateAction: "preparing equipment",
+      setting: "clinical environment",
+      attire: "medical scrubs, lab coat",
+      tools: "stethoscope, medical supplies",
+      simpleBackground: "clinical white-green gradient"
     };
   }
   
   // === PADRÃO - baseado no setor ===
-  // Se não identificou o cargo, usa o setor para decidir
   if (sectorLower.includes('produção') || sectorLower.includes('indústria')) {
     return {
-      environment: "inside industrial facility with machinery and equipment visible, NO OFFICE",
-      action: "working with industrial equipment",
-      alternateAction: "inspecting or operating machinery",
-      setting: "on factory floor or industrial workspace",
-      attire: "safety equipment, work uniform, protective gear",
-      tools: "industrial equipment, safety gear"
+      environment: "industrial facility",
+      action: "working with equipment",
+      alternateAction: "operating machinery",
+      setting: "industrial workspace",
+      attire: "safety equipment, work uniform",
+      tools: "industrial equipment",
+      simpleBackground: "industrial gray gradient"
     };
   }
   
-  // Fallback genérico - NÃO usar escritório por padrão
+  // Fallback genérico
   return {
-    environment: "in professional workplace appropriate for the job role",
-    action: "performing job duties with professionalism",
-    alternateAction: "working efficiently on assigned tasks",
-    setting: "in suitable work environment for the position",
-    attire: "appropriate work attire for the role",
-    tools: "relevant work equipment and tools"
+    environment: "professional workplace",
+    action: "performing duties",
+    alternateAction: "working on tasks",
+    setting: "work environment",
+    attire: "appropriate work attire",
+    tools: "work equipment",
+    simpleBackground: "neutral professional gradient"
   };
 }
