@@ -67,46 +67,70 @@ serve(async (req) => {
 });
 
 function generateImagePrompts(jobTitle: string, sector: string, contractType: string, requirements: string[], imageSuggestion?: string, clientTemplate?: string): string[] {
-  // Determinar ambiente baseado no cargo e setor
+  console.log('Generating prompts for:', { jobTitle, sector, imageSuggestion, clientTemplate });
+  
   const workContext = determineWorkContext(jobTitle, sector);
   
-  // Base do prompt - NUNCA mencionar escritório a menos que seja explicitamente administrativo
-  const basePrompt = `Professional workplace photo, Brazilian worker, realistic lighting, high quality portrait, ultra high resolution`;
+  // Diferentes poses/ângulos para variedade
+  const poses = [
+    "medium shot, front view, looking at camera with confident smile",
+    "three-quarter view, candid working pose, natural expression",
+    "slightly low angle, dynamic working pose, determined look"
+  ];
   
-  // Prompts específicos para Marisa (varejo/loja)
-  if (clientTemplate === 'marisa') {
-    const marisaEnvironment = "inside Marisa fashion retail store with clothing racks and displays visible";
-    const marisaPink = "wearing pink clothing item (pink blouse, pink shirt, or pink vest)";
+  // Diferentes iluminações para variedade
+  const lightings = [
+    "warm natural lighting from side, soft shadows",
+    "bright overhead industrial lighting, clear visibility",
+    "dramatic rim lighting, professional studio quality"
+  ];
+  
+  // Diferentes idades para diversidade
+  const ages = ["Brazilian man age 28-32", "Brazilian woman age 30-38", "Brazilian person age 35-45"];
+  
+  // === SE TEM SUGESTÃO DO USUÁRIO - PRIORIDADE MÁXIMA ===
+  if (imageSuggestion && imageSuggestion.trim()) {
+    console.log('Using user suggestion:', imageSuggestion);
     
-    if (imageSuggestion && imageSuggestion.trim()) {
+    // Marisa com sugestão
+    if (clientTemplate === 'marisa') {
       return [
-        `${basePrompt}, ${marisaEnvironment}, Brazilian ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.action}, friendly expression, age 25-35`,
-        `${basePrompt}, ${marisaEnvironment}, Brazilian professional as ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.alternateAction}, age 30-40`,
-        `${basePrompt}, ${marisaEnvironment}, Brazilian retail worker ${jobTitle}, ${imageSuggestion}, ${marisaPink}, ${workContext.setting}, age 25-45`
+        `IMPORTANT: ${imageSuggestion}. Professional photo of ${ages[0]} working as ${jobTitle} inside Marisa fashion retail store. Wearing pink clothing (pink blouse or pink vest). ${poses[0]}, ${lightings[0]}. Background shows clothing racks and fashion displays. Photorealistic, 8K quality, ultra detailed.`,
+        
+        `IMPORTANT: ${imageSuggestion}. Portrait of ${ages[1]} as ${jobTitle} in Marisa store environment. Must wear pink apparel item. ${poses[1]}, ${lightings[1]}. Visible store merchandise and displays. High resolution professional photography.`,
+        
+        `IMPORTANT: ${imageSuggestion}. ${ages[2]} employed as ${jobTitle} at Marisa retail location. Pink uniform or pink clothing accessory required. ${poses[2]}, ${lightings[2]}. Fashion retail setting clearly visible. Commercial quality portrait.`
       ];
     }
     
+    // Outros templates com sugestão
     return [
-      `${basePrompt}, ${marisaEnvironment}, Brazilian ${jobTitle}, ${marisaPink}, ${workContext.action}, helping customer or organizing products, friendly smile, age 25-35`,
-      `${basePrompt}, ${marisaEnvironment}, Brazilian professional as ${jobTitle}, ${marisaPink}, ${workContext.alternateAction}, near clothing displays, age 30-40`,
-      `${basePrompt}, ${marisaEnvironment}, Brazilian retail worker ${jobTitle}, ${marisaPink}, ${workContext.setting}, welcoming expression, age 25-45`
+      `CRITICAL INSTRUCTION: ${imageSuggestion}. Professional photograph of ${ages[0]} working as ${jobTitle}. Environment: ${workContext.environment}. Wearing: ${workContext.attire}. Activity: ${workContext.action}. ${poses[0]}, ${lightings[0]}. Photorealistic, 8K quality, highly detailed, professional corporate photography.`,
+      
+      `CRITICAL INSTRUCTION: ${imageSuggestion}. Portrait of ${ages[1]} in role of ${jobTitle}. Setting: ${workContext.environment}. Dressed in: ${workContext.attire}. Doing: ${workContext.alternateAction}. ${poses[1]}, ${lightings[1]}. Ultra high resolution, realistic lighting, detailed textures.`,
+      
+      `CRITICAL INSTRUCTION: ${imageSuggestion}. ${ages[2]} as ${jobTitle}. Location: ${workContext.setting}. Equipment visible: ${workContext.tools}. Clothing: ${workContext.attire}. ${poses[2]}, ${lightings[2]}. Professional quality, sharp focus, authentic workplace atmosphere.`
     ];
   }
-
-  // Priorizar sugestão da recrutadora se fornecida
-  if (imageSuggestion && imageSuggestion.trim()) {
+  
+  // === MARISA SEM SUGESTÃO ===
+  if (clientTemplate === 'marisa') {
     return [
-      `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle}, ${imageSuggestion}, ${workContext.action}, wearing ${workContext.attire}, using ${workContext.tools}, age 25-35`,
-      `${basePrompt}, ${workContext.environment}, Brazilian professional as ${jobTitle}, ${imageSuggestion}, ${workContext.alternateAction}, ${workContext.attire}, age 30-40`,
-      `${basePrompt}, ${workContext.environment}, Brazilian worker ${jobTitle}, ${imageSuggestion}, ${workContext.setting}, age 25-45`
+      `Professional portrait of ${ages[0]} working as ${jobTitle} inside Marisa fashion retail store. MUST be wearing pink clothing item (pink blouse, pink polo shirt, or pink vest). ${poses[0]}, ${lightings[0]}. Background shows colorful clothing racks, fashion merchandise, and store displays. Interacting with products or customers. Friendly welcoming expression. Photorealistic, 8K quality, commercial photography style.`,
+      
+      `Candid workplace photo of ${ages[1]} employed as ${jobTitle} at Marisa store. Required: pink apparel (shirt, blouse, or uniform with pink). ${poses[1]}, ${lightings[1]}. Store environment with women's fashion visible, organized displays, bright retail atmosphere. Natural genuine smile. High resolution, professional retail photography.`,
+      
+      `Dynamic portrait of ${ages[2]} in ${jobTitle} position at Marisa retail location. Essential: wearing pink colored clothing piece prominently visible. ${poses[2]}, ${lightings[2]}. Fashion store setting with mannequins, clothing racks, promotional displays visible. Engaged in work activity. Commercial quality, sharp focus, vibrant colors.`
     ];
   }
-
-  // Prompts padrão baseados no contexto do trabalho
+  
+  // === PROMPTS PADRÃO - MUITO DETALHADOS E VARIADOS ===
   return [
-    `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle} in ${sector} sector, ${workContext.action}, wearing ${workContext.attire}, using ${workContext.tools}, focused expression, age 25-35`,
-    `${basePrompt}, ${workContext.environment}, Brazilian professional working as ${jobTitle}, ${workContext.alternateAction}, ${workContext.attire}, ${workContext.tools} nearby, confident demeanor, age 30-40`,
-    `${basePrompt}, ${workContext.environment}, Brazilian ${jobTitle}, ${workContext.setting}, ${workContext.attire}, ${workContext.tools} visible, natural pose, age 25-45`
+    `Highly detailed professional photograph of ${ages[0]} working as ${jobTitle} in ${sector} sector. ENVIRONMENT: ${workContext.environment}. WEARING: ${workContext.attire}. ACTIVITY: ${workContext.action}. TOOLS/EQUIPMENT: ${workContext.tools}. ${poses[0]}, ${lightings[0]}. Photorealistic quality, 8K resolution, authentic workplace setting, genuine expression, professional corporate photography style. The person should look competent and engaged in their work.`,
+    
+    `Realistic workplace portrait of ${ages[1]} employed as ${jobTitle}. SETTING: ${workContext.setting}. DRESS CODE: ${workContext.attire}. TASK: ${workContext.alternateAction}. VISIBLE EQUIPMENT: ${workContext.tools}. ${poses[1]}, ${lightings[1]}. Ultra high definition, sharp focus on subject, blurred background depth of field, commercial photography quality. Natural authentic pose showing expertise in their role.`,
+    
+    `Professional headshot style photo of ${ages[2]} as ${jobTitle} in ${sector} field. LOCATION DETAILS: ${workContext.environment}. UNIFORM/CLOTHING: ${workContext.attire}. WORK CONTEXT: ${workContext.setting}. ${poses[2]}, ${lightings[2]}. Crisp high resolution image, realistic skin texture, appropriate workplace background, confident professional demeanor. Should clearly represent the ${sector} industry and ${jobTitle} role.`
   ];
 }
 
