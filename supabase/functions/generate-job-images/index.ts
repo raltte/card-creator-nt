@@ -70,6 +70,7 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
   console.log('Generating prompts for:', { jobTitle, sector, imageSuggestion, clientTemplate });
   
   const workContext = determineWorkContext(jobTitle, sector);
+  const requirementsText = requirements && requirements.length > 0 ? requirements.join(', ') : '';
   
   // Pessoas brasileiras diversas
   const subjects = [
@@ -78,8 +79,11 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
     "Brazilian person, age 35"
   ];
   
-  // Instrução base para imagens LIMPAS
-  const cleanStyle = "clean simple background, solid color or soft gradient backdrop, studio lighting, no text, no logos, no clutter, professional portrait style, sharp focus on person";
+  // Estilo de enquadramento: 9:16 portrait, corpo inteiro ou até a cintura, distante
+  const framingStyle = "9:16 portrait aspect ratio, full body or waist-up shot, medium distance framing, person centered, plenty of negative space around subject";
+  
+  // Estilo de qualidade
+  const qualityStyle = "8K, photorealistic, professional photography, natural lighting, no text, no logos, no watermarks";
   
   // === SE TEM SUGESTÃO DO USUÁRIO - PRIORIDADE MÁXIMA ===
   if (imageSuggestion && imageSuggestion.trim()) {
@@ -88,34 +92,34 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
     // Marisa com sugestão
     if (clientTemplate === 'marisa') {
       return [
-        `${subjects[0]} as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Wearing pink shirt. ${cleanStyle}, hint of retail store in blurred background. Friendly smile.`,
-        `${subjects[1]} working as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Pink clothing visible. ${cleanStyle}, subtle fashion retail context. Confident expression.`,
-        `${subjects[2]} employed as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Pink uniform element. ${cleanStyle}, minimal store background. Professional demeanor.`
+        `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[0]} working as ${jobTitle} in a fashion retail store. Wearing pink uniform or pink clothing elements. Background: bright modern Marisa clothing store with racks of clothes, warm ambient lighting. ${qualityStyle}. Friendly professional expression.`,
+        `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[1]} as ${jobTitle} in retail environment. Pink polo shirt or blouse. Background: organized fashion store interior with colorful merchandise display. ${qualityStyle}. Confident welcoming smile.`,
+        `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[2]} employed as ${jobTitle}. Pink uniform visible. Background: clean fashion retail store with clothing racks and mannequins. ${qualityStyle}. Natural professional demeanor.`
       ];
     }
     
     // Outros templates com sugestão
     return [
-      `${subjects[0]} as ${jobTitle}. USER REQUEST: ${imageSuggestion}. Wearing ${workContext.attire}. ${cleanStyle}, subtle ${workContext.simpleBackground}. Confident smile.`,
-      `${subjects[1]} working as ${jobTitle}. USER REQUEST: ${imageSuggestion}. ${workContext.attire}. ${cleanStyle}, hint of ${workContext.simpleBackground}. Natural expression.`,
-      `${subjects[2]} employed as ${jobTitle}. USER REQUEST: ${imageSuggestion}. ${workContext.attire}. ${cleanStyle}, minimal ${workContext.simpleBackground}. Professional look.`
+      `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[0]} working as ${jobTitle}. Wearing ${workContext.attire}. Background: realistic ${workContext.environment} with ${workContext.tools} visible, authentic workplace setting. ${qualityStyle}. Confident professional expression.`,
+      `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[1]} as ${jobTitle}, ${workContext.action}. ${workContext.attire}. Background: ${workContext.setting} environment with proper equipment and context. ${qualityStyle}. Engaged natural expression.`,
+      `CRITICAL: ${imageSuggestion}. ${framingStyle}. ${subjects[2]} employed as ${jobTitle}. ${workContext.attire}. Background: authentic ${workContext.environment}, ${workContext.tools}. ${qualityStyle}. Determined professional look.`
     ];
   }
   
   // === MARISA SEM SUGESTÃO ===
   if (clientTemplate === 'marisa') {
     return [
-      `${subjects[0]} as ${jobTitle} in retail. Wearing pink polo shirt or pink blouse. ${cleanStyle}, soft blurred fashion store background. Friendly welcoming smile, professional portrait.`,
-      `${subjects[1]} working as ${jobTitle}. Pink clothing prominent. ${cleanStyle}, subtle retail environment hint. Confident warm expression.`,
-      `${subjects[2]} employed as ${jobTitle}. Pink uniform shirt visible. ${cleanStyle}, minimal store background. Natural professional demeanor.`
+      `${framingStyle}. ${subjects[0]} as ${jobTitle} in a fashion retail store. Wearing pink polo shirt or pink uniform. Background: modern Marisa clothing store interior with clothing racks, warm store lighting, organized merchandise display. ${qualityStyle}. Friendly professional expression.`,
+      `${framingStyle}. ${subjects[1]} working as ${jobTitle}. Pink blouse or pink uniform visible. Background: bright retail store environment with colorful clothes on display, clean organized store. ${qualityStyle}. Confident welcoming smile.`,
+      `${framingStyle}. ${subjects[2]} employed as ${jobTitle}. Pink uniform shirt. Background: fashion store interior with mannequins and clothing racks visible. ${qualityStyle}. Natural professional demeanor.`
     ];
   }
   
-  // === PROMPTS PADRÃO - LIMPOS E SIMPLES ===
+  // === PROMPTS PADRÃO COM FUNDO CONTEXTUAL ===
   return [
-    `${subjects[0]} as ${jobTitle}. Wearing ${workContext.attire}. ${cleanStyle}, subtle ${workContext.simpleBackground}. Confident professional expression, natural pose.`,
-    `${subjects[1]} working as ${jobTitle}. ${workContext.attire}. ${cleanStyle}, hint of ${workContext.simpleBackground}. Friendly smile, engaged look.`,
-    `${subjects[2]} employed as ${jobTitle}. ${workContext.attire}. ${cleanStyle}, minimal ${workContext.simpleBackground}. Determined professional expression.`
+    `${framingStyle}. ${subjects[0]} working as ${jobTitle}. Wearing ${workContext.attire}. Background: realistic ${workContext.environment} with ${workContext.tools} visible, authentic ${workContext.setting}. ${requirementsText ? `Job context: ${requirementsText}.` : ''} ${qualityStyle}. Confident professional expression.`,
+    `${framingStyle}. ${subjects[1]} as ${jobTitle}, ${workContext.action}. ${workContext.attire}. Background: ${workContext.setting} environment, proper workplace equipment visible, authentic work atmosphere. ${qualityStyle}. Engaged friendly expression.`,
+    `${framingStyle}. ${subjects[2]} employed as ${jobTitle}, ${workContext.alternateAction}. ${workContext.attire}. Background: ${workContext.environment} with relevant tools and equipment. ${qualityStyle}. Determined professional look.`
   ];
 }
 
