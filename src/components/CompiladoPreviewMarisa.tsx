@@ -138,17 +138,17 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       }
     });
 
-    // Requisitos - Fonte 26px
+    // Requisitos e atividades - Fonte 26px
     y += 32;
     ctx.fillStyle = '#E5007E';
     ctx.beginPath();
-    ctx.roundRect(64, y, 160, 48, 24);
+    ctx.roundRect(64, y, 280, 48, 24);
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 22px Montserrat, Arial';
+    ctx.font = 'bold 20px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Requisitos', 144, y + 30);
+    ctx.fillText('Requisitos e atividades', 204, y + 30);
     ctx.textAlign = 'left';
 
     y += 80;
