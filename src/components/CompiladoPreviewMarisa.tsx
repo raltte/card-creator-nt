@@ -191,8 +191,17 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br/marisa';
     
+    // Calcular fonte dinâmica para e-mails longos
+    const maxContactWidth = 420;
+    let contactFontSize = 26;
+    ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
+    
+    while (ctx.measureText(contactValue).width > maxContactWidth && contactFontSize > 16) {
+      contactFontSize -= 1;
+      ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
+    }
+    
     ctx.fillStyle = '#11332B';
-    ctx.font = 'bold 26px Montserrat, Arial';
     
     if (data.contato.tipo === 'whatsapp') {
       const whatsappImg = new Image();
@@ -202,7 +211,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
         whatsappImg.onerror = resolve;
       });
       
-      const iconSize = 26;
+      const iconSize = contactFontSize;
       ctx.drawImage(whatsappImg, 64, y - iconSize, iconSize, iconSize);
       ctx.fillText(contactValue, 64 + iconSize + 8, y);
     } else {

@@ -288,12 +288,26 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br';
     
-    // Medir o texto do contato para criar o quadro dinâmico
-    ctx.font = 'bold 24px Montserrat, Arial';
+    // Área máxima disponível para o botão de contato (limitando a 480px)
+    const maxButtonWidth = 480;
     const iconSize = 24;
     const iconPadding = 8;
-    const contactTextMetrics = ctx.measureText(contactText);
-    const buttonWidth = iconSize + iconPadding + contactTextMetrics.width + 40; // ícone + espaço + texto + padding
+    const basePadding = 40;
+    
+    // Calcular fonte dinâmica para e-mails longos
+    let contactFontSize = 24;
+    ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
+    let contactTextMetrics = ctx.measureText(contactText);
+    let buttonWidth = iconSize + iconPadding + contactTextMetrics.width + basePadding;
+    
+    // Reduzir fonte se necessário para caber na área
+    while (buttonWidth > maxButtonWidth && contactFontSize > 14) {
+      contactFontSize -= 1;
+      ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
+      contactTextMetrics = ctx.measureText(contactText);
+      buttonWidth = iconSize + iconPadding + contactTextMetrics.width + basePadding;
+    }
+    
     const buttonHeight = 48;
     const buttonY = footerY + 108;
     
@@ -318,7 +332,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       
       // Texto do contato ao lado do ícone
       ctx.fillStyle = '#11332B';
-      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
@@ -326,7 +340,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
       // Texto com emoji para email e site
       const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
       ctx.fillStyle = '#11332B';
-      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(iconText + ' ' + contactText, 696, buttonY);
