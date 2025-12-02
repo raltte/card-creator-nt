@@ -235,8 +235,7 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     if (data.requisitos) {
       ctx.fillStyle = '#20CE90';
       ctx.font = 'bold 28px Montserrat, Arial';
-      const requisitosTitle = data.tipoContrato === 'Temporário' ? 'Requisitos:' : 'Requisitos e atividades:';
-      ctx.fillText(requisitosTitle, 456, y);
+      ctx.fillText('Requisitos e atividades:', 456, y);
       y += 44;
 
       // Quebrar texto dos requisitos com espaçamento correto
