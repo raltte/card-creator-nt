@@ -4,14 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CartazForm } from "./CartazForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
+import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, FileImage, Layers } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export interface CartazData {
   image?: File | string;
@@ -150,162 +150,114 @@ export const CartazGenerator = () => {
     }
   };
 
+  const renderPreview = () => {
+    if (modeloType === 'tradicional') {
+      switch (cartazData.clientTemplate) {
+        case 'marisa':
+          return <CartazPreviewMarisa data={cartazData} />;
+        case 'weg':
+          return <CartazPreviewWeg data={cartazData} />;
+        default:
+          return <CartazPreview data={cartazData} />;
+      }
+    } else {
+      return compiladoData.clientTemplate === 'marisa' 
+        ? <CompiladoPreviewMarisa data={compiladoData} />
+        : <CompiladoPreview data={compiladoData} />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-nt-dark mb-2">
-            Gerador de Cartazes de Vagas
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-nt-dark mb-1">
+            Editor de Cartazes
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-muted-foreground">
             Novo Tempo Consultoria e RH
           </p>
         </div>
 
         {/* Seleção de Modelo */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <Label className="text-lg font-semibold mb-4 block">Selecione o tipo de modelo:</Label>
-            <RadioGroup value={modeloType} onValueChange={(value: 'tradicional' | 'compilado') => setModeloType(value)}>
-              <div className="flex items-center space-x-2 mb-3">
-                <RadioGroupItem value="tradicional" id="tradicional" />
-                <Label htmlFor="tradicional" className="cursor-pointer">
-                  Tradicional - Uma vaga por cartaz
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="compilado" id="compilado" />
-                <Label htmlFor="compilado" className="cursor-pointer">
-                  Compilado - Múltiplas vagas em um cartaz
-                </Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
+        <div className="flex justify-center gap-4 mb-6">
+          <Button
+            variant={modeloType === 'tradicional' ? 'default' : 'outline'}
+            onClick={() => setModeloType('tradicional')}
+            className="gap-2"
+          >
+            <FileImage className="w-4 h-4" />
+            Individual
+          </Button>
+          <Button
+            variant={modeloType === 'compilado' ? 'default' : 'outline'}
+            onClick={() => setModeloType('compilado')}
+            className="gap-2"
+          >
+            <Layers className="w-4 h-4" />
+            Compilado
+          </Button>
+        </div>
 
-        <Tabs defaultValue="editor" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="editor">Editor</TabsTrigger>
-            <TabsTrigger value="preview">Visualização</TabsTrigger>
-          </TabsList>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Formulário */}
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold text-nt-dark mb-4">
+                {modeloType === 'tradicional' ? 'Dados da Vaga' : 'Dados das Vagas'}
+              </h2>
+              {modeloType === 'tradicional' ? (
+                <CartazForm 
+                  data={cartazData}
+                  onChange={setCartazData}
+                />
+              ) : (
+                <CompiladoForm 
+                  data={compiladoData}
+                  onChange={setCompiladoData}
+                />
+              )}
+            </CardContent>
+          </Card>
 
-          <TabsContent value="editor" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Formulário */}
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-semibold text-nt-dark mb-6">
-                    {modeloType === 'tradicional' ? 'Dados da Vaga' : 'Dados das Vagas'}
-                  </h2>
-                  {modeloType === 'tradicional' ? (
-                    <CartazForm 
-                      data={cartazData}
-                      onChange={setCartazData}
-                    />
-                  ) : (
-                    <CompiladoForm 
-                      data={compiladoData}
-                      onChange={setCompiladoData}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Preview em tempo real */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-semibold text-nt-dark">
-                      Prévia
-                    </h2>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={handleShare}
-                        disabled={!isFormValid()}
-                      >
-                        <Share2 className="w-4 h-4 mr-1" />
-                        Compartilhar
-                      </Button>
-                      <Button 
-                        variant="default"
-                        size="sm"
-                        onClick={handleDownload}
-                        disabled={!isFormValid()}
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        Baixar PNG
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    {modeloType === 'tradicional' ? (
-                      cartazData.clientTemplate === 'marisa' ? (
-                        <CartazPreviewMarisa data={cartazData} />
-                      ) : (
-                        <CartazPreview data={cartazData} />
-                      )
-                    ) : (
-                      compiladoData.clientTemplate === 'marisa' ? (
-                        <CompiladoPreviewMarisa data={compiladoData} />
-                      ) : (
-                        <CompiladoPreview data={compiladoData} />
-                      )
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="preview">
-            <Card>
-              <CardContent className="p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-semibold text-nt-dark">
-                    Cartaz Final
-                  </h2>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline"
-                      onClick={handleShare}
-                      disabled={!isFormValid()}
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Compartilhar
-                    </Button>
-                    <Button 
-                      onClick={handleDownload}
-                      disabled={!isFormValid()}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Baixar PNG
-                    </Button>
-                  </div>
+          {/* Preview em tempo real */}
+          <Card className="sticky top-4">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-nt-dark">
+                  Prévia
+                </h2>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleShare}
+                    disabled={!isFormValid()}
+                  >
+                    <Share2 className="w-4 h-4 mr-1" />
+                    Copiar
+                  </Button>
+                  <Button 
+                    variant="default"
+                    size="sm"
+                    onClick={handleDownload}
+                    disabled={!isFormValid()}
+                    className="bg-nt-light hover:bg-nt-light/90"
+                  >
+                    <Download className="w-4 h-4 mr-1" />
+                    Baixar PNG
+                  </Button>
                 </div>
-                <div className="flex justify-center">
-                  <div className="scale-125 origin-top">
-                    {modeloType === 'tradicional' ? (
-                      cartazData.clientTemplate === 'marisa' ? (
-                        <CartazPreviewMarisa data={cartazData} />
-                      ) : (
-                        <CartazPreview data={cartazData} />
-                      )
-                    ) : (
-                      compiladoData.clientTemplate === 'marisa' ? (
-                        <CompiladoPreviewMarisa data={compiladoData} />
-                      ) : (
-                        <CompiladoPreview data={compiladoData} />
-                      )
-                    )}
-                  </div>
+              </div>
+              <div className="flex justify-center overflow-auto max-h-[calc(100vh-200px)]">
+                <div className="scale-[0.4] origin-top">
+                  {renderPreview()}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
