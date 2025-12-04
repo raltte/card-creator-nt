@@ -86,7 +86,7 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
           jobTitle: data.vagas[0].cargo,
           sector: "Geral",
           contractType: "Diversos",
-          requirements: [],
+          requirements: data.requisitos ? data.requisitos.split('\n') : [],
           clientTemplate: data.clientTemplate,
         }
       });
@@ -185,13 +185,92 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      {/* Seleção de Template */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Template do Cliente</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'padrao')}
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
+              data.clientTemplate === 'padrao' 
+                ? 'border-nt-light bg-nt-light/10' 
+                : 'border-border hover:border-nt-light/50'
+            }`}
+          >
+            <div className="font-semibold text-sm">Novo Tempo</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'marisa')}
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
+              data.clientTemplate === 'marisa' 
+                ? 'border-pink-500 bg-pink-500/10' 
+                : 'border-border hover:border-pink-500/50'
+            }`}
+          >
+            <div className="font-semibold text-sm">Marisa</div>
+          </button>
+        </div>
+      </div>
+
+      {/* Imagem */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>
+        
+        <div className="grid grid-cols-2 gap-2">
+          <div className="border-2 border-dashed border-border rounded-lg p-3 hover:border-nt-light transition-colors">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload-compilado"
+            />
+            <label htmlFor="image-upload-compilado" className="cursor-pointer">
+              <div className="flex flex-col items-center gap-1 text-center">
+                <Upload className="w-5 h-5 text-muted-foreground" />
+                <div className="text-xs text-muted-foreground">
+                  Upload
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGenerateAIImage}
+            disabled={isGeneratingImage || data.vagas.length === 0 || !data.vagas[0].cargo}
+            className="h-full"
+          >
+            <div className="flex flex-col items-center gap-1">
+              <Wand2 className="w-5 h-5" />
+              <div className="text-xs">
+                {isGeneratingImage ? 'Gerando...' : 'Gerar com IA'}
+              </div>
+            </div>
+          </Button>
+        </div>
+
+        {data.image && (
+          <div className="relative aspect-[9/16] max-h-32 rounded-lg overflow-hidden border-2 border-nt-light">
+            <img
+              src={typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image)}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+      </div>
+
       {/* Vaga PCD */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
+      <div className="flex items-center justify-between p-3 border rounded-lg">
         <div className="space-y-0.5">
-          <Label htmlFor="pcd-compilado" className="text-base font-semibold">Vaga PCD</Label>
-          <div className="text-sm text-muted-foreground">
-            Vaga exclusiva ou afirmativa para Pessoa com Deficiência
+          <Label htmlFor="pcd-compilado" className="text-sm font-semibold">Vaga PCD</Label>
+          <div className="text-xs text-muted-foreground">
+            Exclusiva para PcD
           </div>
         </div>
         <Switch
@@ -202,9 +281,9 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
       </div>
 
       {/* Local */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="sm:col-span-2">
-          <Label htmlFor="cidade">Cidade *</Label>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="col-span-2">
+          <Label htmlFor="cidade" className="text-sm">Cidade *</Label>
           <Input
             id="cidade"
             placeholder="Ex: Arujá"
@@ -214,10 +293,10 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
           />
         </div>
         <div>
-          <Label htmlFor="estado">Estado * (Sigla)</Label>
+          <Label htmlFor="estado" className="text-sm">UF *</Label>
           <Input
             id="estado"
-            placeholder="Ex: SP"
+            placeholder="SP"
             value={data.estado}
             onChange={(e) => {
               const value = e.target.value.toUpperCase();
@@ -232,42 +311,43 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
       </div>
 
       {/* Vagas */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label className="text-base font-semibold">Vagas</Label>
+          <Label className="text-sm font-semibold">Vagas</Label>
           <Button 
             type="button" 
             size="sm" 
             onClick={addVaga}
             variant="outline"
+            className="h-7 text-xs"
           >
-            <Plus className="w-4 h-4 mr-1" />
-            Adicionar Vaga
+            <Plus className="w-3 h-3 mr-1" />
+            Adicionar
           </Button>
         </div>
 
         {data.vagas.map((vaga, index) => (
-          <div key={index} className="flex gap-2 items-start p-4 border rounded-lg">
-            <div className="flex-1 grid grid-cols-4 gap-2">
-              <Input
-                placeholder="Código"
-                value={vaga.codigo}
-                onChange={(e) => updateVaga(index, 'codigo', e.target.value)}
-                maxLength={5}
-              />
-              <Input
-                placeholder="Nome da vaga"
-                value={vaga.cargo}
-                onChange={(e) => updateVaga(index, 'cargo', e.target.value)}
-                className="col-span-3"
-              />
-            </div>
+          <div key={index} className="flex gap-2 items-center p-2 border rounded-lg">
+            <Input
+              placeholder="Código"
+              value={vaga.codigo}
+              onChange={(e) => updateVaga(index, 'codigo', e.target.value)}
+              maxLength={5}
+              className="w-20 text-sm"
+            />
+            <Input
+              placeholder="Nome da vaga"
+              value={vaga.cargo}
+              onChange={(e) => updateVaga(index, 'cargo', e.target.value)}
+              className="flex-1 text-sm"
+            />
             <Button
               type="button"
               size="icon"
               variant="ghost"
               onClick={() => removeVaga(index)}
               disabled={data.vagas.length === 1}
+              className="h-8 w-8"
             >
               <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
@@ -277,26 +357,26 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
 
       {/* Requisitos e Atividades */}
       <div>
-        <Label htmlFor="requisitos">Requisitos e Atividades *</Label>
+        <Label htmlFor="requisitos" className="text-sm">Requisitos e Atividades *</Label>
         <Textarea
           id="requisitos"
-          placeholder="• Ensino Médio Completo;&#10;• Disponibilidade para atuar em turnos;&#10;• Experiência em atendimento ao cliente."
+          placeholder="• Ensino Médio Completo;&#10;• Disponibilidade para turnos;&#10;• Experiência em atendimento."
           value={data.requisitos}
           onChange={(e) => updateData('requisitos', e.target.value)}
           maxLength={250}
-          rows={5}
-          className="mt-1 resize-none"
+          rows={3}
+          className="mt-1 resize-none text-sm"
         />
         <div className="text-xs text-muted-foreground mt-1">
-          {data.requisitos.length}/250 caracteres
+          {data.requisitos.length}/250
         </div>
       </div>
 
       {/* Contato */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Opções de Contato</Label>
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Contato</Label>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Website */}
           <div className="flex items-center space-x-2">
             <Checkbox 
@@ -306,18 +386,14 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
                 if (checked) handleContactTypeChange('site');
               }}
             />
-            <label 
-              htmlFor="website-compilado" 
-              className="text-sm font-medium leading-none cursor-pointer"
-              onClick={() => handleContactTypeChange('site')}
-            >
-              Website da empresa
+            <label htmlFor="website-compilado" className="text-sm cursor-pointer">
+              Website
             </label>
           </div>
           {data.contato.tipo === 'site' && (
-            <div className="ml-6 p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
-                <Globe className="w-4 h-4 text-nt-light" />
+            <div className="ml-6 p-2 bg-muted rounded-lg">
+              <div className="flex items-center gap-2 text-xs">
+                <Globe className="w-3 h-3 text-nt-light" />
                 <span>novotemporh.com.br</span>
               </div>
             </div>
@@ -332,29 +408,19 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
                 if (checked) handleContactTypeChange('whatsapp');
               }}
             />
-            <label 
-              htmlFor="whatsapp-compilado" 
-              className="text-sm font-medium leading-none cursor-pointer"
-              onClick={() => handleContactTypeChange('whatsapp')}
-            >
+            <label htmlFor="whatsapp-compilado" className="text-sm cursor-pointer">
               WhatsApp
             </label>
           </div>
           {data.contato.tipo === 'whatsapp' && (
-            <div className="ml-6 space-y-2">
-              <Label htmlFor="whatsapp-number-compilado" className="text-sm">Número do WhatsApp</Label>
+            <div className="ml-6">
               <Input
-                id="whatsapp-number-compilado"
                 placeholder="(11) 99999-9999"
                 value={data.contato.valor}
                 onChange={(e) => handleWhatsAppChange(e.target.value)}
                 maxLength={15}
-                className="font-mono"
+                className="font-mono text-sm"
               />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MessageCircle className="w-4 h-4 text-nt-light" />
-                <span>Formato: (xx) xxxxx-xxxx</span>
-              </div>
             </div>
           )}
 
@@ -367,20 +433,18 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
                 if (checked) handleContactTypeChange('email');
               }}
             />
-            <label 
-              htmlFor="email-compilado" 
-              className="text-sm font-medium leading-none cursor-pointer"
-              onClick={() => handleContactTypeChange('email')}
-            >
-              Email da empresa
+            <label htmlFor="email-compilado" className="text-sm cursor-pointer">
+              Email
             </label>
           </div>
           {data.contato.tipo === 'email' && (
-            <div className="ml-6 p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-nt-light" />
-                <span>email@novotemporh.com.br</span>
-              </div>
+            <div className="ml-6">
+              <Input
+                placeholder="email@novotemporh.com.br"
+                value={data.contato.valor}
+                onChange={(e) => updateData('contato.valor', e.target.value)}
+                className="text-sm"
+              />
             </div>
           )}
         </div>

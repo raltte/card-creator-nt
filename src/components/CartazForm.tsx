@@ -68,7 +68,7 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
           jobTitle: data.cargo,
           sector: "Geral",
           contractType: data.tipoContrato,
-          requirements: [],
+          requirements: data.requisitos ? data.requisitos.split('\n') : [],
           clientTemplate: data.clientTemplate,
         }
       });
@@ -155,44 +155,53 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Seleção de Cliente */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Template do Cliente</Label>
-        <div className="grid grid-cols-2 gap-4">
+    <div className="space-y-5">
+      {/* Seleção de Template */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Template do Cliente</Label>
+        <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
             onClick={() => updateData('clientTemplate', 'padrao')}
-            className={`p-4 border-2 rounded-lg text-left transition-colors ${
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
               data.clientTemplate === 'padrao' 
-                ? 'border-nt-light bg-nt-light/5' 
+                ? 'border-nt-light bg-nt-light/10' 
                 : 'border-border hover:border-nt-light/50'
             }`}
           >
-            <div className="font-semibold">Padrão</div>
-            <div className="text-sm text-muted-foreground">Novo Tempo RH</div>
+            <div className="font-semibold text-sm">Novo Tempo</div>
           </button>
           <button
             type="button"
             onClick={() => updateData('clientTemplate', 'marisa')}
-            className={`p-4 border-2 rounded-lg text-left transition-colors ${
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
               data.clientTemplate === 'marisa' 
-                ? 'border-nt-light bg-nt-light/5' 
-                : 'border-border hover:border-nt-light/50'
+                ? 'border-pink-500 bg-pink-500/10' 
+                : 'border-border hover:border-pink-500/50'
             }`}
           >
-            <div className="font-semibold">Marisa</div>
-            <div className="text-sm text-muted-foreground">Layout personalizado</div>
+            <div className="font-semibold text-sm">Marisa</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'weg')}
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
+              data.clientTemplate === 'weg' 
+                ? 'border-blue-600 bg-blue-600/10' 
+                : 'border-border hover:border-blue-600/50'
+            }`}
+          >
+            <div className="font-semibold text-sm">WEG</div>
           </button>
         </div>
       </div>
 
       {/* Imagem */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Imagem Ilustrativa</Label>
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>
         
         <div className="grid grid-cols-2 gap-2">
-          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-nt-light transition-colors">
+          <div className="border-2 border-dashed border-border rounded-lg p-3 hover:border-nt-light transition-colors">
             <input
               type="file"
               accept="image/*"
@@ -201,8 +210,8 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="image-upload"
             />
             <label htmlFor="image-upload" className="cursor-pointer">
-              <div className="flex flex-col items-center gap-2 text-center">
-                <Upload className="w-6 h-6 text-muted-foreground" />
+              <div className="flex flex-col items-center gap-1 text-center">
+                <Upload className="w-5 h-5 text-muted-foreground" />
                 <div className="text-xs text-muted-foreground">
                   Upload
                 </div>
@@ -217,8 +226,8 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             disabled={isGeneratingImage || !data.cargo}
             className="h-full"
           >
-            <div className="flex flex-col items-center gap-2">
-              <Wand2 className="w-6 h-6" />
+            <div className="flex flex-col items-center gap-1">
+              <Wand2 className="w-5 h-5" />
               <div className="text-xs">
                 {isGeneratingImage ? 'Gerando...' : 'Gerar com IA'}
               </div>
@@ -227,7 +236,7 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
         </div>
 
         {data.image && (
-          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-nt-light">
+          <div className="relative aspect-[9/16] max-h-32 rounded-lg overflow-hidden border-2 border-nt-light">
             <img
               src={typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image)}
               alt="Preview"
@@ -238,11 +247,11 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       </div>
 
       {/* Vaga PCD */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
+      <div className="flex items-center justify-between p-3 border rounded-lg">
         <div className="space-y-0.5">
-          <Label htmlFor="pcd" className="text-base font-semibold">Vaga PCD</Label>
-          <div className="text-sm text-muted-foreground">
-            Vaga exclusiva ou afirmativa para Pessoa com Deficiência
+          <Label htmlFor="pcd" className="text-sm font-semibold">Vaga PCD</Label>
+          <div className="text-xs text-muted-foreground">
+            Exclusiva para PcD
           </div>
         </div>
         <Switch
@@ -253,9 +262,9 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       </div>
 
       {/* Dados da vaga */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3">
         <div>
-          <Label htmlFor="cargo">Cargo da Vaga *</Label>
+          <Label htmlFor="cargo" className="text-sm">Cargo da Vaga *</Label>
           <Input
             id="cargo"
             placeholder="Ex: Operador de Produção"
@@ -265,94 +274,102 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="local">Local *</Label>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2">
+            <Label htmlFor="cidade" className="text-sm">Cidade *</Label>
             <Input
-              id="local"
-              placeholder="Ex: Resende - RJ"
-              value={data.local}
-              onChange={(e) => updateData('local', e.target.value)}
+              id="cidade"
+              placeholder="Ex: Resende"
+              value={data.cidade}
+              onChange={(e) => updateData('cidade', e.target.value)}
               className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="codigo">Código *</Label>
+            <Label htmlFor="estado" className="text-sm">UF *</Label>
+            <Input
+              id="estado"
+              placeholder="RJ"
+              value={data.estado}
+              onChange={(e) => {
+                const value = e.target.value.toUpperCase();
+                if (value.length <= 2) {
+                  updateData('estado', value);
+                }
+              }}
+              maxLength={2}
+              className="mt-1 uppercase"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Label htmlFor="codigo" className="text-sm">Código *</Label>
             <Input
               id="codigo"
-              placeholder="Ex: 20632"
+              placeholder="20632"
               value={data.codigo}
               onChange={(e) => updateData('codigo', e.target.value)}
               maxLength={5}
               className="mt-1"
             />
           </div>
+          <div>
+            <Label htmlFor="tipo-contrato" className="text-sm">Contrato *</Label>
+            <Select value={data.tipoContrato} onValueChange={(value) => updateData('tipoContrato', value)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Efetivo">Efetivo</SelectItem>
+                <SelectItem value="Temporário">Temporário</SelectItem>
+                <SelectItem value="PJ">PJ</SelectItem>
+                <SelectItem value="Estágio">Estágio</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div>
-          <Label htmlFor="tipo-contrato">Tipo de Contrato *</Label>
-          <Select value={data.tipoContrato} onValueChange={(value) => updateData('tipoContrato', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Efetivo">Efetivo</SelectItem>
-              <SelectItem value="Temporário">Temporário</SelectItem>
-              <SelectItem value="PJ">PJ</SelectItem>
-              <SelectItem value="Estágio">Estágio</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="requisitos">
-            {data.tipoContrato === 'Temporário' ? 'Requisitos' : 'Requisitos e Atividades'} *
-          </Label>
+          <Label htmlFor="requisitos" className="text-sm">Requisitos e Atividades *</Label>
           <Textarea
             id="requisitos"
-            placeholder="• Ensino Médio completo;&#10;• Experiência anterior na função/área;&#10;• Disponibilidade para trabalhar em turnos;"
+            placeholder="• Ensino Médio completo;&#10;• Experiência anterior na função;&#10;• Disponibilidade para turnos;"
             value={data.requisitos}
             onChange={(e) => updateData('requisitos', e.target.value)}
             maxLength={180}
-            rows={4}
-            className="mt-1 resize-none"
+            rows={3}
+            className="mt-1 resize-none text-sm"
           />
           <div className="text-xs text-muted-foreground mt-1">
-            {data.requisitos.length}/180 caracteres
+            {data.requisitos.length}/180
           </div>
         </div>
       </div>
 
       {/* Contato */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Opções de Contato</Label>
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Contato</Label>
         
-        {/* Opções de contato */}
-        <div className="space-y-4">
-          {/* Website (padrão) */}
+        <div className="space-y-3">
+          {/* Website */}
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="website"
               checked={data.contato.tipo === 'site'}
               onCheckedChange={(checked) => {
-                console.log('Website checkbox clicked:', checked);
-                if (checked) {
-                  handleContactTypeChange('site');
-                }
+                if (checked) handleContactTypeChange('site');
               }}
             />
-            <label 
-              htmlFor="website" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              onClick={() => handleContactTypeChange('site')}
-            >
-              Website da empresa
+            <label htmlFor="website" className="text-sm cursor-pointer">
+              Website
             </label>
           </div>
           {data.contato.tipo === 'site' && (
-            <div className="ml-6 p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
-                <Globe className="w-4 h-4 text-nt-light" />
+            <div className="ml-6 p-2 bg-muted rounded-lg">
+              <div className="flex items-center gap-2 text-xs">
+                <Globe className="w-3 h-3 text-nt-light" />
                 <span>novotemporh.com.br</span>
               </div>
             </div>
@@ -364,35 +381,22 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="whatsapp"
               checked={data.contato.tipo === 'whatsapp'}
               onCheckedChange={(checked) => {
-                console.log('WhatsApp checkbox clicked:', checked);
-                if (checked) {
-                  handleContactTypeChange('whatsapp');
-                }
+                if (checked) handleContactTypeChange('whatsapp');
               }}
             />
-            <label 
-              htmlFor="whatsapp" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              onClick={() => handleContactTypeChange('whatsapp')}
-            >
+            <label htmlFor="whatsapp" className="text-sm cursor-pointer">
               WhatsApp
             </label>
           </div>
           {data.contato.tipo === 'whatsapp' && (
             <div className="ml-6 space-y-2">
-              <Label htmlFor="whatsapp-number" className="text-sm">Número do WhatsApp</Label>
               <Input
-                id="whatsapp-number"
                 placeholder="(11) 99999-9999"
                 value={data.contato.valor}
                 onChange={(e) => handleWhatsAppChange(e.target.value)}
                 maxLength={15}
-                className="font-mono"
+                className="font-mono text-sm"
               />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MessageCircle className="w-4 h-4 text-nt-light" />
-                <span>Formato: (xx) xxxxx-xxxx</span>
-              </div>
             </div>
           )}
 
@@ -402,26 +406,21 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
               id="email"
               checked={data.contato.tipo === 'email'}
               onCheckedChange={(checked) => {
-                console.log('Email checkbox clicked:', checked);
-                if (checked) {
-                  handleContactTypeChange('email');
-                }
+                if (checked) handleContactTypeChange('email');
               }}
             />
-            <label 
-              htmlFor="email" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              onClick={() => handleContactTypeChange('email')}
-            >
-              Email da empresa
+            <label htmlFor="email" className="text-sm cursor-pointer">
+              Email
             </label>
           </div>
           {data.contato.tipo === 'email' && (
-            <div className="ml-6 p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-nt-light" />
-                <span>email@novotemporh.com.br</span>
-              </div>
+            <div className="ml-6">
+              <Input
+                placeholder="email@novotemporh.com.br"
+                value={data.contato.valor}
+                onChange={(e) => updateData('contato.valor', e.target.value)}
+                className="text-sm"
+              />
             </div>
           )}
         </div>
