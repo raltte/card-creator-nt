@@ -251,7 +251,7 @@ export const CartazGenerator = () => {
                 </div>
               </div>
               <div className="flex justify-center overflow-auto max-h-[calc(100vh-180px)]">
-                <div className="scale-[0.55] origin-top">
+                <div className="scale-[1.1] origin-top">
                   {renderPreview()}
                 </div>
               </div>
