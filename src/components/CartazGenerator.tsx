@@ -251,7 +251,7 @@ export const CartazGenerator = () => {
                 </div>
               </div>
               <div className="flex justify-center items-start">
-                <div className="scale-[0.77] origin-top -mb-[45%]">
+                <div className="scale-[0.92] origin-top -mb-[20%]">
                   {renderPreview()}
                 </div>
               </div>
