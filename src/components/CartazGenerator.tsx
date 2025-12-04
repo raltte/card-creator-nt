@@ -250,8 +250,8 @@ export const CartazGenerator = () => {
                   </Button>
                 </div>
               </div>
-              <div className="flex justify-center overflow-auto max-h-[calc(100vh-200px)]">
-                <div className="scale-[0.4] origin-top">
+              <div className="flex justify-center overflow-auto max-h-[calc(100vh-180px)]">
+                <div className="scale-[0.55] origin-top">
                   {renderPreview()}
                 </div>
               </div>
