@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
-import { CompiladoForm } from "./CompiladoForm";
+import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
@@ -14,16 +14,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, Download } from "lucide-react";
 import html2canvas from "html2canvas";
 
-// State type without getter
-interface CompiladoState {
-  image: File | string;
-  cidade: string;
-  estado: string;
-  vagas: { codigo: string; cargo: string }[];
-  requisitos: string;
-  isPcd: boolean;
-  clientTemplate: 'padrao' | 'marisa' | 'weg';
-  contato: { tipo: 'whatsapp' | 'email' | 'site'; valor: string };
+class CompiladoDataImpl implements CompiladoData {
+  image: File | string = '';
+  cidade = '';
+  estado = '';
+  vagas = [{ codigo: '', cargo: '' }];
+  requisitos = '';
+  isPcd = false;
+  clientTemplate: 'padrao' | 'marisa' | 'weg' = 'padrao';
+  contato: { tipo: 'whatsapp' | 'email' | 'site'; valor: string } = { tipo: 'site', valor: 'novotemporh.com.br' };
+  
+  get local(): string {
+    return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+  }
 }
 
 export const RecrutadoraDashboard = () => {
@@ -45,17 +48,7 @@ export const RecrutadoraDashboard = () => {
     image: '',
     sugestaoImagem: ''
   });
-  const [dadosCompilado, setDadosCompilado] = useState<CompiladoState>({
-    image: '',
-    cidade: '',
-    estado: '',
-    vagas: [{ codigo: '', cargo: '' }],
-    requisitos: '',
-    isPcd: false,
-    clientTemplate: 'padrao',
-    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
-  });
-
+  const [dadosCompilado, setDadosCompilado] = useState<CompiladoDataImpl>(() => new CompiladoDataImpl());
 
   const handleFormSubmit = async (dados: RecrutadoraData) => {
     try {
@@ -96,17 +89,13 @@ export const RecrutadoraDashboard = () => {
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
-      const localValue = dadosCompilado.cidade && dadosCompilado.estado 
-        ? `${dadosCompilado.cidade} - ${dadosCompilado.estado}` 
-        : "";
-
       const { error } = await supabase.functions.invoke('criar-solicitacao', {
         body: {
           codigo: dadosCompilado.vagas[0].codigo,
           cargo: dadosCompilado.vagas.map(v => v.cargo).join(', '),
           tipoContrato: 'Compilado',
           modeloCartaz: `compilado-${dadosCompilado.clientTemplate}`,
-          local: localValue,
+          local: dadosCompilado.local,
           contato: dadosCompilado.contato,
           requisitos: dadosCompilado.requisitos,
           atividades: null,
@@ -171,12 +160,18 @@ export const RecrutadoraDashboard = () => {
     local: dadosIndividual.cidade && dadosIndividual.estado ? `${dadosIndividual.cidade} - ${dadosIndividual.estado}` : ""
   });
 
-  const getCompiladoDataWithLocal = () => ({
-    ...dadosCompilado,
-    get local() {
-      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
-    }
-  });
+  const updateCompiladoData = (newData: CompiladoData) => {
+    const updated = new CompiladoDataImpl();
+    updated.image = newData.image || '';
+    updated.cidade = newData.cidade;
+    updated.estado = newData.estado;
+    updated.vagas = newData.vagas;
+    updated.requisitos = newData.requisitos;
+    updated.isPcd = newData.isPcd;
+    updated.clientTemplate = newData.clientTemplate;
+    updated.contato = newData.contato;
+    setDadosCompilado(updated);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-6">
@@ -208,16 +203,16 @@ export const RecrutadoraDashboard = () => {
                   onValueChange={(value) => {
                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg');
                     if (tipoCartaz === 'compilado') {
-                      setDadosCompilado({
-                        ...dadosCompilado,
-                        clientTemplate: value as 'padrao' | 'marisa' | 'weg',
-                        contato: { 
-                          tipo: dadosCompilado.contato.tipo,
-                          valor: dadosCompilado.contato.tipo === 'site'
-                            ? (value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
-                            : dadosCompilado.contato.valor
-                        }
-                      });
+                      const updated = new CompiladoDataImpl();
+                      Object.assign(updated, dadosCompilado);
+                      updated.clientTemplate = value as 'padrao' | 'marisa' | 'weg';
+                      if (updated.contato.tipo === 'site') {
+                        updated.contato = { 
+                          tipo: 'site',
+                          valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
+                        };
+                      }
+                      setDadosCompilado(updated);
                     }
                   }}
                 >
@@ -269,28 +264,17 @@ export const RecrutadoraDashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
                     <CompiladoForm 
-                      data={getCompiladoDataWithLocal()} 
-                      onChange={(newData) => {
-                        setDadosCompilado({
-                          image: newData.image || '',
-                          cidade: newData.cidade,
-                          estado: newData.estado,
-                          vagas: newData.vagas,
-                          requisitos: newData.requisitos,
-                          isPcd: newData.isPcd,
-                          clientTemplate: newData.clientTemplate,
-                          contato: newData.contato
-                        });
-                      }}
+                      data={dadosCompilado} 
+                      onChange={updateCompiladoData}
                     />
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
                     <div ref={previewRef}>
                       {dadosCompilado.clientTemplate === 'padrao' ? (
-                        <CompiladoPreview data={getCompiladoDataWithLocal()} />
+                        <CompiladoPreview data={dadosCompilado} />
                       ) : (
-                        <CompiladoPreviewMarisa data={getCompiladoDataWithLocal()} />
+                        <CompiladoPreviewMarisa data={dadosCompilado} />
                       )}
                     </div>
                   </div>
