@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
-import { CompiladoForm, CompiladoData } from "./CompiladoForm";
+import { CompiladoForm } from "./CompiladoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
@@ -11,9 +11,24 @@ import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Send, Download } from "lucide-react";
+import html2canvas from "html2canvas";
+
+// State type without getter
+interface CompiladoState {
+  image: File | string;
+  cidade: string;
+  estado: string;
+  vagas: { codigo: string; cargo: string }[];
+  requisitos: string;
+  isPcd: boolean;
+  clientTemplate: 'padrao' | 'marisa' | 'weg';
+  contato: { tipo: 'whatsapp' | 'email' | 'site'; valor: string };
+}
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
+  const previewRef = useRef<HTMLDivElement>(null);
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
@@ -30,7 +45,7 @@ export const RecrutadoraDashboard = () => {
     image: '',
     sugestaoImagem: ''
   });
-  const [dadosCompilado, setDadosCompilado] = useState<CompiladoData>({
+  const [dadosCompilado, setDadosCompilado] = useState<CompiladoState>({
     image: '',
     cidade: '',
     estado: '',
@@ -38,10 +53,7 @@ export const RecrutadoraDashboard = () => {
     requisitos: '',
     isPcd: false,
     clientTemplate: 'padrao',
-    contato: { tipo: 'site', valor: 'novotemporh.com.br' },
-    get local() {
-      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
-    }
+    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
   });
 
 
@@ -84,13 +96,17 @@ export const RecrutadoraDashboard = () => {
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
+      const localValue = dadosCompilado.cidade && dadosCompilado.estado 
+        ? `${dadosCompilado.cidade} - ${dadosCompilado.estado}` 
+        : "";
+
       const { error } = await supabase.functions.invoke('criar-solicitacao', {
         body: {
           codigo: dadosCompilado.vagas[0].codigo,
           cargo: dadosCompilado.vagas.map(v => v.cargo).join(', '),
           tipoContrato: 'Compilado',
           modeloCartaz: `compilado-${dadosCompilado.clientTemplate}`,
-          local: dadosCompilado.local,
+          local: localValue,
           contato: dadosCompilado.contato,
           requisitos: dadosCompilado.requisitos,
           atividades: null,
@@ -112,6 +128,55 @@ export const RecrutadoraDashboard = () => {
     }
   };
 
+  const handleDownloadPng = async () => {
+    if (!previewRef.current) return;
+    
+    try {
+      toast({ title: "Gerando imagem...", description: "Aguarde..." });
+      
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `cartaz-${tipoCartaz}-${modeloSelecionado}-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      toast({ title: "Download iniciado!", description: "O cartaz foi baixado com sucesso." });
+    } catch (error) {
+      console.error('Erro ao gerar PNG:', error);
+      toast({ title: "Erro", description: "Não foi possível gerar o PNG.", variant: "destructive" });
+    }
+  };
+
+  const getIndividualPreviewData = () => ({
+    image: dadosIndividual.image || '',
+    cargo: dadosIndividual.nomeVaga || '',
+    cidade: dadosIndividual.cidade || '',
+    estado: dadosIndividual.estado || '',
+    codigo: dadosIndividual.codigoPS || '',
+    tipoContrato: dadosIndividual.tipoContrato || '',
+    requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
+    isPcd: dadosIndividual.isPcd || false,
+    clientTemplate: modeloSelecionado as 'padrao' | 'marisa' | 'weg',
+    contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
+      ? { tipo: 'whatsapp' as const, valor: dadosIndividual.whatsappNumber || '' }
+      : dadosIndividual.captacaoCurriculo === 'email'
+      ? { tipo: 'email' as const, valor: dadosIndividual.emailCaptacao || '' }
+      : { tipo: 'site' as const, valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
+    local: dadosIndividual.cidade && dadosIndividual.estado ? `${dadosIndividual.cidade} - ${dadosIndividual.estado}` : ""
+  });
+
+  const getCompiladoDataWithLocal = () => ({
+    ...dadosCompilado,
+    get local() {
+      return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
+    }
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-6">
@@ -128,7 +193,6 @@ export const RecrutadoraDashboard = () => {
               onValueChange={(value) => setTipoCartaz(value as 'individual' | 'compilado')}
               className="space-y-6"
             >
-              {/* Tabs de Tipo de Cartaz */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">Tipo de Cartaz</h3>
                 <TabsList className="grid w-full grid-cols-2">
@@ -137,14 +201,12 @@ export const RecrutadoraDashboard = () => {
                 </TabsList>
               </div>
 
-              {/* Tabs de Modelo */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
                 <Tabs 
                   defaultValue="padrao" 
                   onValueChange={(value) => {
                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg');
-                    // Atualizar o template do cliente e contato para compilado
                     if (tipoCartaz === 'compilado') {
                       setDadosCompilado({
                         ...dadosCompilado,
@@ -167,7 +229,6 @@ export const RecrutadoraDashboard = () => {
                 </Tabs>
               </div>
 
-              {/* Formulários */}
               <TabsContent value="individual" className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
@@ -179,105 +240,71 @@ export const RecrutadoraDashboard = () => {
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    {modeloSelecionado === 'padrao' ? (
-                      <CartazPreview 
-                        data={{
-                          image: dadosIndividual.image || '',
-                          cargo: dadosIndividual.nomeVaga || '',
-                          cidade: dadosIndividual.cidade || '',
-                          estado: dadosIndividual.estado || '',
-                          codigo: dadosIndividual.codigoPS || '',
-                          tipoContrato: dadosIndividual.tipoContrato || '',
-                          requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: dadosIndividual.isPcd || false,
-                          clientTemplate: 'padrao',
-                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
-                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
-                            : dadosIndividual.captacaoCurriculo === 'email'
-                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br' },
-                          get local() {
-                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
-                          }
-                        }}
-                      />
-                    ) : modeloSelecionado === 'weg' ? (
-                      <CartazPreviewWeg 
-                        data={{
-                          image: dadosIndividual.image || '',
-                          cargo: dadosIndividual.nomeVaga || '',
-                          cidade: dadosIndividual.cidade || '',
-                          estado: dadosIndividual.estado || '',
-                          codigo: dadosIndividual.codigoPS || '',
-                          tipoContrato: dadosIndividual.tipoContrato || '',
-                          requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
-                          isPcd: dadosIndividual.isPcd || false,
-                          clientTemplate: 'weg',
-                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
-                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
-                            : dadosIndividual.captacaoCurriculo === 'email'
-                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br' },
-                          get local() {
-                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
-                          }
-                        }}
-                      />
-                    ) : (
-                      <CartazPreviewMarisa 
-                        data={{
-                          image: dadosIndividual.image || '',
-                          cargo: dadosIndividual.nomeVaga || '',
-                          cidade: dadosIndividual.cidade || '',
-                          estado: dadosIndividual.estado || '',
-                          codigo: dadosIndividual.codigoPS || '',
-                          tipoContrato: dadosIndividual.tipoContrato || '',
-                          requisitos: '',
-                          isPcd: dadosIndividual.isPcd || false,
-                          clientTemplate: 'marisa',
-                          contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
-                            ? { tipo: 'whatsapp', valor: dadosIndividual.whatsappNumber || '' }
-                            : dadosIndividual.captacaoCurriculo === 'email'
-                            ? { tipo: 'email', valor: dadosIndividual.emailCaptacao || '' }
-                            : { tipo: 'site', valor: 'novotemporh.com.br/marisa' },
-                          get local() {
-                            return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
-                          }
-                        }}
-                      />
-                    )}
+                    <div ref={previewRef}>
+                      {modeloSelecionado === 'padrao' && (
+                        <CartazPreview data={getIndividualPreviewData()} />
+                      )}
+                      {modeloSelecionado === 'weg' && (
+                        <CartazPreviewWeg data={getIndividualPreviewData()} />
+                      )}
+                      {modeloSelecionado === 'marisa' && (
+                        <CartazPreviewMarisa data={getIndividualPreviewData()} />
+                      )}
+                    </div>
                   </div>
                 </div>
-                <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
-                  Enviar Solicitação
-                </Button>
+                <div className="flex gap-4">
+                  <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1" size="lg">
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar ao Monday
+                  </Button>
+                  <Button onClick={handleDownloadPng} variant="outline" className="flex-1" size="lg">
+                    <Download className="w-4 h-4 mr-2" />
+                    Baixar PNG
+                  </Button>
+                </div>
               </TabsContent>
 
               <TabsContent value="compilado" className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
                     <CompiladoForm 
-                      data={{
-                        ...dadosCompilado,
-                        clientTemplate: modeloSelecionado
-                      }} 
+                      data={getCompiladoDataWithLocal()} 
                       onChange={(newData) => {
-                        setDadosCompilado(newData);
+                        setDadosCompilado({
+                          image: newData.image || '',
+                          cidade: newData.cidade,
+                          estado: newData.estado,
+                          vagas: newData.vagas,
+                          requisitos: newData.requisitos,
+                          isPcd: newData.isPcd,
+                          clientTemplate: newData.clientTemplate,
+                          contato: newData.contato
+                        });
                       }}
                     />
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    {dadosCompilado.clientTemplate === 'padrao' ? (
-                      <CompiladoPreview data={dadosCompilado} />
-                    ) : (
-                      <CompiladoPreviewMarisa data={dadosCompilado} />
-                    )}
+                    <div ref={previewRef}>
+                      {dadosCompilado.clientTemplate === 'padrao' ? (
+                        <CompiladoPreview data={getCompiladoDataWithLocal()} />
+                      ) : (
+                        <CompiladoPreviewMarisa data={getCompiladoDataWithLocal()} />
+                      )}
+                    </div>
                   </div>
                 </div>
-                <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
-                  Enviar Solicitação
-                </Button>
+                <div className="flex gap-4">
+                  <Button onClick={handleCompiladoGenerate} className="flex-1" size="lg">
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar ao Monday
+                  </Button>
+                  <Button onClick={handleDownloadPng} variant="outline" className="flex-1" size="lg">
+                    <Download className="w-4 h-4 mr-2" />
+                    Baixar PNG
+                  </Button>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
