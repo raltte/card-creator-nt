@@ -73,14 +73,15 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     
     // Cargo (onde está escrito "Líder de Vendas")
     const cargoText = data.cargo || 'Nome da Vaga';
-    const maxWidth = 550; // Área segura horizontal reduzida
+    const maxWidth = 550; // Área segura horizontal
     const baseFontSize = 58;
-    const lineHeight = 52; // Espaçamento menor entre linhas
+    const minFontSize = 32;
+    const lineHeight = 52; // Espaçamento entre linhas
     
     ctx.fillStyle = '#E5007E';
     ctx.textAlign = 'center';
     
-    // Função para quebrar texto em linhas
+    // Função para quebrar texto em linhas com fonte específica
     const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       
@@ -89,7 +90,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
         return [text];
       }
       
-      // Quebrar em duas linhas
+      // Quebrar em linhas
       const words = text.split(' ');
       const lines: string[] = [];
       let currentLine = '';
@@ -112,25 +113,37 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       return lines.slice(0, 2); // Máximo 2 linhas
     };
     
-    // Tentar com fonte base, reduzir se ainda não couber em 2 linhas
+    // Encontrar o tamanho de fonte ideal
     let fontSize = baseFontSize;
-    let lines = wrapText(cargoText, maxWidth, fontSize);
+    ctx.font = `bold ${fontSize}px Montserrat, Arial`;
     
-    // Se ainda não couber bem, reduzir fonte
-    while (lines.length > 1 && fontSize > 40) {
-      const singleLineWidth = ctx.measureText(cargoText).width;
-      if (singleLineWidth <= maxWidth) {
-        lines = [cargoText];
-        break;
-      }
-      fontSize -= 2;
+    // Primeiro: tentar reduzir fonte para caber em uma linha
+    while (ctx.measureText(cargoText).width > maxWidth && fontSize > minFontSize) {
+      fontSize -= 1;
+      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+    }
+    
+    // Se ainda não couber em uma linha, quebrar em duas
+    let lines: string[];
+    if (ctx.measureText(cargoText).width > maxWidth) {
+      // Voltar para uma fonte maior e quebrar em 2 linhas
+      fontSize = Math.min(baseFontSize - 10, 48);
+      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+      
+      // Reduzir fonte até cada linha caber
       lines = wrapText(cargoText, maxWidth, fontSize);
+      while (lines.some(line => ctx.measureText(line).width > maxWidth) && fontSize > minFontSize) {
+        fontSize -= 1;
+        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+        lines = wrapText(cargoText, maxWidth, fontSize);
+      }
+    } else {
+      lines = [cargoText];
     }
     
     ctx.font = `bold ${fontSize}px Montserrat, Arial`;
     
     // Posicionar linhas centralizadas verticalmente
-    const totalTextHeight = lines.length * lineHeight;
     const startY = 922 - ((lines.length - 1) * lineHeight / 2);
     
     lines.forEach((line, index) => {
