@@ -29,14 +29,14 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Canvas 960x1200
-    canvas.width = 960;
-    canvas.height = 1200;
+    // Canvas 1080x1350
+    canvas.width = 1080;
+    canvas.height = 1350;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Espaço reservado para tarja PCD (sempre reservado)
-    const topOffset = 60;
+    // Espaço reservado para tarja PCD
+    const topOffset = 67;
 
     // Desenhar tarja azul PCD no topo (apenas se for vaga PCD)
     if (data.isPcd) {
@@ -44,9 +44,9 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.fillRect(0, 0, canvas.width, topOffset);
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 43);
       ctx.textAlign = 'left';
     }
 
@@ -55,140 +55,138 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     ctx.fillRect(0, topOffset, canvas.width, canvas.height - topOffset);
 
     // Lado esquerdo - conteúdo
-    const leftWidth = 528;
+    const leftWidth = 594;
     
     // Título "Vagas de emprego abertas"
     ctx.fillStyle = '#11332B';
-    ctx.font = 'bold 64px Montserrat, Arial';
+    ctx.font = 'bold 72px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vagas de', 64, topOffset + 160);
-    ctx.fillText('emprego', 64, topOffset + 224);
+    ctx.fillText('Vagas de', 72, topOffset + 180);
+    ctx.fillText('emprego', 72, topOffset + 252);
     
     // "abertas" em verde com ícone de seta
     ctx.fillStyle = '#20CE90';
-    ctx.fillText('abertas', 64, topOffset + 288);
+    ctx.fillText('abertas', 72, topOffset + 324);
     
     // Ícone de seta (down arrow) após "abertas"
     const textWidth = ctx.measureText('abertas ').width;
     ctx.beginPath();
-    ctx.arc(64 + textWidth + 24, topOffset + 270, 24, 0, Math.PI * 2);
+    ctx.arc(72 + textWidth + 27, topOffset + 304, 27, 0, Math.PI * 2);
     ctx.fillStyle = '#20CE90';
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 28px Arial';
+    ctx.font = 'bold 31px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('↓', 64 + textWidth + 24, topOffset + 278);
+    ctx.fillText('↓', 72 + textWidth + 27, topOffset + 313);
     
     ctx.textAlign = 'left';
 
-    // Badge local e PCD - posicionar após o título com margem
-    let y = topOffset + 340;
+    // Badge local e PCD
+    let y = topOffset + 382;
     const local = data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : '';
     if (local) {
       ctx.fillStyle = '#20CE90';
       ctx.beginPath();
-      ctx.roundRect(64, y, 200, 48, 24);
+      ctx.roundRect(72, y, 225, 54, 27);
       ctx.fill();
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 22px Montserrat, Arial';
+      ctx.font = 'bold 25px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(local, 164, y + 30);
+      ctx.fillText(local, 184, y + 34);
       ctx.textAlign = 'left';
       
-      // Badge PCD ao lado do local (se for vaga PCD)
+      // Badge PCD ao lado do local
       if (data.isPcd) {
-        const badgeX = 64 + 200 + 16;
+        const badgeX = 72 + 225 + 18;
         ctx.fillStyle = '#3B5998';
         ctx.beginPath();
-        ctx.roundRect(badgeX, y, 100, 48, 24);
+        ctx.roundRect(badgeX, y, 112, 54, 27);
         ctx.fill();
         
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 22px Montserrat, Arial';
+        ctx.font = 'bold 25px Montserrat, Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('PCD', badgeX + 50, y + 30);
+        ctx.fillText('PCD', badgeX + 56, y + 34);
         ctx.textAlign = 'left';
       }
     }
 
-    // Vagas - Fonte aumentada para 30px com espaçamento adequado após local
-    y += local ? 120 : 0;
+    // Vagas
+    y += local ? 135 : 0;
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
         ctx.fillStyle = '#20CE90';
-        ctx.font = 'bold 30px Montserrat, Arial';
+        ctx.font = 'bold 34px Montserrat, Arial';
         const codigoText = `${vaga.codigo}:`;
-        ctx.fillText(codigoText, 64, y);
+        ctx.fillText(codigoText, 72, y);
         
         const codigoWidth = ctx.measureText(codigoText).width;
         ctx.fillStyle = '#11332B';
-        ctx.font = '30px Montserrat, Arial';
-        ctx.fillText(` ${vaga.cargo}`, 64 + codigoWidth, y);
+        ctx.font = '34px Montserrat, Arial';
+        ctx.fillText(` ${vaga.cargo}`, 72 + codigoWidth, y);
         
-        y += 44;
+        y += 49;
       }
     });
 
-    // Requisitos e atividades - Fonte aumentada para 26px
-    y += 32;
+    // Requisitos e atividades
+    y += 36;
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
-    ctx.roundRect(64, y, 280, 48, 24);
+    ctx.roundRect(72, y, 315, 54, 27);
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Requisitos e atividades', 204, y + 30);
+    ctx.fillText('Requisitos e atividades', 229, y + 34);
     ctx.textAlign = 'left';
 
-    y += 80;
+    y += 90;
     if (data.requisitos) {
       ctx.fillStyle = '#11332B';
-      ctx.font = '26px Montserrat, Arial';
+      ctx.font = '29px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
-          ctx.fillText(lineWithBullet, 64, y);
-          y += 34;
+          ctx.fillText(lineWithBullet, 72, y);
+          y += 38;
         }
       });
     }
 
-    // Badge "Envie seu currículo:" - Dinâmico baseado no tamanho do texto
-    y = 1000;
+    // Badge "Envie seu currículo:"
+    y = 1125;
     
-    // Medir o texto para criar badge dinâmico
-    ctx.font = 'bold 22px Montserrat, Arial';
+    ctx.font = 'bold 25px Montserrat, Arial';
     const badgeTextMetrics = ctx.measureText('Envie seu currículo:');
-    const badgeWidth = badgeTextMetrics.width + 40; // adiciona padding
+    const badgeWidth = badgeTextMetrics.width + 45;
     
     ctx.fillStyle = '#20CE90';
     ctx.beginPath();
-    ctx.roundRect(64, y, badgeWidth, 48, 24);
+    ctx.roundRect(72, y, badgeWidth, 54, 27);
     ctx.fill();
     
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo:', 64 + badgeWidth/2, y + 30);
+    ctx.fillText('Envie seu currículo:', 72 + badgeWidth/2, y + 34);
     ctx.textAlign = 'left';
 
-    // Contato dinâmico com ícone - Fonte aumentada para 26px
-    y += 80;
+    // Contato dinâmico com ícone
+    y += 90;
     const contactValue = data.contato.tipo === 'whatsapp'
       ? data.contato.valor || '(xx) xxxxx-xxxx'
       : data.contato.tipo === 'email'
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br';
     
-    // Calcular fonte dinâmica para e-mails longos
-    const maxContactWidth = 420; // Largura máxima disponível no lado esquerdo
-    let contactFontSize = 26;
+    const maxContactWidth = 472;
+    let contactFontSize = 29;
     ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
     
-    while (ctx.measureText(contactValue).width > maxContactWidth && contactFontSize > 16) {
+    while (ctx.measureText(contactValue).width > maxContactWidth && contactFontSize > 18) {
       contactFontSize -= 1;
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
     }
@@ -204,11 +202,11 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       });
       
       const iconSize = contactFontSize;
-      ctx.drawImage(whatsappImg, 64, y - iconSize, iconSize, iconSize);
-      ctx.fillText(contactValue, 64 + iconSize + 8, y);
+      ctx.drawImage(whatsappImg, 72, y - iconSize, iconSize, iconSize);
+      ctx.fillText(contactValue, 72 + iconSize + 9, y);
     } else {
       const contactIcon = data.contato.tipo === 'email' ? '✉️' : '🌐';
-      ctx.fillText(`${contactIcon} ${contactValue}`, 64, y);
+      ctx.fillText(`${contactIcon} ${contactValue}`, 72, y);
     }
 
     // Lado direito - imagem
@@ -234,9 +232,9 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     } else {
       rightImage = new Image();
       rightImage.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg width="432" height="900" xmlns="http://www.w3.org/2000/svg">
-          <rect width="432" height="900" fill="#f3f4f6"/>
-          <text x="216" y="450" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
+        <svg width="486" height="1012" xmlns="http://www.w3.org/2000/svg">
+          <rect width="486" height="1012" fill="#f3f4f6"/>
+          <text x="243" y="506" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
         </svg>
       `);
       await new Promise((resolve) => {
@@ -251,19 +249,19 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       logo.onload = resolve;
     });
     
-    const logoWidth = 320;
+    const logoWidth = 360;
     const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 576, topOffset + 40, logoWidth, logoHeight);
+    ctx.drawImage(logo, 648, topOffset + 45, logoWidth, logoHeight);
 
-    // Desenhar imagem no lado direito com todas as bordas arredondadas
-    const imageX = 528;
-    const imageY = topOffset + logoHeight + 80;
-    const imageWidth = 432;
-    const imageHeight = 900;
+    // Desenhar imagem no lado direito com bordas arredondadas
+    const imageX = 594;
+    const imageY = topOffset + logoHeight + 90;
+    const imageWidth = 486;
+    const imageHeight = 1012;
 
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(imageX, imageY, imageWidth, imageHeight, 40);
+    ctx.roundRect(imageX, imageY, imageWidth, imageHeight, 45);
     ctx.clip();
 
     const imageAspect = rightImage.width / rightImage.height;
@@ -292,7 +290,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
   }, [data]);
 
   return (
-    <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="cartaz-container bg-white shadow-lg overflow-hidden">
       <canvas 
         ref={canvasRef}
         id="cartaz-canvas"

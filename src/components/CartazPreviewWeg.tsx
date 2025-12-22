@@ -17,18 +17,17 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configurar canvas com proporção 4:5 (960x1200)
-    canvas.width = 960;
-    canvas.height = 1200;
+    // Configurar canvas com proporção 4:5 (1080x1350)
+    canvas.width = 1080;
+    canvas.height = 1350;
     
-    // Limpar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Configurações padrão (sem offset para ocupar todo o espaço)
     const topOffset = 0;
-    const availableHeight = 1200;
+    const availableHeight = 1350;
+    const leftWidth = 486;
 
-    // Lado esquerdo - imagem (45% da largura)
+    // Lado esquerdo - imagem
     let leftImage: HTMLImageElement;
     
     if (data.image && data.image !== '') {
@@ -38,7 +37,6 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       if (data.image instanceof File) {
         leftImage.src = URL.createObjectURL(data.image);
       } else {
-        // Imagem da IA (URL ou base64)
         leftImage.src = data.image;
       }
       
@@ -46,16 +44,15 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
         leftImage.onload = resolve;
         leftImage.onerror = () => {
           console.error('Erro ao carregar imagem:', data.image);
-          resolve(null); // Usar imagem padrão em caso de erro
+          resolve(null);
         };
       });
     } else {
-      // Imagem padrão quando não há imagem
       leftImage = new Image();
       leftImage.src = 'data:image/svg+xml;base64,' + btoa(`
-        <svg width="432" height="${availableHeight}" xmlns="http://www.w3.org/2000/svg">
-          <rect width="432" height="${availableHeight}" fill="#f3f4f6"/>
-          <text x="216" y="${availableHeight/2}" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
+        <svg width="${leftWidth}" height="${availableHeight}" xmlns="http://www.w3.org/2000/svg">
+          <rect width="${leftWidth}" height="${availableHeight}" fill="#f3f4f6"/>
+          <text x="${leftWidth/2}" y="${availableHeight/2}" text-anchor="middle" font-family="Arial" font-size="32" fill="#9ca3af">Imagem</text>
         </svg>
       `);
       await new Promise((resolve) => {
@@ -65,34 +62,33 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
 
     // Desenhar imagem do lado esquerdo com object-fit: cover
     const imageAspect = leftImage.width / leftImage.height;
-    const canvasAspect = 432 / availableHeight;
+    const canvasAspect = leftWidth / availableHeight;
     
     let drawWidth, drawHeight, offsetX, offsetY;
     
     if (imageAspect > canvasAspect) {
-      // Imagem é mais larga - cortar nas laterais
       drawHeight = availableHeight;
       drawWidth = availableHeight * imageAspect;
-      offsetX = -(drawWidth - 432) / 2;
+      offsetX = -(drawWidth - leftWidth) / 2;
       offsetY = topOffset;
     } else {
-      // Imagem é mais alta - cortar no topo/fundo
-      drawWidth = 432;
-      drawHeight = 432 / imageAspect;
+      drawWidth = leftWidth;
+      drawHeight = leftWidth / imageAspect;
       offsetX = 0;
       offsetY = topOffset - (drawHeight - availableHeight) / 2;
     }
     
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
-    // Lado direito - fundo azul WEG com canto superior direito arredondado
-    const rightHeight = 1008;
+    // Lado direito - fundo azul WEG
+    const rightWidth = 1080 - leftWidth;
+    const rightHeight = 1134;
     ctx.fillStyle = '#2B5BA0';
     ctx.beginPath();
-    ctx.roundRect(432, topOffset, 528, rightHeight, [0, 24, 0, 0]);
+    ctx.roundRect(leftWidth, topOffset, rightWidth, rightHeight, [0, 27, 0, 0]);
     ctx.fill();
 
-    // Logo WEG & NT unificado (topo direito)
+    // Logo WEG & NT unificado
     const wegNtLogo = new Image();
     wegNtLogo.src = wegNtLogoImage;
     await new Promise((resolve) => {
@@ -100,35 +96,35 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       wegNtLogo.onerror = resolve;
     });
     
-    const contentOffset = 40;
+    const contentOffset = 45;
+    const contentX = leftWidth + 27;
     
-    // Logo unificado com proporção mantida (reduzido e alinhado à esquerda)
-    const logoWidth = 280;
+    const logoWidth = 315;
     const logoHeight = (logoWidth * wegNtLogo.height) / wegNtLogo.width;
-    ctx.drawImage(wegNtLogo, 456, topOffset + contentOffset + 80, logoWidth, logoHeight);
+    ctx.drawImage(wegNtLogo, contentX, topOffset + contentOffset + 90, logoWidth, logoHeight);
 
-    // "Vaga de emprego" - título principal centralizado verticalmente
+    // "Vaga de emprego" - título principal
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 64px Montserrat, Arial';
+    ctx.font = 'bold 72px Montserrat, Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Vaga de', 456, topOffset + contentOffset + 280);
-    ctx.fillText('emprego', 456, topOffset + contentOffset + 333);
+    ctx.fillText('Vaga de', contentX, topOffset + contentOffset + 315);
+    ctx.fillText('emprego', contentX, topOffset + contentOffset + 375);
 
-    // Badge PCD ao lado do título (se for vaga PCD)
+    // Badge PCD ao lado do título
     if (data.isPcd) {
       const textWidth = ctx.measureText('emprego').width;
-      const badgeX = 456 + textWidth + 24;
-      const badgeY = topOffset + contentOffset + 305;
+      const badgeX = contentX + textWidth + 27;
+      const badgeY = topOffset + contentOffset + 343;
       
       ctx.fillStyle = '#3B5998';
       ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, 100, 48, 24);
+      ctx.roundRect(badgeX, badgeY, 112, 54, 27);
       ctx.fill();
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 24px Montserrat, Arial';
+      ctx.font = 'bold 27px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('PCD', badgeX + 50, badgeY + 30);
+      ctx.fillText('PCD', badgeX + 56, badgeY + 34);
       ctx.textAlign = 'left';
     }
 
@@ -153,112 +149,110 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       return lines;
     };
 
-    // Dados da vaga - começando na posição centralizada
-    let y = topOffset + contentOffset + 400;
-    const maxTextWidth = 464; // Margem de 40px da direita (960 - 456 - 40)
+    // Dados da vaga
+    let y = topOffset + contentOffset + 450;
+    const maxTextWidth = rightWidth - 54;
     
     if (data.cargo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 30px Montserrat, Arial';
-      const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 30px Montserrat, Arial');
+      ctx.font = 'bold 34px Montserrat, Arial';
+      const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 34px Montserrat, Arial');
       cargoLines.forEach(line => {
-        ctx.fillText(line, 456, y);
-        y += 36;
+        ctx.fillText(line, contentX, y);
+        y += 40;
       });
     }
-    y += 16;
+    y += 18;
 
     if (data.local) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 26px Montserrat, Arial';
-      ctx.fillText('Local: ', 456, y);
+      ctx.font = 'bold 29px Montserrat, Arial';
+      ctx.fillText('Local: ', contentX, y);
       
       const localWidth = ctx.measureText('Local: ').width;
-      ctx.font = '26px Montserrat, Arial';
-      const localLines = wrapText(data.local, maxTextWidth - localWidth, '26px Montserrat, Arial');
+      ctx.font = '29px Montserrat, Arial';
+      const localLines = wrapText(data.local, maxTextWidth - localWidth, '29px Montserrat, Arial');
       localLines.forEach((line, index) => {
         if (index === 0) {
-          ctx.fillText(line, 456 + localWidth, y);
+          ctx.fillText(line, contentX + localWidth, y);
         } else {
-          ctx.fillText(line, 456, y);
+          ctx.fillText(line, contentX, y);
         }
-        y += 32;
+        y += 36;
       });
     }
-    y += 16;
+    y += 18;
 
     if (data.codigo) {
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 26px Montserrat, Arial';
-      ctx.fillText('Código: ', 456, y);
+      ctx.font = 'bold 29px Montserrat, Arial';
+      ctx.fillText('Código: ', contentX, y);
       
       const codigoWidth = ctx.measureText('Código: ').width;
-      ctx.font = '26px Montserrat, Arial';
-      ctx.fillText(data.codigo, 456 + codigoWidth, y);
+      ctx.font = '29px Montserrat, Arial';
+      ctx.fillText(data.codigo, contentX + codigoWidth, y);
     }
-    y += 56;
+    y += 63;
 
     // Tipo de contrato - texto amarelo/dourado para contraste com azul
     if (data.tipoContrato) {
       ctx.fillStyle = '#FFD700';
-      ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Tipo de contrato:', 456, y);
-      y += 40;
+      ctx.font = 'bold 31px Montserrat, Arial';
+      ctx.fillText('Tipo de contrato:', contentX, y);
+      y += 45;
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '28px Montserrat, Arial';
-      ctx.fillText(data.tipoContrato, 456, y);
+      ctx.font = '31px Montserrat, Arial';
+      ctx.fillText(data.tipoContrato, contentX, y);
     }
-    y += 56;
+    y += 63;
 
     // Requisitos
     if (data.requisitos) {
       ctx.fillStyle = '#FFD700';
-      ctx.font = 'bold 28px Montserrat, Arial';
-      ctx.fillText('Requisitos e atividades:', 456, y);
-      y += 44;
+      ctx.font = 'bold 31px Montserrat, Arial';
+      ctx.fillText('Requisitos e atividades:', contentX, y);
+      y += 49;
 
-      // Quebrar texto dos requisitos com espaçamento correto
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '24px Montserrat, Arial';
+      ctx.font = '27px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
-          // Adicionar bullet point se não existir
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
-          const wrappedLines = wrapText(lineWithBullet, maxTextWidth, '24px Montserrat, Arial');
+          const wrappedLines = wrapText(lineWithBullet, maxTextWidth, '27px Montserrat, Arial');
           wrappedLines.forEach((wrappedLine, index) => {
-            // Para linhas continuadas, adicionar indentação
-            const x = index === 0 ? 456 : 476;
+            const x = index === 0 ? contentX : contentX + 22;
             ctx.fillText(wrappedLine, x, y);
-            y += 32;
+            y += 36;
           });
         }
       });
     }
 
-    // "Saiba mais na legenda" - posicionamento exato
-    y += 32;
+    // "Saiba mais na legenda"
+    y += 36;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '26px Montserrat, Arial';
-    ctx.fillText('Saiba mais na ', 456, y);
+    ctx.font = '29px Montserrat, Arial';
+    ctx.fillText('Saiba mais na ', contentX, y);
     
-    // Medir texto para posicionar "legenda" em branco
     const textWidth = ctx.measureText('Saiba mais na ').width;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 26px Montserrat, Arial';
-    ctx.fillText('legenda.', 456 + textWidth, y);
+    ctx.font = 'bold 29px Montserrat, Arial';
+    ctx.fillText('legenda.', contentX + textWidth, y);
 
     // Barra de contato preta na parte inferior
     const footerY = topOffset + rightHeight;
+    const footerHeight = 1350 - footerY;
     ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(432, footerY, 528, 192);
+    ctx.fillRect(leftWidth, footerY, rightWidth, footerHeight);
 
     // Texto do contato
+    const footerCenterX = leftWidth + rightWidth / 2;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 32px Montserrat, Arial';
+    ctx.font = 'bold 36px Montserrat, Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Envie seu currículo em:', 696, footerY + 60);
+    ctx.fillText('Envie seu currículo em:', footerCenterX, footerY + 67);
 
     // Obter informações de contato
     const contactText = data.contato.tipo === 'whatsapp' 
@@ -267,32 +261,29 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       ? data.contato.valor || 'email@exemplo.com'
       : 'novotemporh.com.br';
     
-    // Área máxima disponível para o botão de contato
-    const maxButtonWidth = 480;
-    const iconSize = 24;
-    const iconPadding = 8;
-    const basePadding = 40;
+    const maxButtonWidth = 540;
+    const iconSize = 27;
+    const iconPadding = 9;
+    const basePadding = 45;
     
-    // Calcular fonte dinâmica para e-mails longos
-    let contactFontSize = 24;
+    let contactFontSize = 27;
     ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
     let contactTextMetrics = ctx.measureText(contactText);
     let buttonWidth = iconSize + iconPadding + contactTextMetrics.width + basePadding;
     
-    while (buttonWidth > maxButtonWidth && contactFontSize > 14) {
+    while (buttonWidth > maxButtonWidth && contactFontSize > 16) {
       contactFontSize -= 1;
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       contactTextMetrics = ctx.measureText(contactText);
       buttonWidth = iconSize + iconPadding + contactTextMetrics.width + basePadding;
     }
     
-    const buttonHeight = 48;
-    const buttonY = footerY + 108;
+    const buttonHeight = 54;
+    const buttonY = footerY + 121;
     
-    // Desenhar o fundo branco dinâmico centralizado
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.roundRect(696 - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 24);
+    ctx.roundRect(footerCenterX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 27);
     ctx.fill();
     
     // Desenhar ícone se for WhatsApp
@@ -304,7 +295,7 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
         whatsappImg.onerror = resolve;
       });
       
-      const iconX = 696 - buttonWidth/2 + 20;
+      const iconX = footerCenterX - buttonWidth/2 + 22;
       const iconY = buttonY - iconSize/2;
       ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
       
@@ -319,18 +310,18 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(iconText + ' ' + contactText, 696, buttonY);
+      ctx.fillText(iconText + ' ' + contactText, footerCenterX, buttonY);
     }
 
-    // Desenhar tarja azul PCD no topo (sobrepondo os elementos) se for vaga PCD
+    // Desenhar tarja azul PCD no topo se for vaga PCD
     if (data.isPcd) {
       ctx.fillStyle = '#3B5998';
-      ctx.fillRect(0, 0, canvas.width, 60);
+      ctx.fillRect(0, 0, canvas.width, 67);
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 20px Montserrat, Arial';
+      ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 38);
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 43);
       ctx.textAlign = 'left';
     }
   };
@@ -340,7 +331,7 @@ export const CartazPreviewWeg = ({ data }: CartazPreviewWegProps) => {
   }, [data]);
 
   return (
-    <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="cartaz-container bg-white shadow-lg overflow-hidden">
       <canvas 
         ref={canvasRef}
         id="cartaz-canvas"
