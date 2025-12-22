@@ -115,15 +115,12 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       }
     }
 
-    // Área segura para textos (imagem começa em x=594, texto começa em x=72)
-    // Margem de segurança: 594 - 72 - 100 = 422px
-    const maxTextWidth = 420;
+    // Limite de caracteres por linha para não invadir a imagem
+    const maxCharsPerLine = 50;
     
-    // Função para quebrar texto em linhas
-    const wrapTextToLines = (text: string, maxWidth: number, fontSize: number, fontWeight: string = ''): string[] => {
-      ctx.font = `${fontWeight} ${fontSize}px Montserrat, Arial`.trim();
-      
-      if (ctx.measureText(text).width <= maxWidth) {
+    // Função para quebrar texto em linhas baseado em caracteres
+    const wrapTextByChars = (text: string, maxChars: number): string[] => {
+      if (text.length <= maxChars) {
         return [text];
       }
       
@@ -133,7 +130,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       
       for (const word of words) {
         const testLine = currentLine ? `${currentLine} ${word}` : word;
-        if (ctx.measureText(testLine).width <= maxWidth) {
+        if (testLine.length <= maxChars) {
           currentLine = testLine;
         } else {
           if (currentLine) lines.push(currentLine);
@@ -154,19 +151,11 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       if (vaga.codigo && vaga.cargo) {
         const codigoText = `${vaga.codigo}:`;
         const fullText = `${codigoText} ${vaga.cargo}`;
+        const fontSize = 34;
         
-        // Calcular fonte dinâmica
-        let fontSize = baseFontSize;
-        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-        
-        while (ctx.measureText(fullText).width > maxTextWidth && fontSize > minFontSize) {
-          fontSize -= 1;
-          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-        }
-        
-        // Se ainda não couber, quebrar em linhas
-        if (ctx.measureText(fullText).width > maxTextWidth) {
-          const lines = wrapTextToLines(fullText, maxTextWidth, fontSize, 'bold');
+        // Quebrar em linhas se ultrapassar 50 caracteres
+        if (fullText.length > maxCharsPerLine) {
+          const lines = wrapTextByChars(fullText, maxCharsPerLine);
           lines.forEach((line, lineIndex) => {
             // Encontrar onde termina o código na linha
             if (lineIndex === 0 && line.includes(':')) {
@@ -187,7 +176,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
               ctx.font = `${fontSize}px Montserrat, Arial`;
               ctx.fillText(line, 72, y);
             }
-            y += fontSize + 8;
+            y += fontSize + 10;
           });
         } else {
           ctx.fillStyle = '#20CE90';
@@ -220,36 +209,26 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     y += 90;
     if (data.requisitos) {
       const reqFontSize = 26;
-      const minReqFontSize = 18;
       
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
           
-          // Calcular fonte dinâmica para requisitos
-          let fontSize = reqFontSize;
-          ctx.font = `${fontSize}px Montserrat, Arial`;
-          
-          while (ctx.measureText(lineWithBullet).width > maxTextWidth && fontSize > minReqFontSize) {
-            fontSize -= 1;
-            ctx.font = `${fontSize}px Montserrat, Arial`;
-          }
-          
-          // Se ainda não couber, quebrar em linhas
-          if (ctx.measureText(lineWithBullet).width > maxTextWidth) {
-            const wrappedLines = wrapTextToLines(lineWithBullet, maxTextWidth, fontSize);
+          // Quebrar em linhas se ultrapassar 50 caracteres
+          if (lineWithBullet.length > maxCharsPerLine) {
+            const wrappedLines = wrapTextByChars(lineWithBullet, maxCharsPerLine);
             wrappedLines.forEach((wrappedLine, idx) => {
               ctx.fillStyle = '#11332B';
-              ctx.font = `${fontSize}px Montserrat, Arial`;
+              ctx.font = `${reqFontSize}px Montserrat, Arial`;
               ctx.fillText(wrappedLine, 72, y);
-              y += fontSize + 8;
+              y += reqFontSize + 8;
             });
           } else {
             ctx.fillStyle = '#11332B';
-            ctx.font = `${fontSize}px Montserrat, Arial`;
+            ctx.font = `${reqFontSize}px Montserrat, Arial`;
             ctx.fillText(lineWithBullet, 72, y);
-            y += fontSize + 10;
+            y += reqFontSize + 10;
           }
         }
       });
