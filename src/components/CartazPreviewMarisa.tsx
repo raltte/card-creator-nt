@@ -265,12 +265,20 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
         ? data.contato.valor || 'email@exemplo.com'
         : 'novotemporh.com.br/marisa';
       
-      // Calcular fonte dinâmica para e-mails longos
-      const maxWidth = 900;
+      // Calcular fonte dinâmica para e-mails longos (> 32 caracteres)
+      const maxWidth = 750; // Área segura do footer
       let fontSize = 29;
+      
+      // Se o texto tiver mais de 32 caracteres, reduzir fonte proporcionalmente
+      if (footerText.length > 32) {
+        const ratio = 32 / footerText.length;
+        fontSize = Math.max(18, Math.floor(29 * ratio));
+      }
+      
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       
-      while (ctx.measureText(footerText).width > maxWidth && fontSize > 18) {
+      // Garantir que cabe na largura máxima
+      while (ctx.measureText(footerText).width > maxWidth && fontSize > 16) {
         fontSize -= 1;
         ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       }
