@@ -139,19 +139,23 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
   };
 
   const handleContactTypeChange = (tipo: 'site' | 'whatsapp' | 'email') => {
-    updateData('contato.tipo', tipo);
-    
+    let valor = '';
     switch (tipo) {
       case 'site':
-        updateData('contato.valor', 'novotemporh.com.br');
+        valor = data.clientTemplate === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br';
         break;
       case 'whatsapp':
-        updateData('contato.valor', '');
+        valor = '';
         break;
       case 'email':
-        updateData('contato.valor', 'email@novotemporh.com.br');
+        valor = 'email@novotemporh.com.br';
         break;
     }
+    
+    onChange({
+      ...data,
+      contato: { tipo, valor }
+    });
   };
 
   const formatWhatsAppNumber = (value: string) => {
