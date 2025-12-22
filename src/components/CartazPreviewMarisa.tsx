@@ -75,14 +75,14 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     const cargoText = data.cargo || 'Nome da Vaga';
     const maxWidth = 550; // Área segura horizontal
     const baseFontSize = 58;
-    const minFontSize = 32;
-    const lineHeight = 52; // Espaçamento entre linhas
+    const minFontSize = 22; // Reduzido para permitir títulos muito longos
+    const maxLines = 3; // Permitir até 3 linhas
     
     ctx.fillStyle = '#E5007E';
     ctx.textAlign = 'center';
     
     // Função para quebrar texto em linhas com fonte específica
-    const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
+    const wrapText = (text: string, maxWidth: number, fontSize: number, maxLinesLimit: number): string[] => {
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       
       // Se cabe em uma linha, retorna
@@ -103,48 +103,66 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
           if (currentLine) {
             lines.push(currentLine);
           }
-          currentLine = word;
+          // Se uma palavra sozinha não cabe, quebrar a palavra
+          if (ctx.measureText(word).width > maxWidth) {
+            let partialWord = '';
+            for (const char of word) {
+              if (ctx.measureText(partialWord + char).width <= maxWidth) {
+                partialWord += char;
+              } else {
+                if (partialWord) lines.push(partialWord);
+                partialWord = char;
+              }
+            }
+            currentLine = partialWord;
+          } else {
+            currentLine = word;
+          }
         }
       }
       if (currentLine) {
         lines.push(currentLine);
       }
       
-      return lines.slice(0, 2); // Máximo 2 linhas
+      return lines.slice(0, maxLinesLimit);
     };
     
-    // Encontrar o tamanho de fonte ideal
+    // Encontrar o tamanho de fonte e número de linhas ideal
     let fontSize = baseFontSize;
-    ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+    let lines: string[] = [];
+    let allTextFits = false;
     
-    // Primeiro: tentar reduzir fonte para caber em uma linha
-    while (ctx.measureText(cargoText).width > maxWidth && fontSize > minFontSize) {
-      fontSize -= 1;
+    // Tentar com fontes progressivamente menores até todo o texto caber
+    while (fontSize >= minFontSize && !allTextFits) {
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-    }
-    
-    // Se ainda não couber em uma linha, quebrar em duas
-    let lines: string[];
-    if (ctx.measureText(cargoText).width > maxWidth) {
-      // Voltar para uma fonte maior e quebrar em 2 linhas
-      fontSize = Math.min(baseFontSize - 10, 48);
-      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+      lines = wrapText(cargoText, maxWidth, fontSize, maxLines);
       
-      // Reduzir fonte até cada linha caber
-      lines = wrapText(cargoText, maxWidth, fontSize);
-      while (lines.some(line => ctx.measureText(line).width > maxWidth) && fontSize > minFontSize) {
+      // Verificar se todo o texto coube nas linhas permitidas
+      const reconstructedText = lines.join(' ');
+      const originalWords = cargoText.split(' ').length;
+      const linesWords = lines.join(' ').split(' ').length;
+      
+      // Verificar se todas as linhas cabem na largura
+      const allLinesFit = lines.every(line => ctx.measureText(line).width <= maxWidth);
+      
+      // Verificar se todo o conteúdo foi incluído (comparando caracteres)
+      const allContentIncluded = lines.join('').replace(/\s/g, '').length >= cargoText.replace(/\s/g, '').length * 0.95;
+      
+      if (allLinesFit && allContentIncluded) {
+        allTextFits = true;
+      } else {
         fontSize -= 1;
-        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-        lines = wrapText(cargoText, maxWidth, fontSize);
       }
-    } else {
-      lines = [cargoText];
     }
+    
+    // Calcular line height proporcional ao tamanho da fonte
+    const lineHeight = Math.max(fontSize + 4, 28);
     
     ctx.font = `bold ${fontSize}px Montserrat, Arial`;
     
-    // Posicionar linhas centralizadas verticalmente
-    const startY = 922 - ((lines.length - 1) * lineHeight / 2);
+    // Posicionar linhas centralizadas verticalmente em torno de Y=922
+    const totalHeight = (lines.length - 1) * lineHeight;
+    const startY = 922 - totalHeight / 2;
     
     lines.forEach((line, index) => {
       ctx.fillText(line, 540, startY + (index * lineHeight));
