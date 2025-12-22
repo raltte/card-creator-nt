@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageSelector } from "@/components/ImageSelector";
 import { CartazPreview } from "@/components/CartazPreview";
@@ -11,6 +12,7 @@ import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
 import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
+import { MondayItemSelector } from "@/components/MondayItemSelector";
 import { CartazData } from "@/components/CartazGenerator";
 import { CompiladoData } from "@/components/CompiladoForm";
 
@@ -18,6 +20,7 @@ const Finalizar = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isEditor } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [solicitacao, setSolicitacao] = useState<any>(null);
@@ -25,6 +28,8 @@ const Finalizar = () => {
   const [cartazData, setCartazData] = useState<CartazData | null>(null);
   const [compiladoData, setCompiladoData] = useState<CompiladoData | null>(null);
   const [isFinalizando, setIsFinalizando] = useState(false);
+  const [showMondaySelector, setShowMondaySelector] = useState(false);
+  const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -124,7 +129,7 @@ const Finalizar = () => {
     setEtapa('preview');
   };
 
-  const handleFinalizar = async () => {
+  const handleFinalizar = async (mondayItemId?: string) => {
     try {
       setIsFinalizando(true);
 
@@ -138,7 +143,8 @@ const Finalizar = () => {
       const { data, error } = await supabase.functions.invoke('finalizar-cartaz', {
         body: {
           solicitacaoId: id,
-          imagemUrl: imagemUrl
+          imagemUrl: imagemUrl,
+          mondayItemId: mondayItemId || solicitacao?.monday_item_id
         }
       });
 
@@ -149,7 +155,6 @@ const Finalizar = () => {
         description: "Cartaz finalizado e enviado para o Monday.com!",
       });
 
-      // Redirecionar para a home após 2 segundos
       setTimeout(() => {
         navigate('/');
       }, 2000);
@@ -164,6 +169,15 @@ const Finalizar = () => {
     } finally {
       setIsFinalizando(false);
     }
+  };
+
+  const handleFinalizarComSelecao = () => {
+    setShowMondaySelector(true);
+  };
+
+  const handleMondayItemSelect = (item: { id: string; name: string; codigo: string }) => {
+    setShowMondaySelector(false);
+    handleFinalizar(item.id);
   };
 
   if (loading) {
@@ -282,21 +296,47 @@ const Finalizar = () => {
                   >
                     Trocar Imagem
                   </Button>
-                  <Button
-                    onClick={handleFinalizar}
-                    disabled={isFinalizando}
-                    className="flex-1"
-                  >
-                    {isFinalizando ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Finalizando...
-                      </>
-                    ) : (
-                      'Finalizar e Enviar'
-                    )}
-                  </Button>
+                  {isEditor && !solicitacao?.monday_item_id ? (
+                    <Button
+                      onClick={handleFinalizarComSelecao}
+                      disabled={isFinalizando}
+                      className="flex-1"
+                    >
+                      {isFinalizando ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Finalizando...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Selecionar Linha no Monday
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => handleFinalizar()}
+                      disabled={isFinalizando}
+                      className="flex-1"
+                    >
+                      {isFinalizando ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Finalizando...
+                        </>
+                      ) : (
+                        'Finalizar e Enviar'
+                      )}
+                    </Button>
+                  )}
                 </div>
+
+                <MondayItemSelector
+                  open={showMondaySelector}
+                  onClose={() => setShowMondaySelector(false)}
+                  onSelect={handleMondayItemSelect}
+                />
               </CardContent>
             </Card>
           </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,9 +10,11 @@ import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
+import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Send } from "lucide-react";
+import { Send, Edit } from "lucide-react";
 
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
@@ -30,6 +33,8 @@ class CompiladoDataImpl implements CompiladoData {
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { role } = useAuth();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
@@ -47,12 +52,19 @@ export const RecrutadoraDashboard = () => {
     sugestaoImagem: ''
   });
   const [dadosCompilado, setDadosCompilado] = useState<CompiladoDataImpl>(() => new CompiladoDataImpl());
+  const [showMondaySelector, setShowMondaySelector] = useState(false);
+  const [pendingFinalizacao, setPendingFinalizacao] = useState<{
+    tipo: 'individual' | 'compilado';
+    dados: any;
+  } | null>(null);
+
+  const { isEditor } = useAuth();
 
   const handleFormSubmit = async (dados: RecrutadoraData) => {
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
-      const { error } = await supabase.functions.invoke('criar-solicitacao', {
+      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
         body: {
           codigo: dados.codigoPS,
           cargo: dados.nomeVaga,
@@ -78,6 +90,76 @@ export const RecrutadoraDashboard = () => {
         title: "Solicitação criada com sucesso!",
         description: "Um link de finalização foi enviado para o Monday.com."
       });
+    } catch (error) {
+      console.error('Erro:', error);
+      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
+    }
+  };
+
+  const handleFinalizarDireto = async (dados: RecrutadoraData) => {
+    try {
+      toast({ title: "Processando...", description: "Criando solicitação..." });
+
+      // Criar solicitação sem enviar ao Monday ainda
+      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
+        body: {
+          codigo: dados.codigoPS,
+          cargo: dados.nomeVaga,
+          tipoContrato: dados.tipoContrato,
+          modeloCartaz: tipoCartaz === 'compilado' ? `compilado-${modeloSelecionado}` : modeloSelecionado,
+          local: `${dados.cidade} - ${dados.estado}`,
+          contato: dados.captacaoCurriculo === 'whatsapp' 
+            ? { tipo: 'whatsapp', valor: dados.whatsappNumber || '' }
+            : dados.captacaoCurriculo === 'email'
+            ? { tipo: 'email', valor: dados.emailCaptacao || '' }
+            : { tipo: 'site', valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
+          requisitos: dados.requisitos.join('\n• '),
+          atividades: null,
+          linkVaga: null,
+          emailSolicitante: dados.emailSolicitante || null,
+          isPcd: dados.isPcd || false,
+          skipMonday: true // Flag para não criar item no Monday
+        }
+      });
+
+      if (error) throw error;
+
+      // Redirecionar para a página de finalização
+      if (data?.solicitacaoId) {
+        navigate(`/finalizar/${data.solicitacaoId}`);
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
+    }
+  };
+
+  const handleFinalizarCompiladoDireto = async () => {
+    try {
+      toast({ title: "Processando...", description: "Criando solicitação..." });
+
+      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
+        body: {
+          codigo: dadosCompilado.vagas[0].codigo,
+          cargo: dadosCompilado.vagas.map(v => v.cargo).join(', '),
+          tipoContrato: 'Compilado',
+          modeloCartaz: `compilado-${dadosCompilado.clientTemplate}`,
+          local: dadosCompilado.local,
+          contato: dadosCompilado.contato,
+          requisitos: dadosCompilado.requisitos,
+          atividades: null,
+          linkVaga: null,
+          emailSolicitante: null,
+          isPcd: dadosCompilado.isPcd || false,
+          skipMonday: true
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.solicitacaoId) {
+        navigate(`/finalizar/${data.solicitacaoId}`);
+      }
     } catch (error) {
       console.error('Erro:', error);
       toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
@@ -223,10 +305,24 @@ export const RecrutadoraDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
-                  <Send className="w-4 h-4 mr-2" />
-                  Enviar ao Monday
-                </Button>
+                
+                {isEditor ? (
+                  <div className="flex gap-3">
+                    <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1" size="lg">
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar ao Monday
+                    </Button>
+                    <Button onClick={() => handleFinalizarDireto(dadosIndividual)} variant="secondary" className="flex-1" size="lg">
+                      <Edit className="w-4 h-4 mr-2" />
+                      Finalizar Cartaz
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar ao Monday
+                  </Button>
+                )}
               </TabsContent>
 
               <TabsContent value="compilado" className="space-y-6 mt-6">
@@ -248,15 +344,41 @@ export const RecrutadoraDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
-                  <Send className="w-4 h-4 mr-2" />
-                  Enviar ao Monday
-                </Button>
+                
+                {isEditor ? (
+                  <div className="flex gap-3">
+                    <Button onClick={handleCompiladoGenerate} className="flex-1" size="lg">
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar ao Monday
+                    </Button>
+                    <Button onClick={handleFinalizarCompiladoDireto} variant="secondary" className="flex-1" size="lg">
+                      <Edit className="w-4 h-4 mr-2" />
+                      Finalizar Cartaz
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar ao Monday
+                  </Button>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
       </div>
+
+      <MondayItemSelector
+        open={showMondaySelector}
+        onClose={() => {
+          setShowMondaySelector(false);
+          setPendingFinalizacao(null);
+        }}
+        onSelect={(item) => {
+          console.log('Item selecionado:', item);
+          // Aqui será implementada a lógica de anexar ao item selecionado
+        }}
+      />
     </div>
   );
 };
