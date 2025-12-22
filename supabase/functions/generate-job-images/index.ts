@@ -20,35 +20,56 @@ serve(async (req) => {
 
     // Gerar 3 imagens com prompts diferentes baseados no setor, vaga, sugestão do usuário e template do cliente
     const prompts = generateImagePrompts(jobTitle, sector, contractType, requirements, imageSuggestion, clientTemplate);
-    const imagePromises = prompts.map(async (prompt) => {
-      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash-image-preview',
-          messages: [
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          modalities: ['image', 'text']
-        }),
-      });
+    console.log(`Gerando ${prompts.length} imagens...`);
+    
+    const imagePromises = prompts.map(async (prompt, index) => {
+      try {
+        console.log(`Iniciando geração da imagem ${index + 1}...`);
+        
+        const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash-image-preview',
+            messages: [
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            modalities: ['image', 'text']
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Erro na imagem ${index + 1}: Status ${response.status} - ${errorText}`);
+          return null;
+        }
+
+        const data = await response.json();
+        const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        
+        if (imageUrl) {
+          console.log(`Imagem ${index + 1} gerada com sucesso`);
+        } else {
+          console.error(`Imagem ${index + 1}: Resposta sem URL de imagem`, JSON.stringify(data));
+        }
+        
+        return imageUrl;
+      } catch (error) {
+        console.error(`Erro ao gerar imagem ${index + 1}:`, error);
+        return null;
       }
-
-      const data = await response.json();
-      return data.choices[0]?.message?.images?.[0]?.image_url?.url;
     });
 
     const images = await Promise.all(imagePromises);
-    const validImages = images.filter(img => img !== undefined);
+    const validImages = images.filter(img => img !== null && img !== undefined);
+    
+    console.log(`Geradas ${validImages.length} de ${prompts.length} imagens`);
 
     return new Response(JSON.stringify({ images: validImages }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
