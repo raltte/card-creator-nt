@@ -93,20 +93,23 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     let y = topOffset + 135 + textoHeight + 45;
     const local = data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : '';
     if (local) {
+      ctx.font = 'bold 25px Montserrat, Arial';
+      const localTextMetrics = ctx.measureText(local);
+      const localBadgeWidth = localTextMetrics.width + 45;
+      
       ctx.fillStyle = '#E5007E';
       ctx.beginPath();
-      ctx.roundRect(72, y, 225, 54, 27);
+      ctx.roundRect(72, y, localBadgeWidth, 54, 27);
       ctx.fill();
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 25px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(local, 184, y + 34);
+      ctx.fillText(local, 72 + localBadgeWidth / 2, y + 34);
       ctx.textAlign = 'left';
       
       // Badge PCD ao lado do local
       if (data.isPcd) {
-        const badgeX = 72 + 225 + 18;
+        const badgeX = 72 + localBadgeWidth + 18;
         ctx.fillStyle = '#3B5998';
         ctx.beginPath();
         ctx.roundRect(badgeX, y, 112, 54, 27);
