@@ -73,10 +73,15 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     
     // Cargo (onde está escrito "Líder de Vendas")
     const cargoText = data.cargo || 'Nome da Vaga';
-    const maxWidth = 550; // Área segura horizontal
-    const baseFontSize = 58;
-    const minFontSize = 22; // Reduzido para permitir títulos muito longos
-    const maxLines = 3; // Permitir até 3 linhas
+    const maxWidth = 480; // Área segura dentro do container branco
+    const baseFontSize = 52;
+    const minFontSize = 18; // Reduzido para permitir títulos muito longos
+    const maxLines = 4; // Permitir até 4 linhas para títulos extremamente longos
+    
+    // Área vertical segura: entre Y=850 e Y=940 (acima dos badges que começam em ~962)
+    const titleAreaTop = 840;
+    const titleAreaBottom = 935;
+    const availableHeight = titleAreaBottom - titleAreaTop;
     
     ctx.fillStyle = '#E5007E';
     ctx.textAlign = 'center';
@@ -137,18 +142,20 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       lines = wrapText(cargoText, maxWidth, fontSize, maxLines);
       
-      // Verificar se todo o texto coube nas linhas permitidas
-      const reconstructedText = lines.join(' ');
-      const originalWords = cargoText.split(' ').length;
-      const linesWords = lines.join(' ').split(' ').length;
+      // Calcular altura total necessária
+      const lineHeight = fontSize * 1.1;
+      const totalHeight = lines.length * lineHeight;
       
       // Verificar se todas as linhas cabem na largura
       const allLinesFit = lines.every(line => ctx.measureText(line).width <= maxWidth);
       
-      // Verificar se todo o conteúdo foi incluído (comparando caracteres)
+      // Verificar se cabe na altura disponível
+      const fitsHeight = totalHeight <= availableHeight;
+      
+      // Verificar se todo o conteúdo foi incluído
       const allContentIncluded = lines.join('').replace(/\s/g, '').length >= cargoText.replace(/\s/g, '').length * 0.95;
       
-      if (allLinesFit && allContentIncluded) {
+      if (allLinesFit && fitsHeight && allContentIncluded) {
         allTextFits = true;
       } else {
         fontSize -= 1;
@@ -156,13 +163,13 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     }
     
     // Calcular line height proporcional ao tamanho da fonte
-    const lineHeight = Math.max(fontSize + 4, 28);
+    const lineHeight = fontSize * 1.1;
     
     ctx.font = `bold ${fontSize}px Montserrat, Arial`;
     
-    // Posicionar linhas centralizadas verticalmente em torno de Y=922
-    const totalHeight = (lines.length - 1) * lineHeight;
-    const startY = 922 - totalHeight / 2;
+    // Posicionar linhas centralizadas verticalmente na área segura
+    const totalHeight = lines.length * lineHeight;
+    const startY = titleAreaTop + (availableHeight - totalHeight) / 2 + fontSize;
     
     lines.forEach((line, index) => {
       ctx.fillText(line, 540, startY + (index * lineHeight));
