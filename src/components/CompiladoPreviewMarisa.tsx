@@ -123,67 +123,11 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       }
     }
 
-    // Safezone das vagas: calcula largura segura antes de chegar na imagem (imagem começa em x=594)
-    const textStartX = 72;
-    const imageStartX = 594;
-    const safeGapToImage = 170; // aumenta a margem para nunca encostar na foto
-    const maxVagaTextWidth = imageStartX - safeGapToImage - textStartX;
-    const maxVagaCharsPerLine = 35;
-
-    const wrapVagaText = (text: string, fontSize: number): string[] => {
-      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-
-      const fits = (line: string) =>
-        line.length <= maxVagaCharsPerLine && ctx.measureText(line).width <= maxVagaTextWidth;
-
-      const splitLongWord = (word: string): string[] => {
-        const parts: string[] = [];
-        let current = '';
-
-        for (const ch of word) {
-          const test = current + ch;
-          if (test.length <= maxVagaCharsPerLine && ctx.measureText(test).width <= maxVagaTextWidth) {
-            current = test;
-          } else {
-            if (current) parts.push(current);
-            current = ch;
-          }
-        }
-        if (current) parts.push(current);
-        return parts;
-      };
-
-      const words = text.split(' ');
-      const lines: string[] = [];
-      let currentLine = '';
-
-      for (const word of words) {
-        const wordFits = fits(word);
-        const wordParts = wordFits ? [word] : splitLongWord(word);
-
-        for (const part of wordParts) {
-          const testLine = currentLine ? `${currentLine} ${part}` : part;
-
-          if (!currentLine) {
-            currentLine = part;
-            continue;
-          }
-
-          if (fits(testLine)) {
-            currentLine = testLine;
-          } else {
-            lines.push(currentLine);
-            currentLine = part;
-          }
-        }
-      }
-
-      if (currentLine) lines.push(currentLine);
-      return lines;
-    };
-
-    // Requisitos: mantém lógica por caracteres (já estava OK)
-    const maxReqCharsPerLine = 35;
+    // Área segura para textos (imagem começa em x=594, texto começa em x=72)
+    const maxTextWidth = 480;
+    const maxCharsPerLine = 35;
+    
+    // Função para quebrar texto em linhas baseado em caracteres
     const wrapTextByChars = (text: string, maxChars: number): string[] => {
       if (text.length <= maxChars) return [text];
 
@@ -205,52 +149,42 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       return lines;
     };
 
-    // Vagas
+    // Vagas - usa fonte dinâmica para caber em UMA linha
     y += local ? 135 : 45;
 
     data.vagas.forEach((vaga) => {
       if (vaga.codigo && vaga.cargo) {
         const codigoText = `${vaga.codigo}:`;
-        const fullText = `${codigoText} ${vaga.cargo}`;
-        const fontSize = 34;
-
-        const lines = wrapVagaText(fullText, fontSize);
-
-        if (lines.length > 1) {
-          lines.forEach((line, lineIndex) => {
-            if (lineIndex === 0 && line.includes(':')) {
-              const colonIndex = line.indexOf(':');
-              const codePart = line.substring(0, colonIndex + 1);
-              const cargoPart = line.substring(colonIndex + 1);
-
-              ctx.fillStyle = '#E5007E';
-              ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-              ctx.fillText(codePart, 72, y);
-
-              const codeWidth = ctx.measureText(codePart).width;
-              ctx.fillStyle = '#11332B';
-              ctx.font = `${fontSize}px Montserrat, Arial`;
-              ctx.fillText(cargoPart, 72 + codeWidth, y);
-            } else {
-              ctx.fillStyle = '#11332B';
-              ctx.font = `${fontSize}px Montserrat, Arial`;
-              ctx.fillText(line, 72, y);
-            }
-
-            y += fontSize + 10;
-          });
-        } else {
-          ctx.fillStyle = '#E5007E';
+        const cargoText = ` ${vaga.cargo}`;
+        
+        // Encontrar tamanho de fonte que caiba na área segura
+        let fontSize = 34;
+        const minFontSize = 20;
+        
+        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+        let totalWidth = ctx.measureText(codigoText).width;
+        ctx.font = `${fontSize}px Montserrat, Arial`;
+        totalWidth += ctx.measureText(cargoText).width;
+        
+        while (totalWidth > maxTextWidth && fontSize > minFontSize) {
+          fontSize -= 1;
           ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-          ctx.fillText(codigoText, 72, y);
-
-          const codigoWidth = ctx.measureText(codigoText).width;
-          ctx.fillStyle = '#11332B';
+          totalWidth = ctx.measureText(codigoText).width;
           ctx.font = `${fontSize}px Montserrat, Arial`;
-          ctx.fillText(` ${vaga.cargo}`, 72 + codigoWidth, y);
-
-          y += fontSize + 15;
+          totalWidth += ctx.measureText(cargoText).width;
         }
+        
+        // Desenhar código (rosa/bold) + cargo (escuro/normal)
+        ctx.fillStyle = '#E5007E';
+        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+        ctx.fillText(codigoText, 72, y);
+        
+        const codigoWidth = ctx.measureText(codigoText).width;
+        ctx.fillStyle = '#11332B';
+        ctx.font = `${fontSize}px Montserrat, Arial`;
+        ctx.fillText(cargoText, 72 + codigoWidth, y);
+        
+        y += fontSize + 12;
       }
     });
 
@@ -277,8 +211,8 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
           
           // Quebrar em linhas se ultrapassar o limite de caracteres
-          if (lineWithBullet.length > maxReqCharsPerLine) {
-            const wrappedLines = wrapTextByChars(lineWithBullet, maxReqCharsPerLine);
+          if (lineWithBullet.length > maxCharsPerLine) {
+            const wrappedLines = wrapTextByChars(lineWithBullet, maxCharsPerLine);
             wrappedLines.forEach((wrappedLine, idx) => {
               ctx.fillStyle = '#11332B';
               ctx.font = `${reqFontSize}px Montserrat, Arial`;
