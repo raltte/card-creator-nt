@@ -73,9 +73,9 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     
     // Cargo (onde está escrito "Líder de Vendas")
     const cargoText = data.cargo || 'Nome da Vaga';
-    const maxWidth = 900; // Área segura horizontal
+    const maxWidth = 720; // Área segura horizontal reduzida
     const baseFontSize = 58;
-    const lineHeight = 65;
+    const lineHeight = 52; // Espaçamento menor entre linhas
     
     ctx.fillStyle = '#E5007E';
     ctx.textAlign = 'center';
