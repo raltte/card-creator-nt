@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,7 +12,6 @@ import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Download } from "lucide-react";
-import html2canvas from "html2canvas";
 
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
@@ -31,7 +30,6 @@ class CompiladoDataImpl implements CompiladoData {
 
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
-  const previewRef = useRef<HTMLDivElement>(null);
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
@@ -120,21 +118,19 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleDownloadPng = async () => {
-    if (!previewRef.current) return;
-    
     try {
       toast({ title: "Gerando imagem...", description: "Aguarde..." });
       
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null,
-      });
+      // Capturar diretamente do canvas interno (não do wrapper HTML)
+      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
+      if (!canvas) {
+        toast({ title: "Erro", description: "Canvas não encontrado.", variant: "destructive" });
+        return;
+      }
       
       const link = document.createElement('a');
       link.download = `cartaz-${tipoCartaz}-${modeloSelecionado}-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
       
       toast({ title: "Download iniciado!", description: "O cartaz foi baixado com sucesso." });
@@ -237,7 +233,7 @@ export const RecrutadoraDashboard = () => {
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    <div ref={previewRef}>
+                    <div>
                       {modeloSelecionado === 'padrao' && (
                         <CartazPreview data={getIndividualPreviewData()} />
                       )}
@@ -272,7 +268,7 @@ export const RecrutadoraDashboard = () => {
                   </div>
                   <div className="sticky top-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    <div ref={previewRef}>
+                    <div>
                       {dadosCompilado.clientTemplate === 'padrao' ? (
                         <CompiladoPreview data={dadosCompilado} />
                       ) : (
