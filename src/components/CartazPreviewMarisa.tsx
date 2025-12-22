@@ -73,18 +73,69 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     
     // Cargo (onde está escrito "Líder de Vendas")
     const cargoText = data.cargo || 'Nome da Vaga';
-    const maxCargoLength = 17;
-    
-    // Ajustar tamanho da fonte baseado no comprimento do texto
-    let cargoFontSize = 58;
-    if (cargoText.length > maxCargoLength) {
-      cargoFontSize = Math.max(34, 58 * (maxCargoLength / cargoText.length));
-    }
+    const maxWidth = 900; // Área segura horizontal
+    const baseFontSize = 58;
+    const lineHeight = 65;
     
     ctx.fillStyle = '#E5007E';
-    ctx.font = `bold ${cargoFontSize}px Montserrat, Arial`;
     ctx.textAlign = 'center';
-    ctx.fillText(cargoText, 540, 922);
+    
+    // Função para quebrar texto em linhas
+    const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
+      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+      
+      // Se cabe em uma linha, retorna
+      if (ctx.measureText(text).width <= maxWidth) {
+        return [text];
+      }
+      
+      // Quebrar em duas linhas
+      const words = text.split(' ');
+      const lines: string[] = [];
+      let currentLine = '';
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) {
+            lines.push(currentLine);
+          }
+          currentLine = word;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      
+      return lines.slice(0, 2); // Máximo 2 linhas
+    };
+    
+    // Tentar com fonte base, reduzir se ainda não couber em 2 linhas
+    let fontSize = baseFontSize;
+    let lines = wrapText(cargoText, maxWidth, fontSize);
+    
+    // Se ainda não couber bem, reduzir fonte
+    while (lines.length > 1 && fontSize > 40) {
+      const singleLineWidth = ctx.measureText(cargoText).width;
+      if (singleLineWidth <= maxWidth) {
+        lines = [cargoText];
+        break;
+      }
+      fontSize -= 2;
+      lines = wrapText(cargoText, maxWidth, fontSize);
+    }
+    
+    ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+    
+    // Posicionar linhas centralizadas verticalmente
+    const totalTextHeight = lines.length * lineHeight;
+    const startY = 922 - ((lines.length - 1) * lineHeight / 2);
+    
+    lines.forEach((line, index) => {
+      ctx.fillText(line, 540, startY + (index * lineHeight));
+    });
 
     // Badges dinâmicos
     const badgeY = 962;
