@@ -35,8 +35,12 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Espaço reservado para tarja PCD
-    const topOffset = 67;
+    // Espaço reservado para tarja PCD (apenas se for vaga PCD)
+    const topOffset = data.isPcd ? 67 : 0;
+
+    // Fundo branco - preenche todo o canvas primeiro
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Desenhar tarja azul PCD no topo (apenas se for vaga PCD)
     if (data.isPcd) {
@@ -49,10 +53,6 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 43);
       ctx.textAlign = 'left';
     }
-
-    // Fundo branco
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, topOffset, canvas.width, canvas.height - topOffset);
 
     // Lado esquerdo - conteúdo
     const leftWidth = 594;
