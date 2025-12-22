@@ -48,6 +48,18 @@ serve(async (req) => {
 
     console.log('Solicitação criada:', solicitacao);
 
+    // Se skipMonday = true, retornar apenas o ID da solicitação
+    if (solicitacaoData.skipMonday) {
+      return new Response(JSON.stringify({
+        success: true,
+        solicitacaoId: solicitacao.id,
+        mondayItemId: null,
+        finalizacaoUrl: null
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Gerar link de finalização usando a URL de origem do request
     const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || Deno.env.get('APP_URL') || 'https://jqpjcoitrmochijrgfbc.lovable.app';
     const finalizacaoUrl = `${origin}/finalizar/${solicitacao.id}`;
