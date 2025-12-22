@@ -69,7 +69,8 @@ export const RecrutadoraDashboard = () => {
           requisitos: dados.requisitos.join('\n• '),
           atividades: null,
           linkVaga: null,
-          emailSolicitante: dados.emailSolicitante || null
+          emailSolicitante: dados.emailSolicitante || null,
+          isPcd: dados.isPcd || false
         }
       });
 
@@ -100,7 +101,8 @@ export const RecrutadoraDashboard = () => {
           requisitos: dadosCompilado.requisitos,
           atividades: null,
           linkVaga: null,
-          emailSolicitante: null
+          emailSolicitante: null,
+          isPcd: dadosCompilado.isPcd || false
         }
       });
 

@@ -25,6 +25,7 @@ export type Database = {
           email_solicitante: string | null
           id: string
           imagem_url: string | null
+          is_pcd: boolean
           link_vaga: string | null
           local: string | null
           modelo_cartaz: string
@@ -44,6 +45,7 @@ export type Database = {
           email_solicitante?: string | null
           id?: string
           imagem_url?: string | null
+          is_pcd?: boolean
           link_vaga?: string | null
           local?: string | null
           modelo_cartaz: string
@@ -63,6 +65,7 @@ export type Database = {
           email_solicitante?: string | null
           id?: string
           imagem_url?: string | null
+          is_pcd?: boolean
           link_vaga?: string | null
           local?: string | null
           modelo_cartaz?: string
