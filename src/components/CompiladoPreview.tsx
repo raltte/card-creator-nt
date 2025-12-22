@@ -144,8 +144,6 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
 
     // Vagas
     y += local ? 135 : 0;
-    const baseFontSize = 34;
-    const minFontSize = 22;
     
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
@@ -153,7 +151,7 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
         const fullText = `${codigoText} ${vaga.cargo}`;
         const fontSize = 34;
         
-        // Quebrar em linhas se ultrapassar 50 caracteres
+        // Quebrar em linhas se ultrapassar 35 caracteres
         if (fullText.length > maxCharsPerLine) {
           const lines = wrapTextByChars(fullText, maxCharsPerLine);
           lines.forEach((line, lineIndex) => {
