@@ -124,7 +124,7 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     }
 
     // Limite de caracteres por linha para não invadir a imagem
-    const maxCharsPerLine = 50;
+    const maxCharsPerLine = 35;
     
     // Função para quebrar texto em linhas baseado em caracteres
     const wrapTextByChars = (text: string, maxChars: number): string[] => {
