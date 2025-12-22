@@ -376,7 +376,22 @@ export const RecrutadoraDashboard = () => {
         }}
         onSelect={(item) => {
           console.log('Item selecionado:', item);
-          // Aqui será implementada a lógica de anexar ao item selecionado
+          // Navegar para o editor com o item pré-selecionado
+          if (pendingFinalizacao) {
+            toast({
+              title: "Funcionalidade em desenvolvimento",
+              description: "A finalização direta será implementada em breve."
+            });
+          }
+        }}
+        onCreateNew={(groupId) => {
+          console.log('Criar novo item no grupo:', groupId);
+          if (pendingFinalizacao) {
+            toast({
+              title: "Funcionalidade em desenvolvimento",
+              description: "A criação de nova linha será implementada em breve."
+            });
+          }
         }}
       />
     </div>

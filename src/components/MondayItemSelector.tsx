@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Search, Check } from "lucide-react";
+import { Loader2, Search, Check, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface MondayItem {
@@ -16,13 +16,15 @@ interface MondayItemSelectorProps {
   open: boolean;
   onClose: () => void;
   onSelect: (item: MondayItem) => void;
+  onCreateNew: (groupId: string) => void;
 }
 
-export const MondayItemSelector = ({ open, onClose, onSelect }: MondayItemSelectorProps) => {
+export const MondayItemSelector = ({ open, onClose, onSelect, onCreateNew }: MondayItemSelectorProps) => {
   const [items, setItems] = useState<MondayItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<MondayItem | null>(null);
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -38,6 +40,7 @@ export const MondayItemSelector = ({ open, onClose, onSelect }: MondayItemSelect
       if (error) throw error;
 
       setItems(data.items || []);
+      setGroupId(data.groupId || null);
     } catch (error) {
       console.error('Erro ao buscar items:', error);
     } finally {
@@ -57,13 +60,20 @@ export const MondayItemSelector = ({ open, onClose, onSelect }: MondayItemSelect
     }
   };
 
+  const handleCreateNew = () => {
+    if (groupId) {
+      onCreateNew(groupId);
+      onClose();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Selecionar Linha do Monday</DialogTitle>
           <DialogDescription>
-            Escolha a linha onde o cartaz será anexado
+            Escolha uma linha existente no grupo "Pedidos" ou crie uma nova
           </DialogDescription>
         </DialogHeader>
 
@@ -84,9 +94,31 @@ export const MondayItemSelector = ({ open, onClose, onSelect }: MondayItemSelect
             </div>
           ) : (
             <ScrollArea className="h-[300px] border rounded-md">
-              {filteredItems.length === 0 ? (
+              {/* Opção de criar nova linha */}
+              {groupId && (
+                <button
+                  onClick={handleCreateNew}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-primary/10 transition-colors text-left border-b bg-primary/5"
+                >
+                  <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Plus className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-primary">Criar nova linha</p>
+                    <p className="text-sm text-muted-foreground">
+                      Adicionar novo item no grupo "Pedidos"
+                    </p>
+                  </div>
+                </button>
+              )}
+
+              {filteredItems.length === 0 && !groupId ? (
                 <div className="p-4 text-center text-muted-foreground">
-                  Nenhum item encontrado
+                  Grupo "Pedidos" não encontrado ou vazio
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  Nenhum item encontrado com esse filtro
                 </div>
               ) : (
                 <div className="divide-y">
@@ -122,7 +154,7 @@ export const MondayItemSelector = ({ open, onClose, onSelect }: MondayItemSelect
             Cancelar
           </Button>
           <Button onClick={handleConfirm} disabled={!selectedItem}>
-            Confirmar
+            Confirmar Seleção
           </Button>
         </DialogFooter>
       </DialogContent>

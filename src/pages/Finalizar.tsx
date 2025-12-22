@@ -129,7 +129,7 @@ const Finalizar = () => {
     setEtapa('preview');
   };
 
-  const handleFinalizar = async (mondayItemId?: string) => {
+  const handleFinalizar = async (mondayItemId?: string, createInGroupId?: string) => {
     try {
       setIsFinalizando(true);
 
@@ -144,7 +144,8 @@ const Finalizar = () => {
         body: {
           solicitacaoId: id,
           imagemUrl: imagemUrl,
-          mondayItemId: mondayItemId || solicitacao?.monday_item_id
+          mondayItemId: mondayItemId || solicitacao?.monday_item_id,
+          createInGroupId: createInGroupId
         }
       });
 
@@ -178,6 +179,11 @@ const Finalizar = () => {
   const handleMondayItemSelect = (item: { id: string; name: string; codigo: string }) => {
     setShowMondaySelector(false);
     handleFinalizar(item.id);
+  };
+
+  const handleCreateNewMondayItem = (groupId: string) => {
+    // Criar novo item no Monday e anexar o cartaz
+    handleFinalizar(undefined, groupId);
   };
 
   if (loading) {
@@ -336,6 +342,7 @@ const Finalizar = () => {
                   open={showMondaySelector}
                   onClose={() => setShowMondaySelector(false)}
                   onSelect={handleMondayItemSelect}
+                  onCreateNew={handleCreateNewMondayItem}
                 />
               </CardContent>
             </Card>
