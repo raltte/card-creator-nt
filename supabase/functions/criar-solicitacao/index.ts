@@ -35,6 +35,7 @@ serve(async (req) => {
         atividades: solicitacaoData.atividades,
         link_vaga: solicitacaoData.linkVaga,
         email_solicitante: solicitacaoData.emailSolicitante,
+        is_pcd: solicitacaoData.isPcd || false,
         status: 'pendente_imagem'
       })
       .select()

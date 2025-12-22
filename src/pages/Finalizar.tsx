@@ -85,7 +85,7 @@ const Finalizar = () => {
         estado: localParts[1] || '',
         vagas: [{ codigo: solicitacao.codigo, cargo: solicitacao.cargo }],
         requisitos: solicitacao.requisitos || solicitacao.atividades || '',
-        isPcd: false,
+        isPcd: solicitacao.is_pcd || false,
         clientTemplate: solicitacao.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
         contato: {
           tipo: solicitacao.contato_tipo || 'site',
@@ -107,8 +107,8 @@ const Finalizar = () => {
         codigo: solicitacao.codigo,
         tipoContrato: solicitacao.tipo_contrato,
         requisitos: solicitacao.requisitos || '',
-        isPcd: false,
-        clientTemplate: solicitacao.modelo_cartaz === 'marisa' ? 'marisa' : 'padrao',
+        isPcd: solicitacao.is_pcd || false,
+        clientTemplate: solicitacao.modelo_cartaz === 'marisa' ? 'marisa' : (solicitacao.modelo_cartaz === 'weg' ? 'weg' : 'padrao'),
         contato: {
           tipo: solicitacao.contato_tipo || 'site',
           valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
