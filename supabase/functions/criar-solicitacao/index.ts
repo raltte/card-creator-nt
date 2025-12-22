@@ -149,6 +149,7 @@ function getModeloLabel(modelo: string): string {
   const map: Record<string, string> = {
     'padrao': 'tradicional',
     'marisa': 'marisa',
+    'weg': 'weg',
     'compilado-padrao': 'compilado',
     'compilado-marisa': 'compilado'
   };

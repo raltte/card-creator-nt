@@ -18,7 +18,7 @@ interface ImageSelectorProps {
   };
   onImageSelect: (imageUrl: string) => void;
   onBack: () => void;
-  clientTemplate?: 'padrao' | 'marisa';
+  clientTemplate?: 'padrao' | 'marisa' | 'weg';
 }
 
 export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate = 'padrao' }: ImageSelectorProps) => {

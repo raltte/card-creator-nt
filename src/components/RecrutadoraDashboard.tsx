@@ -11,7 +11,7 @@ import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Download } from "lucide-react";
+import { Send } from "lucide-react";
 
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
@@ -114,29 +114,6 @@ export const RecrutadoraDashboard = () => {
     } catch (error) {
       console.error('Erro:', error);
       toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
-    }
-  };
-
-  const handleDownloadPng = async () => {
-    try {
-      toast({ title: "Gerando imagem...", description: "Aguarde..." });
-      
-      // Capturar diretamente do canvas interno (não do wrapper HTML)
-      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
-      if (!canvas) {
-        toast({ title: "Erro", description: "Canvas não encontrado.", variant: "destructive" });
-        return;
-      }
-      
-      const link = document.createElement('a');
-      link.download = `cartaz-${tipoCartaz}-${modeloSelecionado}-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-      
-      toast({ title: "Download iniciado!", description: "O cartaz foi baixado com sucesso." });
-    } catch (error) {
-      console.error('Erro ao gerar PNG:', error);
-      toast({ title: "Erro", description: "Não foi possível gerar o PNG.", variant: "destructive" });
     }
   };
 
@@ -246,16 +223,10 @@ export const RecrutadoraDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1" size="lg">
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                  <Button onClick={handleDownloadPng} variant="outline" className="flex-1" size="lg">
-                    <Download className="w-4 h-4 mr-2" />
-                    Baixar PNG
-                  </Button>
-                </div>
+                <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
+                  <Send className="w-4 h-4 mr-2" />
+                  Enviar ao Monday
+                </Button>
               </TabsContent>
 
               <TabsContent value="compilado" className="space-y-6 mt-6">
@@ -277,16 +248,10 @@ export const RecrutadoraDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <Button onClick={handleCompiladoGenerate} className="flex-1" size="lg">
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                  <Button onClick={handleDownloadPng} variant="outline" className="flex-1" size="lg">
-                    <Download className="w-4 h-4 mr-2" />
-                    Baixar PNG
-                  </Button>
-                </div>
+                <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
+                  <Send className="w-4 h-4 mr-2" />
+                  Enviar ao Monday
+                </Button>
               </TabsContent>
             </Tabs>
           </CardContent>
