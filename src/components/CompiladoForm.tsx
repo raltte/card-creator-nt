@@ -1,14 +1,10 @@
-import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Upload, Plus, Trash2, Globe, MessageCircle, Mail, Wand2 } from "lucide-react";
+import { Plus, Trash2, Globe } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { ImageFraming } from "./ImageFraming";
 
 export interface CompiladoVaga {
   codigo: string;
@@ -37,11 +33,6 @@ interface CompiladoFormProps {
 }
 
 export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
-  const { toast } = useToast();
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [showFraming, setShowFraming] = useState(false);
-  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
-
   const updateData = (field: keyof CompiladoData | string, value: any) => {
     if (field === 'contato.tipo' || field === 'contato.valor') {
       const [parent, child] = field.split('.');
@@ -58,68 +49,6 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
         [field]: value
       });
     }
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setTempImageUrl(url);
-      setShowFraming(true);
-    }
-  };
-
-  const handleGenerateAIImage = async () => {
-    if (data.vagas.length === 0 || !data.vagas[0].cargo) {
-      toast({
-        title: "Campo obrigatório",
-        description: "Adicione pelo menos uma vaga antes de gerar a imagem.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsGeneratingImage(true);
-    try {
-      const { data: result, error } = await supabase.functions.invoke('generate-job-images', {
-        body: {
-          jobTitle: data.vagas[0].cargo,
-          sector: "Geral",
-          contractType: "Diversos",
-          requirements: data.requisitos ? data.requisitos.split('\n') : [],
-          clientTemplate: data.clientTemplate,
-        }
-      });
-
-      if (error) throw error;
-
-      if (result.images && result.images.length > 0) {
-        setTempImageUrl(result.images[0]);
-        setShowFraming(true);
-      } else {
-        throw new Error('Nenhuma imagem foi gerada');
-      }
-    } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao gerar imagem. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
-  const handleFramingComplete = (croppedImageData: string) => {
-    updateData('image', croppedImageData);
-    setShowFraming(false);
-    setTempImageUrl(null);
-  };
-
-  const handleBackFromFraming = () => {
-    setShowFraming(false);
-    setTempImageUrl(null);
   };
 
   const addVaga = () => {
@@ -176,18 +105,6 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
     updateData('contato.valor', formatted);
   };
 
-  // Se estiver na tela de enquadramento
-  if (showFraming && tempImageUrl) {
-    return (
-      <ImageFraming
-        imageUrl={tempImageUrl}
-        onFramingComplete={handleFramingComplete}
-        onBack={handleBackFromFraming}
-        modelType="compilado"
-      />
-    );
-  }
-
   return (
     <div className="space-y-5">
       {/* Seleção de Template */}
@@ -217,56 +134,6 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
             <div className="font-semibold text-sm">Marisa</div>
           </button>
         </div>
-      </div>
-
-      {/* Imagem */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>
-        
-        <div className="grid grid-cols-2 gap-2">
-          <div className="border-2 border-dashed border-border rounded-lg p-3 hover:border-nt-light transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="image-upload-compilado"
-            />
-            <label htmlFor="image-upload-compilado" className="cursor-pointer">
-              <div className="flex flex-col items-center gap-1 text-center">
-                <Upload className="w-5 h-5 text-muted-foreground" />
-                <div className="text-xs text-muted-foreground">
-                  Upload
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGenerateAIImage}
-            disabled={isGeneratingImage || data.vagas.length === 0 || !data.vagas[0].cargo}
-            className="h-full"
-          >
-            <div className="flex flex-col items-center gap-1">
-              <Wand2 className="w-5 h-5" />
-              <div className="text-xs">
-                {isGeneratingImage ? 'Gerando...' : 'Gerar com IA'}
-              </div>
-            </div>
-          </Button>
-        </div>
-
-        {data.image && (
-          <div className="relative aspect-[9/16] max-h-32 rounded-lg overflow-hidden border-2 border-nt-light">
-            <img
-              src={typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image)}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
       </div>
 
       {/* Vaga PCD */}
