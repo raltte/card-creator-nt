@@ -16,9 +16,9 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configurar canvas 4:5 (960x1200)
-    canvas.width = 960;
-    canvas.height = 1200;
+    // Configurar canvas 4:5 (1080x1350)
+    canvas.width = 1080;
+    canvas.height = 1350;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -40,20 +40,20 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
       // Desenhar imagem ocupando todo o espaço (com cover)
       const imageAspect = mainImage.width / mainImage.height;
-      const canvasAspect = 960 / 1200;
+      const canvasAspect = 1080 / 1350;
       
       let drawWidth, drawHeight, offsetX, offsetY;
       
       if (imageAspect > canvasAspect) {
-        drawHeight = 1200;
-        drawWidth = 1200 * imageAspect;
-        offsetX = -(drawWidth - 960) / 2;
+        drawHeight = 1350;
+        drawWidth = 1350 * imageAspect;
+        offsetX = -(drawWidth - 1080) / 2;
         offsetY = 0;
       } else {
-        drawWidth = 960;
-        drawHeight = 960 / imageAspect;
+        drawWidth = 1080;
+        drawHeight = 1080 / imageAspect;
         offsetX = 0;
-        offsetY = -(drawHeight - 1200) / 2;
+        offsetY = -(drawHeight - 1350) / 2;
       }
       
       ctx.drawImage(mainImage, offsetX, offsetY, drawWidth, drawHeight);
@@ -67,7 +67,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       fundoMarisa.onerror = resolve;
     });
     
-    ctx.drawImage(fundoMarisa, 0, 0, 960, 1200);
+    ctx.drawImage(fundoMarisa, 0, 0, 1080, 1350);
 
     // Posicionar textos sobre o PNG conforme referência
     
@@ -76,26 +76,25 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     const maxCargoLength = 17;
     
     // Ajustar tamanho da fonte baseado no comprimento do texto
-    let cargoFontSize = 52;
+    let cargoFontSize = 58;
     if (cargoText.length > maxCargoLength) {
-      // Reduzir proporcionalmente ao tamanho extra
-      cargoFontSize = Math.max(30, 52 * (maxCargoLength / cargoText.length));
+      cargoFontSize = Math.max(34, 58 * (maxCargoLength / cargoText.length));
     }
     
     ctx.fillStyle = '#E5007E';
     ctx.font = `bold ${cargoFontSize}px Montserrat, Arial`;
     ctx.textAlign = 'center';
-    ctx.fillText(cargoText, 480, 820);
+    ctx.fillText(cargoText, 540, 922);
 
     // Badges dinâmicos
-    const badgeY = 855; // Posição Y ajustada (mais acima)
-    const badgePadding = 20;
-    const badgeHeight = 40;
-    const badgeRadius = 20;
-    const gapBetweenBadges = 30;
+    const badgeY = 962;
+    const badgePadding = 22;
+    const badgeHeight = 45;
+    const badgeRadius = 22;
+    const gapBetweenBadges = 34;
 
     // Medir texto do tipo de contrato
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     const tipoContratoText = data.tipoContrato || 'Tipo de Contrato';
     const tipoContratoWidth = ctx.measureText(tipoContratoText).width;
     const badge1Width = tipoContratoWidth + (badgePadding * 2);
@@ -107,7 +106,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
     // Calcular posições centralizadas
     const totalWidth = badge1Width + gapBetweenBadges + badge2Width;
-    const startX = (960 - totalWidth) / 2;
+    const startX = (1080 - totalWidth) / 2;
 
     const badge1X = startX;
     const badge1CenterX = badge1X + badge1Width / 2;
@@ -123,7 +122,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
     // Texto do badge 1 (branco)
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(tipoContratoText, badge1CenterX, badgeY + badgeHeight / 2);
@@ -131,7 +130,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     // Desenhar seta entre os badges
     const arrowX = badge1X + badge1Width + (gapBetweenBadges / 2);
     const arrowY = badgeY + badgeHeight / 2;
-    const arrowSize = 8;
+    const arrowSize = 9;
     
     ctx.fillStyle = '#E5007E';
     ctx.beginPath();
@@ -149,7 +148,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
 
     // Texto do badge 2 (rosa)
     ctx.fillStyle = '#E5007E';
-    ctx.font = 'bold 20px Montserrat, Arial';
+    ctx.font = 'bold 22px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(localText, badge2CenterX, badgeY + badgeHeight / 2);
@@ -160,23 +159,23 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       const baseText = 'Candidate-se em:';
       
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.font = 'bold 29px Montserrat, Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
       
       // Medir texto base
       const baseTextWidth = ctx.measureText(baseText).width;
       const numberWidth = ctx.measureText(whatsappNumber).width;
-      const iconSize = 30;
-      const spacing = 10;
+      const iconSize = 34;
+      const spacing = 11;
       
       // Calcular posição inicial para centralizar tudo
       const totalWidth = baseTextWidth + spacing + iconSize + spacing + numberWidth;
-      const startX = (960 - totalWidth) / 2;
+      const startX = (1080 - totalWidth) / 2;
       
       // Desenhar texto "Candidate-se em:"
       ctx.textAlign = 'left';
-      ctx.fillText(baseText, startX, 962);
+      ctx.fillText(baseText, startX, 1082);
       
       // Carregar e desenhar ícone do WhatsApp
       const whatsappIcon = new Image();
@@ -192,22 +191,22 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       });
       
       const iconX = startX + baseTextWidth + spacing;
-      const iconY = 962 - iconSize + 5; // Ajustar posição vertical
+      const iconY = 1082 - iconSize + 6;
       ctx.drawImage(whatsappIcon, iconX, iconY, iconSize, iconSize);
       
       // Desenhar número do WhatsApp
-      ctx.fillText(whatsappNumber, iconX + iconSize + spacing, 962);
+      ctx.fillText(whatsappNumber, iconX + iconSize + spacing, 1082);
     } else {
       const footerText = data.contato?.tipo === 'email'
         ? data.contato.valor || 'email@exemplo.com'
         : 'novotemporh.com.br/marisa';
       
       // Calcular fonte dinâmica para e-mails longos
-      const maxWidth = 800; // Largura máxima disponível
-      let fontSize = 26;
+      const maxWidth = 900;
+      let fontSize = 29;
       ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       
-      while (ctx.measureText(footerText).width > maxWidth && fontSize > 16) {
+      while (ctx.measureText(footerText).width > maxWidth && fontSize > 18) {
         fontSize -= 1;
         ctx.font = `bold ${fontSize}px Montserrat, Arial`;
       }
@@ -215,7 +214,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText(footerText, 480, 962);
+      ctx.fillText(footerText, 540, 1082);
     }
   };
 
@@ -224,7 +223,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
   }, [data]);
 
   return (
-    <div className="cartaz-container bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="cartaz-container bg-white shadow-lg overflow-hidden">
       <canvas 
         ref={canvasRef}
         id="cartaz-canvas"
