@@ -353,19 +353,20 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="Administração">Administração</SelectItem>
-            <SelectItem value="Produção">Produção</SelectItem>
-            <SelectItem value="Vendas">Vendas</SelectItem>
-            <SelectItem value="Tecnologia">Tecnologia</SelectItem>
-            <SelectItem value="Saúde">Saúde</SelectItem>
+            <SelectItem value="Atendimento ao Cliente">Atendimento ao Cliente</SelectItem>
             <SelectItem value="Educação">Educação</SelectItem>
             <SelectItem value="Financeiro">Financeiro</SelectItem>
-            <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
-            <SelectItem value="Logística">Logística</SelectItem>
-            <SelectItem value="Marketing">Marketing</SelectItem>
-            <SelectItem value="Atendimento ao Cliente">Atendimento ao Cliente</SelectItem>
-            <SelectItem value="Segurança">Segurança</SelectItem>
+            <SelectItem value="Indústria">Indústria</SelectItem>
             <SelectItem value="Limpeza">Limpeza</SelectItem>
+            <SelectItem value="Logística">Logística</SelectItem>
             <SelectItem value="Manutenção">Manutenção</SelectItem>
+            <SelectItem value="Marketing">Marketing</SelectItem>
+            <SelectItem value="Produção">Produção</SelectItem>
+            <SelectItem value="Recursos Humanos">Recursos Humanos</SelectItem>
+            <SelectItem value="Saúde">Saúde</SelectItem>
+            <SelectItem value="Segurança">Segurança</SelectItem>
+            <SelectItem value="Tecnologia">Tecnologia</SelectItem>
+            <SelectItem value="Vendas">Vendas</SelectItem>
           </SelectContent>
         </Select>
       </div>
