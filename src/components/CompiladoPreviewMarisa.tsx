@@ -123,8 +123,9 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       }
     }
 
-    // Área segura para textos (não invadir a imagem)
-    const maxTextWidth = 480;
+    // Área segura para textos (imagem começa em x=594, texto começa em x=72)
+    // Margem de segurança: 594 - 72 - 100 = 422px
+    const maxTextWidth = 420;
     
     // Função para quebrar texto em linhas
     const wrapTextToLines = (text: string, maxWidth: number, fontSize: number, fontWeight: string = ''): string[] => {
