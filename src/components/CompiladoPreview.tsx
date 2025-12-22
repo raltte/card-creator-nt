@@ -115,19 +115,75 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       }
     }
 
-    // Limite de caracteres por linha para não invadir a imagem
-    const maxCharsPerLine = 35;
-    
-    // Função para quebrar texto em linhas baseado em caracteres
-    const wrapTextByChars = (text: string, maxChars: number): string[] => {
-      if (text.length <= maxChars) {
-        return [text];
-      }
-      
+    // Safezone das vagas: calcula largura segura antes de chegar na imagem (imagem começa em x=594)
+    const textStartX = 72;
+    const imageStartX = 594;
+    const safeGapToImage = 170; // aumenta a margem para nunca encostar na foto
+    const maxVagaTextWidth = imageStartX - safeGapToImage - textStartX;
+    const maxVagaCharsPerLine = 35;
+
+    const wrapVagaText = (text: string, fontSize: number): string[] => {
+      ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+
+      const fits = (line: string) =>
+        line.length <= maxVagaCharsPerLine && ctx.measureText(line).width <= maxVagaTextWidth;
+
+      const splitLongWord = (word: string): string[] => {
+        const parts: string[] = [];
+        let current = '';
+
+        for (const ch of word) {
+          const test = current + ch;
+          if (test.length <= maxVagaCharsPerLine && ctx.measureText(test).width <= maxVagaTextWidth) {
+            current = test;
+          } else {
+            if (current) parts.push(current);
+            current = ch;
+          }
+        }
+        if (current) parts.push(current);
+        return parts;
+      };
+
       const words = text.split(' ');
       const lines: string[] = [];
       let currentLine = '';
-      
+
+      for (const word of words) {
+        // Se a palavra sozinha já não cabe, quebra em pedaços
+        const wordFits = fits(word);
+        const wordParts = wordFits ? [word] : splitLongWord(word);
+
+        for (const part of wordParts) {
+          const testLine = currentLine ? `${currentLine} ${part}` : part;
+
+          if (!currentLine) {
+            currentLine = part;
+            continue;
+          }
+
+          if (fits(testLine)) {
+            currentLine = testLine;
+          } else {
+            lines.push(currentLine);
+            currentLine = part;
+          }
+        }
+      }
+
+      if (currentLine) lines.push(currentLine);
+      return lines;
+    };
+
+    // Requisitos: mantém lógica por caracteres (já estava OK)
+    const maxReqCharsPerLine = 35;
+    const wrapTextByChars = (text: string, maxChars: number): string[] => {
+      if (text.length <= maxChars) return [text];
+
+      const words = text.split(' ');
+      const lines: string[] = [];
+      let currentLine = '';
+
       for (const word of words) {
         const testLine = currentLine ? `${currentLine} ${word}` : word;
         if (testLine.length <= maxChars) {
@@ -137,34 +193,33 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
           currentLine = word;
         }
       }
+
       if (currentLine) lines.push(currentLine);
-      
       return lines;
     };
 
     // Vagas
     y += local ? 135 : 0;
-    
-    data.vagas.forEach((vaga, index) => {
+
+    data.vagas.forEach((vaga) => {
       if (vaga.codigo && vaga.cargo) {
         const codigoText = `${vaga.codigo}:`;
         const fullText = `${codigoText} ${vaga.cargo}`;
         const fontSize = 34;
-        
-        // Quebrar em linhas se ultrapassar 35 caracteres
-        if (fullText.length > maxCharsPerLine) {
-          const lines = wrapTextByChars(fullText, maxCharsPerLine);
+
+        const lines = wrapVagaText(fullText, fontSize);
+
+        if (lines.length > 1) {
           lines.forEach((line, lineIndex) => {
-            // Encontrar onde termina o código na linha
             if (lineIndex === 0 && line.includes(':')) {
               const colonIndex = line.indexOf(':');
               const codePart = line.substring(0, colonIndex + 1);
               const cargoPart = line.substring(colonIndex + 1);
-              
+
               ctx.fillStyle = '#20CE90';
               ctx.font = `bold ${fontSize}px Montserrat, Arial`;
               ctx.fillText(codePart, 72, y);
-              
+
               const codeWidth = ctx.measureText(codePart).width;
               ctx.fillStyle = '#11332B';
               ctx.font = `${fontSize}px Montserrat, Arial`;
@@ -174,18 +229,19 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
               ctx.font = `${fontSize}px Montserrat, Arial`;
               ctx.fillText(line, 72, y);
             }
+
             y += fontSize + 10;
           });
         } else {
           ctx.fillStyle = '#20CE90';
           ctx.font = `bold ${fontSize}px Montserrat, Arial`;
           ctx.fillText(codigoText, 72, y);
-          
+
           const codigoWidth = ctx.measureText(codigoText).width;
           ctx.fillStyle = '#11332B';
           ctx.font = `${fontSize}px Montserrat, Arial`;
           ctx.fillText(` ${vaga.cargo}`, 72 + codigoWidth, y);
-          
+
           y += fontSize + 15;
         }
       }
@@ -213,9 +269,9 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
         if (line.trim()) {
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
           
-          // Quebrar em linhas se ultrapassar 50 caracteres
-          if (lineWithBullet.length > maxCharsPerLine) {
-            const wrappedLines = wrapTextByChars(lineWithBullet, maxCharsPerLine);
+          // Quebrar em linhas se ultrapassar o limite de caracteres
+          if (lineWithBullet.length > maxReqCharsPerLine) {
+            const wrappedLines = wrapTextByChars(lineWithBullet, maxReqCharsPerLine);
             wrappedLines.forEach((wrappedLine, idx) => {
               ctx.fillStyle = '#11332B';
               ctx.font = `${reqFontSize}px Montserrat, Arial`;
