@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ImageSelector } from "@/components/ImageSelector";
 import { CartazPreview } from "@/components/CartazPreview";
 import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
+import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
 import { CartazData } from "@/components/CartazGenerator";
@@ -179,6 +180,7 @@ const Finalizar = () => {
 
   const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
   const isMarisa = solicitacao.modelo_cartaz.includes('marisa');
+  const isWeg = solicitacao.modelo_cartaz === 'weg';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
@@ -211,7 +213,7 @@ const Finalizar = () => {
             }}
             onImageSelect={handleImagemSelecionada}
             onBack={() => navigate('/')}
-            clientTemplate={isMarisa ? 'marisa' : 'padrao'}
+            clientTemplate={isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
         )}
 
@@ -227,7 +229,9 @@ const Finalizar = () => {
                     <CompiladoPreview data={compiladoData} />
                   ) : null
                 ) : (
-                  isMarisa && cartazData ? (
+                  isWeg && cartazData ? (
+                    <CartazPreviewWeg data={cartazData} />
+                  ) : isMarisa && cartazData ? (
                     <CartazPreviewMarisa data={cartazData} />
                   ) : cartazData ? (
                     <CartazPreview data={cartazData} />
