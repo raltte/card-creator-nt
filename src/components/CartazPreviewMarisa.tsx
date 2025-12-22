@@ -73,7 +73,7 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     
     // Cargo (onde está escrito "Líder de Vendas")
     const cargoText = data.cargo || 'Nome da Vaga';
-    const maxWidth = 720; // Área segura horizontal reduzida
+    const maxWidth = 550; // Área segura horizontal reduzida
     const baseFontSize = 58;
     const lineHeight = 52; // Espaçamento menor entre linhas
     
