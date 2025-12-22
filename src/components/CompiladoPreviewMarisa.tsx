@@ -256,9 +256,17 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
     
     const maxContactWidth = 472;
     let contactFontSize = 29;
+    
+    // Se o texto tiver mais de 32 caracteres, reduzir fonte proporcionalmente
+    if (contactValue.length > 32) {
+      const ratio = 32 / contactValue.length;
+      contactFontSize = Math.max(18, Math.floor(29 * ratio));
+    }
+    
     ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
     
-    while (ctx.measureText(contactValue).width > maxContactWidth && contactFontSize > 18) {
+    // Garantir que cabe na largura máxima
+    while (ctx.measureText(contactValue).width > maxContactWidth && contactFontSize > 16) {
       contactFontSize -= 1;
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
     }
