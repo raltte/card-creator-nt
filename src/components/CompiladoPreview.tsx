@@ -115,21 +115,91 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       }
     }
 
+    // Área segura para textos (não invadir a imagem)
+    const maxTextWidth = 480;
+    
+    // Função para quebrar texto em linhas
+    const wrapTextToLines = (text: string, maxWidth: number, fontSize: number, fontWeight: string = ''): string[] => {
+      ctx.font = `${fontWeight} ${fontSize}px Montserrat, Arial`.trim();
+      
+      if (ctx.measureText(text).width <= maxWidth) {
+        return [text];
+      }
+      
+      const words = text.split(' ');
+      const lines: string[] = [];
+      let currentLine = '';
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+      
+      return lines;
+    };
+
     // Vagas
     y += local ? 135 : 0;
+    const baseFontSize = 34;
+    const minFontSize = 22;
+    
     data.vagas.forEach((vaga, index) => {
       if (vaga.codigo && vaga.cargo) {
-        ctx.fillStyle = '#20CE90';
-        ctx.font = 'bold 34px Montserrat, Arial';
         const codigoText = `${vaga.codigo}:`;
-        ctx.fillText(codigoText, 72, y);
+        const fullText = `${codigoText} ${vaga.cargo}`;
         
-        const codigoWidth = ctx.measureText(codigoText).width;
-        ctx.fillStyle = '#11332B';
-        ctx.font = '34px Montserrat, Arial';
-        ctx.fillText(` ${vaga.cargo}`, 72 + codigoWidth, y);
+        // Calcular fonte dinâmica
+        let fontSize = baseFontSize;
+        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
         
-        y += 49;
+        while (ctx.measureText(fullText).width > maxTextWidth && fontSize > minFontSize) {
+          fontSize -= 1;
+          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+        }
+        
+        // Se ainda não couber, quebrar em linhas
+        if (ctx.measureText(fullText).width > maxTextWidth) {
+          const lines = wrapTextToLines(fullText, maxTextWidth, fontSize, 'bold');
+          lines.forEach((line, lineIndex) => {
+            // Encontrar onde termina o código na linha
+            if (lineIndex === 0 && line.includes(':')) {
+              const colonIndex = line.indexOf(':');
+              const codePart = line.substring(0, colonIndex + 1);
+              const cargoPart = line.substring(colonIndex + 1);
+              
+              ctx.fillStyle = '#20CE90';
+              ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+              ctx.fillText(codePart, 72, y);
+              
+              const codeWidth = ctx.measureText(codePart).width;
+              ctx.fillStyle = '#11332B';
+              ctx.font = `${fontSize}px Montserrat, Arial`;
+              ctx.fillText(cargoPart, 72 + codeWidth, y);
+            } else {
+              ctx.fillStyle = '#11332B';
+              ctx.font = `${fontSize}px Montserrat, Arial`;
+              ctx.fillText(line, 72, y);
+            }
+            y += fontSize + 8;
+          });
+        } else {
+          ctx.fillStyle = '#20CE90';
+          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+          ctx.fillText(codigoText, 72, y);
+          
+          const codigoWidth = ctx.measureText(codigoText).width;
+          ctx.fillStyle = '#11332B';
+          ctx.font = `${fontSize}px Montserrat, Arial`;
+          ctx.fillText(` ${vaga.cargo}`, 72 + codigoWidth, y);
+          
+          y += fontSize + 15;
+        }
       }
     });
 
@@ -148,14 +218,38 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
 
     y += 90;
     if (data.requisitos) {
-      ctx.fillStyle = '#11332B';
-      ctx.font = '29px Montserrat, Arial';
+      const reqFontSize = 26;
+      const minReqFontSize = 18;
+      
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
         if (line.trim()) {
           const lineWithBullet = line.startsWith('•') ? line : `• ${line}`;
-          ctx.fillText(lineWithBullet, 72, y);
-          y += 38;
+          
+          // Calcular fonte dinâmica para requisitos
+          let fontSize = reqFontSize;
+          ctx.font = `${fontSize}px Montserrat, Arial`;
+          
+          while (ctx.measureText(lineWithBullet).width > maxTextWidth && fontSize > minReqFontSize) {
+            fontSize -= 1;
+            ctx.font = `${fontSize}px Montserrat, Arial`;
+          }
+          
+          // Se ainda não couber, quebrar em linhas
+          if (ctx.measureText(lineWithBullet).width > maxTextWidth) {
+            const wrappedLines = wrapTextToLines(lineWithBullet, maxTextWidth, fontSize);
+            wrappedLines.forEach((wrappedLine, idx) => {
+              ctx.fillStyle = '#11332B';
+              ctx.font = `${fontSize}px Montserrat, Arial`;
+              ctx.fillText(wrappedLine, 72, y);
+              y += fontSize + 8;
+            });
+          } else {
+            ctx.fillStyle = '#11332B';
+            ctx.font = `${fontSize}px Montserrat, Arial`;
+            ctx.fillText(lineWithBullet, 72, y);
+            y += fontSize + 10;
+          }
         }
       });
     }
