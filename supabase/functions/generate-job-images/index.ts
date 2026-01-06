@@ -104,7 +104,7 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
   const framingStyle = "9:16 portrait aspect ratio, full body or waist-up shot, medium distance framing, person centered, plenty of negative space around subject";
   
   // Estilo de qualidade - CRÍTICO: reforçar múltiplas vezes para não ter texto
-  const qualityStyle = "8K, photorealistic, professional photography, natural lighting, absolutely no text anywhere in the image, no words, no letters, no numbers, no writing, no labels, no signs with text, no logos, no watermarks, no captions, no overlays, clean image without any typography";
+  const qualityStyle = "8K, photorealistic, professional photography, natural lighting, absolutely no text anywhere in the image, no words, no letters, no numbers, no writing, no labels, no signs with text, no logos, no captions, no overlays, clean image without any typography";
   
   // === SE TEM SUGESTÃO DO USUÁRIO - PRIORIDADE MÁXIMA ===
   if (imageSuggestion && imageSuggestion.trim()) {
