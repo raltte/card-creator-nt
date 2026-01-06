@@ -9,6 +9,7 @@ import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
+import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MondayItemSelector } from "./MondayItemSelector";
@@ -37,7 +38,7 @@ export const RecrutadoraDashboard = () => {
   const navigate = useNavigate();
   const { role } = useAuth();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
-  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna'>('padrao');
+  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
     codigoPS: "",
@@ -209,7 +210,7 @@ export const RecrutadoraDashboard = () => {
     tipoContrato: dadosIndividual.tipoContrato || '',
     requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
     isPcd: dadosIndividual.isPcd || false,
-    clientTemplate: modeloSelecionado as 'padrao' | 'marisa' | 'weg',
+    clientTemplate: modeloSelecionado as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card',
     contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
       ? { tipo: 'whatsapp' as const, valor: dadosIndividual.whatsappNumber || '' }
       : dadosIndividual.captacaoCurriculo === 'email'
@@ -256,31 +257,32 @@ export const RecrutadoraDashboard = () => {
 
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
-                <Tabs 
-                  defaultValue="padrao" 
-                  onValueChange={(value) => {
-                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna');
-                    if (tipoCartaz === 'compilado') {
-                      const updated = new CompiladoDataImpl();
-                      Object.assign(updated, dadosCompilado);
-                      updated.clientTemplate = value as 'padrao' | 'marisa' | 'weg';
-                      if (updated.contato.tipo === 'site') {
-                        updated.contato = { 
-                          tipo: 'site',
-                          valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
-                        };
-                      }
-                      setDadosCompilado(updated);
-                    }
-                  }}
-                >
-                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-4'}>
-                    <TabsTrigger value="padrao">Tradicional</TabsTrigger>
-                    {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
-                    {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
-                    <TabsTrigger value="marisa">Marisa</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                 <Tabs 
+                   defaultValue="padrao" 
+                   onValueChange={(value) => {
+                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
+                     if (tipoCartaz === 'compilado') {
+                       const updated = new CompiladoDataImpl();
+                       Object.assign(updated, dadosCompilado);
+                       updated.clientTemplate = value as 'padrao' | 'marisa' | 'weg';
+                       if (updated.contato.tipo === 'site') {
+                         updated.contato = { 
+                           tipo: 'site',
+                           valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
+                         };
+                       }
+                       setDadosCompilado(updated);
+                     }
+                   }}
+                 >
+                   <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-5'}>
+                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                     {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
+                     {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
+                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                     {tipoCartaz === 'individual' && <TabsTrigger value="dm-card">DM Card</TabsTrigger>}
+                   </TabsList>
+                 </Tabs>
               </div>
 
               <TabsContent value="individual" className="space-y-6 mt-6">
@@ -306,6 +308,9 @@ export const RecrutadoraDashboard = () => {
                       )}
                       {modeloSelecionado === 'marisa' && (
                         <CartazPreviewMarisa data={getIndividualPreviewData()} />
+                      )}
+                      {modeloSelecionado === 'dm-card' && (
+                        <CartazPreviewDMCard data={getIndividualPreviewData()} />
                       )}
                     </div>
                   </div>
