@@ -85,7 +85,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     // Lado direito - fundo verde mais claro (vaga interna)
     const rightWidth = 1080 - leftWidth;
     const rightHeight = 1134;
-    ctx.fillStyle = '#1A4A40'; // Verde um pouco mais claro que o padrão #11332B
+    ctx.fillStyle = '#1D5C4A'; // Verde mais claro que o padrão
     ctx.beginPath();
     ctx.roundRect(leftWidth, topOffset, rightWidth, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
@@ -299,14 +299,14 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       const iconY = buttonY - iconSize/2;
       ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
       
-      ctx.fillStyle = '#1A4A40'; // Usar o verde mais claro também no botão
+      ctx.fillStyle = '#1D5C4A'; // Usar o verde mais claro também no botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
     } else {
       const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
-      ctx.fillStyle = '#1A4A40'; // Usar o verde mais claro também no botão
+      ctx.fillStyle = '#1D5C4A'; // Usar o verde mais claro também no botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
