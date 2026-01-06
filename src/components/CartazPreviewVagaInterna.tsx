@@ -299,14 +299,14 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       const iconY = buttonY - iconSize/2;
       ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
       
-      ctx.fillStyle = '#20CE90'; // Verde claro no texto do botão
+      ctx.fillStyle = '#11332B'; // Verde escuro no texto do botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
     } else {
       const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
-      ctx.fillStyle = '#20CE90'; // Verde claro no texto do botão
+      ctx.fillStyle = '#11332B'; // Verde escuro no texto do botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
