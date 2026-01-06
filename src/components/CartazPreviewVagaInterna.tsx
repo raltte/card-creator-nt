@@ -104,7 +104,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     ctx.drawImage(logo, contentX, topOffset + contentOffset + 90, logoWidth, logoHeight);
 
     // "Trabalhe conosco" - título principal (diferente do padrão)
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade no fundo claro
     ctx.font = 'bold 72px Montserrat, Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Trabalhe', contentX, topOffset + contentOffset + 315);
@@ -154,7 +154,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     const maxTextWidth = rightWidth - 48;
     
     if (data.cargo) {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
       ctx.font = 'bold 34px Montserrat, Arial';
       const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 34px Montserrat, Arial');
       cargoLines.forEach(line => {
@@ -165,7 +165,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     y += 18;
 
     if (data.local) {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
       ctx.font = 'bold 29px Montserrat, Arial';
       ctx.fillText('Local: ', contentX, y);
       
@@ -184,7 +184,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     y += 18;
 
     if (data.codigo) {
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
       ctx.font = 'bold 29px Montserrat, Arial';
       ctx.fillText('Código: ', contentX, y);
       
@@ -201,7 +201,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       ctx.fillText('Tipo de contrato:', contentX, y);
       y += 45;
       
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
       ctx.font = '31px Montserrat, Arial';
       ctx.fillText(data.tipoContrato, contentX, y);
     }
@@ -214,7 +214,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       ctx.fillText('Requisitos e atividades:', contentX, y);
       y += 49;
 
-      ctx.fillStyle = '#FFFFFF';
+      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
       ctx.font = '27px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
@@ -232,7 +232,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
 
     // "Saiba mais na legenda"
     y += 36;
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
     ctx.font = '29px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', contentX, y);
     
