@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CartazData } from "./CartazGenerator";
-import logoImage from "@/assets/novo-tempo-logo-vaga-interna.png";
+import logoImage from "@/assets/novo-tempo-logo-light-bg.png"; // Logo para fundo claro
 import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CartazPreviewVagaInternaProps {
@@ -82,10 +82,10 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
-    // Lado direito - fundo verde claro (inversão do tradicional)
+    // Lado direito - fundo branco
     const rightWidth = 1080 - leftWidth;
     const rightHeight = 1134;
-    ctx.fillStyle = '#20CE90'; // Verde claro (invertido do tradicional)
+    ctx.fillStyle = '#FFFFFF'; // Fundo branco
     ctx.beginPath();
     ctx.roundRect(leftWidth, topOffset, rightWidth, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
@@ -103,8 +103,8 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     const logoHeight = (logoWidth * logo.height) / logo.width;
     ctx.drawImage(logo, contentX, topOffset + contentOffset + 90, logoWidth, logoHeight);
 
-    // "Trabalhe conosco" - título principal (diferente do padrão)
-    ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade no fundo claro
+    // "Trabalhe conosco" - título principal
+    ctx.fillStyle = '#20CE90'; // Verde claro
     ctx.font = 'bold 72px Montserrat, Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Trabalhe', contentX, topOffset + contentOffset + 315);
@@ -154,7 +154,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     const maxTextWidth = rightWidth - 48;
     
     if (data.cargo) {
-      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+      ctx.fillStyle = '#20CE90'; // Verde claro
       ctx.font = 'bold 34px Montserrat, Arial';
       const cargoLines = wrapText(data.cargo, maxTextWidth, 'bold 34px Montserrat, Arial');
       cargoLines.forEach(line => {
@@ -165,7 +165,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     y += 18;
 
     if (data.local) {
-      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+      ctx.fillStyle = '#20CE90'; // Verde claro
       ctx.font = 'bold 29px Montserrat, Arial';
       ctx.fillText('Local: ', contentX, y);
       
@@ -184,7 +184,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     y += 18;
 
     if (data.codigo) {
-      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+      ctx.fillStyle = '#20CE90'; // Verde claro
       ctx.font = 'bold 29px Montserrat, Arial';
       ctx.fillText('Código: ', contentX, y);
       
@@ -196,12 +196,12 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
 
     // Tipo de contrato
     if (data.tipoContrato) {
-      ctx.fillStyle = '#11332B'; // Verde escuro para destaque (invertido)
+      ctx.fillStyle = '#11332B'; // Verde escuro para destaque
       ctx.font = 'bold 31px Montserrat, Arial';
       ctx.fillText('Tipo de contrato:', contentX, y);
       y += 45;
       
-      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+      ctx.fillStyle = '#20CE90'; // Verde claro
       ctx.font = '31px Montserrat, Arial';
       ctx.fillText(data.tipoContrato, contentX, y);
     }
@@ -214,7 +214,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       ctx.fillText('Requisitos e atividades:', contentX, y);
       y += 49;
 
-      ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+      ctx.fillStyle = '#20CE90'; // Verde claro
       ctx.font = '27px Montserrat, Arial';
       const lines = data.requisitos.split('\n');
       lines.forEach(line => {
@@ -232,12 +232,12 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
 
     // "Saiba mais na legenda"
     y += 36;
-    ctx.fillStyle = '#11332B'; // Verde escuro para legibilidade
+    ctx.fillStyle = '#20CE90'; // Verde claro
     ctx.font = '29px Montserrat, Arial';
     ctx.fillText('Saiba mais na ', contentX, y);
     
     const textWidth = ctx.measureText('Saiba mais na ').width;
-    ctx.fillStyle = '#11332B'; // Verde escuro (invertido)
+    ctx.fillStyle = '#11332B'; // Verde escuro para destaque
     ctx.font = 'bold 29px Montserrat, Arial';
     ctx.fillText('legenda.', contentX + textWidth, y);
 
