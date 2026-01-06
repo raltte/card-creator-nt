@@ -82,10 +82,10 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     
     ctx.drawImage(leftImage, offsetX, offsetY, drawWidth, drawHeight);
 
-    // Lado direito - fundo verde mais claro (vaga interna)
+    // Lado direito - fundo verde claro (inversão do tradicional)
     const rightWidth = 1080 - leftWidth;
     const rightHeight = 1134;
-    ctx.fillStyle = '#1D5C4A'; // Verde mais claro que o padrão
+    ctx.fillStyle = '#20CE90'; // Verde claro (invertido do tradicional)
     ctx.beginPath();
     ctx.roundRect(leftWidth, topOffset, rightWidth, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
@@ -196,7 +196,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
 
     // Tipo de contrato
     if (data.tipoContrato) {
-      ctx.fillStyle = '#20CE90';
+      ctx.fillStyle = '#11332B'; // Verde escuro para destaque (invertido)
       ctx.font = 'bold 31px Montserrat, Arial';
       ctx.fillText('Tipo de contrato:', contentX, y);
       y += 45;
@@ -209,7 +209,7 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
 
     // Requisitos
     if (data.requisitos) {
-      ctx.fillStyle = '#20CE90';
+      ctx.fillStyle = '#11332B'; // Verde escuro para destaque (invertido)
       ctx.font = 'bold 31px Montserrat, Arial';
       ctx.fillText('Requisitos e atividades:', contentX, y);
       y += 49;
@@ -237,14 +237,14 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     ctx.fillText('Saiba mais na ', contentX, y);
     
     const textWidth = ctx.measureText('Saiba mais na ').width;
-    ctx.fillStyle = '#20CE90';
+    ctx.fillStyle = '#11332B'; // Verde escuro (invertido)
     ctx.font = 'bold 29px Montserrat, Arial';
     ctx.fillText('legenda.', contentX + textWidth, y);
 
-    // Barra de contato verde claro na parte inferior
+    // Barra de contato verde escuro na parte inferior (invertido)
     const footerY = topOffset + rightHeight;
     const footerHeight = 1350 - footerY;
-    ctx.fillStyle = '#20CE90';
+    ctx.fillStyle = '#11332B'; // Verde escuro (invertido do tradicional)
     ctx.fillRect(leftWidth, footerY, rightWidth, footerHeight);
 
     // Texto do contato
@@ -299,14 +299,14 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
       const iconY = buttonY - iconSize/2;
       ctx.drawImage(whatsappImg, iconX, iconY, iconSize, iconSize);
       
-      ctx.fillStyle = '#1D5C4A'; // Usar o verde mais claro também no botão
+      ctx.fillStyle = '#11332B'; // Verde escuro no texto do botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(contactText, iconX + iconSize + iconPadding, buttonY);
     } else {
       const iconText = data.contato.tipo === 'email' ? '✉️' : '🌐';
-      ctx.fillStyle = '#1D5C4A'; // Usar o verde mais claro também no botão
+      ctx.fillStyle = '#11332B'; // Verde escuro no texto do botão
       ctx.font = `bold ${contactFontSize}px Montserrat, Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
