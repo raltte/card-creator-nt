@@ -23,8 +23,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Verifica se está no ambiente de preview do Lovable
 const isLovablePreview = () => {
-  const hostname = window.location.hostname;
-  return hostname.includes('lovable.app') || hostname.includes('localhost');
+  const { hostname, search } = window.location;
+
+  // Domínios típicos do preview
+  if (hostname === 'localhost') return true;
+  if (hostname.includes('lovable.app')) return true;
+  if (hostname.endsWith('lovableproject.com')) return true;
+
+  // Fallback: o preview costuma adicionar um token na URL
+  return new URLSearchParams(search).has('__lovable_token');
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
