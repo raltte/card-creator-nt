@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CartazData } from "./CartazGenerator";
-import logoImage from "@/assets/novo-tempo-logo-v4.png";
+import logoImage from "@/assets/novo-tempo-logo-vaga-interna.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface CartazPreviewVagaInternaProps {
