@@ -119,18 +119,18 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       titleY += 210;
     }
 
-    // 4) "Código da vaga" + número (centralizado no oval)
+    // 4) Círculo do código + número
+    if (circuloNumero) {
+      const circW = 180;
+      const circH = (circW * circuloNumero.height) / circuloNumero.width;
+      ctx.drawImage(circuloNumero, 260, 665, circW, circH);
+    }
     ctx.font = "italic 38px Georgia, serif";
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillText("Código da vaga:", 90, 705);
-
-    // Centro aproximado do oval (no layout 1080x1350)
-    const codigoCenterX = 420;
-    const codigoCenterY = 700;
-    ctx.font = "bold 40px Montserrat, Arial";
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText("Código da vaga:", 70, 705);
+    ctx.font = "bold 38px Montserrat, Arial";
     ctx.textAlign = "center";
-    ctx.fillText(data.codigo || "00000", codigoCenterX, codigoCenterY + 10);
+    ctx.fillText(data.codigo || "00000", 350, 710);
     ctx.textAlign = "left";
 
     // 5) "Vaga efetiva para atuar em" (mesma linha)
@@ -154,7 +154,8 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
     ctx.strokeStyle = "#F4A4A4";
     ctx.lineWidth = 5;
-    drawRoundedRect(pillX, pillY, pillW, pillH, 46);
+    ctx.beginPath();
+    ctx.roundRect(pillX, pillY, pillW, pillH, 46);
     ctx.stroke();
 
     ctx.fillStyle = "#FFFFFF";
@@ -170,7 +171,8 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     const cardH = 655;
 
     ctx.fillStyle = "#FFFFFF";
-    drawRoundedRect(cardX, cardY, cardW, cardH, 55);
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, cardH, 55);
     ctx.fill();
 
     // Miolo cinza (só aparece quando não tem pessoa)
@@ -182,7 +184,8 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
     if (!data.image) {
       ctx.fillStyle = "#E5E7EB";
-      drawRoundedRect(innerX, innerY, innerW, innerH, 26);
+      ctx.beginPath();
+      ctx.roundRect(innerX, innerY, innerW, innerH, 26);
       ctx.fill();
 
       ctx.fillStyle = "#9CA3AF";
@@ -222,8 +225,13 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       }
     }
 
-    // 9) Textos do rodapé (sobre o shape)
-    // Coordenadas aproximadas do layout (1080x1350)
+    // 9) Shape azul + textos do rodapé
+    if (shapeFundo) {
+      const shapeW = 580;
+      const shapeH = (shapeW * shapeFundo.height) / shapeFundo.width;
+      ctx.drawImage(shapeFundo, 0, H - shapeH - 20, shapeW, shapeH);
+    }
+    
     ctx.fillStyle = "#1E4FD8";
     ctx.font = "36px Montserrat, Arial";
     ctx.textAlign = "left";
@@ -239,8 +247,12 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.font = "bold 52px Montserrat, Arial";
     ctx.fillText(contactText, 125, 1145);
 
-    // 10) Estrela por cima de tudo
-    drawFullOverlay(estrela);
+    // 10) Estrela decorativa
+    if (estrela) {
+      const eW = 120;
+      const eH = (eW * estrela.height) / estrela.width;
+      ctx.drawImage(estrela, 530, 880, eW, eH);
+    }
 
     // Tarja azul PCD no topo se for vaga PCD
     if (data.isPcd) {
