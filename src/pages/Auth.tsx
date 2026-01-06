@@ -20,7 +20,8 @@ const Auth = () => {
     user,
     loading: authLoading,
     signIn,
-    signUp
+    signUp,
+    isDevMode
   } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -32,11 +33,13 @@ const Auth = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
+  
   useEffect(() => {
-    if (user && !authLoading) {
+    // Redireciona se está no modo dev ou se já está logado
+    if (!authLoading && (user || isDevMode)) {
       navigate('/dashboard');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, isDevMode, navigate]);
   const validateForm = () => {
     const newErrors: {
       email?: string;
