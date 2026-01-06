@@ -8,6 +8,7 @@ import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
+import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MondayItemSelector } from "./MondayItemSelector";
@@ -36,7 +37,7 @@ export const RecrutadoraDashboard = () => {
   const navigate = useNavigate();
   const { role } = useAuth();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
-  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg'>('padrao');
+  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
     codigoPS: "",
@@ -258,7 +259,7 @@ export const RecrutadoraDashboard = () => {
                 <Tabs 
                   defaultValue="padrao" 
                   onValueChange={(value) => {
-                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg');
+                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna');
                     if (tipoCartaz === 'compilado') {
                       const updated = new CompiladoDataImpl();
                       Object.assign(updated, dadosCompilado);
@@ -273,8 +274,9 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-3'}>
+                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-4'}>
                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                    {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
                     {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
                   </TabsList>
@@ -295,6 +297,9 @@ export const RecrutadoraDashboard = () => {
                     <div>
                       {modeloSelecionado === 'padrao' && (
                         <CartazPreview data={getIndividualPreviewData()} />
+                      )}
+                      {modeloSelecionado === 'vaga-interna' && (
+                        <CartazPreviewVagaInterna data={getIndividualPreviewData()} />
                       )}
                       {modeloSelecionado === 'weg' && (
                         <CartazPreviewWeg data={getIndividualPreviewData()} />
