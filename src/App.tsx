@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Editor from "./pages/Editor";
+import Painel from "./pages/Painel";
 import Finalizar from "./pages/Finalizar";
 import AtualizarLink from "./pages/AtualizarLink";
 import Auth from "./pages/Auth";
@@ -23,9 +24,9 @@ const RootRedirect = () => {
     return null;
   }
   
-  // Se está no modo dev, vai direto pro dashboard
+  // Se está no modo dev, vai direto pro painel
   if (isDevMode) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/painel" replace />;
   }
   
   return <Navigate to="/auth" replace />;
@@ -36,6 +37,14 @@ const AppRoutes = () => (
     <Routes>
       <Route path="/" element={<RootRedirect />} />
       <Route path="/auth" element={<Auth />} />
+      <Route 
+        path="/painel" 
+        element={
+          <ProtectedRoute>
+            <Painel />
+          </ProtectedRoute>
+        } 
+      />
       <Route 
         path="/dashboard" 
         element={
