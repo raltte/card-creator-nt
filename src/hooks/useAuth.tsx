@@ -16,15 +16,23 @@ interface AuthContextType {
   isAdmin: boolean;
   isEditor: boolean;
   isRecrutador: boolean;
+  isDevMode: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Verifica se está no ambiente de preview do Lovable
+const isLovablePreview = () => {
+  const hostname = window.location.hostname;
+  return hostname.includes('lovable.app') || hostname.includes('localhost');
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDevMode, setIsDevMode] = useState(false);
 
   const fetchUserRole = async (userId: string) => {
     try {
@@ -47,6 +55,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    // Modo desenvolvimento para preview do Lovable
+    if (isLovablePreview()) {
+      setIsDevMode(true);
+      setRole('admin_master');
+      // Criar um user mock para o modo dev
+      setUser({
+        id: 'dev-user-id',
+        email: 'dev@lovable.app',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as User);
+      setLoading(false);
+      return;
+    }
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -130,6 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAdmin: role === 'admin' || role === 'admin_master',
     isEditor: role === 'editor' || role === 'admin' || role === 'admin_master',
     isRecrutador: role === 'recrutador',
+    isDevMode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
