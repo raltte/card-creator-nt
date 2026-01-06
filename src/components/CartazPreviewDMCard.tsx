@@ -51,17 +51,10 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       loadImage(circuloNumeroImg).catch(() => null),
     ]);
 
-    // Helpers
+    // Helper: desenha PNG como overlay completo (1080x1350)
     const drawFullOverlay = (img: HTMLImageElement | null) => {
       if (!img) return;
-      // Esses PNGs (enviados por você) já vêm “posicionados” num canvas 1080x1350.
-      // Então desenhamos 1:1 como overlay para não distorcer nem perder alinhamento.
       ctx.drawImage(img, 0, 0, W, H);
-    };
-
-    const drawRoundedRect = (x: number, y: number, w: number, h: number, r: number) => {
-      ctx.beginPath();
-      ctx.roundRect(x, y, w, h, r);
     };
 
     const wrapText = (text: string, maxWidth: number, font: string): string[] => {
@@ -83,12 +76,13 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       return lines;
     };
 
-    // 1) Overlays fixos (posição perfeita)
+    // 1) Overlays fixos (PNGs já posicionados em 1080x1350)
     drawFullOverlay(vemTrabalhar);
     drawFullOverlay(circuloNumero);
     drawFullOverlay(shapeFundo);
+    drawFullOverlay(estrela);
 
-    // 2) Logo (canto superior direito)
+    // 2) Logo Novo Tempo (canto superior direito)
     if (novoTempoLogo) {
       const logoW = 380;
       const logoH = (logoW * novoTempoLogo.height) / novoTempoLogo.width;
@@ -111,20 +105,13 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
         titleY += 105;
       }
     } else {
-      // Placeholder leve para não parecer “vazio”
       ctx.globalAlpha = 0.75;
       ctx.fillText("Nome da", titleX, titleY);
       ctx.fillText("Vaga", titleX, titleY + 105);
       ctx.globalAlpha = 1;
-      titleY += 210;
     }
 
-    // 4) Círculo do código + número
-    if (circuloNumero) {
-      const circW = 180;
-      const circH = (circW * circuloNumero.height) / circuloNumero.width;
-      ctx.drawImage(circuloNumero, 260, 665, circW, circH);
-    }
+    // 4) Código da vaga (texto no círculo)
     ctx.font = "italic 38px Georgia, serif";
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText("Código da vaga:", 70, 705);
@@ -133,7 +120,7 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillText(data.codigo || "00000", 350, 710);
     ctx.textAlign = "left";
 
-    // 5) "Vaga efetiva para atuar em" (mesma linha)
+    // 5) "Vaga efetiva para atuar em:"
     const vagaY = 820;
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 42px Montserrat, Arial";
@@ -175,7 +162,6 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.roundRect(cardX, cardY, cardW, cardH, 55);
     ctx.fill();
 
-    // Miolo cinza (só aparece quando não tem pessoa)
     const innerPad = 65;
     const innerX = cardX + innerPad;
     const innerY = cardY + innerPad;
@@ -198,7 +184,7 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       ctx.textBaseline = "alphabetic";
     }
 
-    // 8) Pessoa (ultrapassando o card)
+    // 8) Pessoa (foto sobre o card branco)
     if (data.image && data.image !== "") {
       const personImg = new Image();
       personImg.crossOrigin = "anonymous";
@@ -211,10 +197,9 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
       if (personImg.complete && personImg.naturalWidth > 0) {
         const aspect = personImg.naturalWidth / personImg.naturalHeight;
-        const targetH = 860; // dá a sensação de profundidade (ultrapassa em cima e embaixo)
+        const targetH = 860;
         const targetW = targetH * aspect;
 
-        // Posição: centraliza no card e empurra um pouco pra direita
         const centerX = cardX + cardW / 2 + 35;
         const bottomY = cardY + cardH + 120;
 
@@ -225,13 +210,7 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       }
     }
 
-    // 9) Shape azul + textos do rodapé
-    if (shapeFundo) {
-      const shapeW = 580;
-      const shapeH = (shapeW * shapeFundo.height) / shapeFundo.width;
-      ctx.drawImage(shapeFundo, 0, H - shapeH - 20, shapeW, shapeH);
-    }
-    
+    // 9) Textos do rodapé (sobre o shape azul)
     ctx.fillStyle = "#1E4FD8";
     ctx.font = "36px Montserrat, Arial";
     ctx.textAlign = "left";
@@ -245,16 +224,9 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
           : "novotemporh.com.br";
 
     ctx.font = "bold 52px Montserrat, Arial";
-    ctx.fillText(contactText, 125, 1145);
+    ctx.fillText(contactText, 90, 1085);
 
-    // 10) Estrela decorativa
-    if (estrela) {
-      const eW = 120;
-      const eH = (eW * estrela.height) / estrela.width;
-      ctx.drawImage(estrela, 530, 880, eW, eH);
-    }
-
-    // Tarja azul PCD no topo se for vaga PCD
+    // 10) Tarja PCD no topo
     if (data.isPcd) {
       ctx.fillStyle = "#3B5998";
       ctx.fillRect(0, 0, W, 67);
