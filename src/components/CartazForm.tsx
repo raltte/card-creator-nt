@@ -159,7 +159,7 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
       {/* Seleção de Template */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Template do Cliente</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => updateData('clientTemplate', 'padrao')}
@@ -170,6 +170,17 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             }`}
           >
             <div className="font-semibold text-sm">Novo Tempo</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateData('clientTemplate', 'vaga-interna')}
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
+              data.clientTemplate === 'vaga-interna' 
+                ? 'border-teal-500 bg-teal-500/10' 
+                : 'border-border hover:border-teal-500/50'
+            }`}
+          >
+            <div className="font-semibold text-sm">Vaga Interna</div>
           </button>
           <button
             type="button"
