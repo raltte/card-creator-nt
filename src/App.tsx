@@ -12,6 +12,7 @@ import Painel from "./pages/Painel";
 import Finalizar from "./pages/Finalizar";
 import AtualizarLink from "./pages/AtualizarLink";
 import Auth from "./pages/Auth";
+import SSOLogin from "./pages/SSOLogin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const AppRoutes = () => (
     <Routes>
       <Route path="/" element={<RootRedirect />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/sso" element={<SSOLogin />} />
       <Route 
         path="/painel" 
         element={
