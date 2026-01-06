@@ -37,7 +37,7 @@ const Auth = () => {
   useEffect(() => {
     // Redireciona se está no modo dev ou se já está logado
     if (!authLoading && (user || isDevMode)) {
-      navigate('/dashboard');
+      navigate('/painel');
     }
   }, [user, authLoading, isDevMode, navigate]);
   const validateForm = () => {
@@ -95,7 +95,7 @@ const Auth = () => {
           title: "Bem-vindo(a)!",
           description: "Login realizado com sucesso."
         });
-        navigate('/dashboard');
+        navigate('/painel');
       } else {
         const {
           error
@@ -120,7 +120,7 @@ const Auth = () => {
           title: "Conta criada!",
           description: "Você já pode acessar o sistema."
         });
-        navigate('/dashboard');
+        navigate('/painel');
       }
     } catch (error) {
       toast({
