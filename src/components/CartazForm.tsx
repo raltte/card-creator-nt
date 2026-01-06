@@ -184,6 +184,17 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
           </button>
           <button
             type="button"
+            onClick={() => updateData('clientTemplate', 'dm-card')}
+            className={`p-3 border-2 rounded-lg text-center transition-colors ${
+              data.clientTemplate === 'dm-card' 
+                ? 'border-blue-500 bg-blue-500/10' 
+                : 'border-border hover:border-blue-500/50'
+            }`}
+          >
+            <div className="font-semibold text-sm">DM Card</div>
+          </button>
+          <button
+            type="button"
             onClick={() => updateData('clientTemplate', 'marisa')}
             className={`p-3 border-2 rounded-lg text-center transition-colors ${
               data.clientTemplate === 'marisa' 
