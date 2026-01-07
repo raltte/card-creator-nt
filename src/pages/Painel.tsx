@@ -1,88 +1,50 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { FileImage, Megaphone, LogOut } from "lucide-react";
+import { RecrutadoraDashboard } from "@/components/RecrutadoraDashboard";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { LogOut, Shield, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Painel = () => {
+  const { user, role, signOut, isAdminMaster, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
 
-  const handlePatrocinado = () => {
-    window.open("https://d92a3000-0e7a-4dcf-bd42-3c3c2f617783.lovableproject.com", "_blank");
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  const getRoleLabel = () => {
+    if (role === 'admin_master') return 'Admin Master';
+    if (role === 'admin') return 'Administrador';
+    return 'Recrutador(a)';
+  };
+
+  const getRoleIcon = () => {
+    if (isAdminMaster || isAdmin) return <Shield className="w-4 h-4" />;
+    return <User className="w-4 h-4" />;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-nt-dark">
-              Painel R&S
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              {user?.email}
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      {/* Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {getRoleIcon()}
+            <div>
+              <p className="text-sm font-medium">{user?.email}</p>
+              <p className="text-xs text-muted-foreground">{getRoleLabel()}</p>
+            </div>
           </div>
-          <Button variant="outline" onClick={signOut}>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" />
             Sair
           </Button>
         </div>
+      </header>
 
-        {/* Opções */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Solicitar Cartaz */}
-          <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-nt-light">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <FileImage className="w-16 h-16 mx-auto text-nt-light" />
-              </div>
-              <h2 className="text-2xl font-bold text-nt-dark mb-4">
-                Solicitar Cartaz de Vaga
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Crie cartazes personalizados para divulgação de vagas de emprego.
-              </p>
-              <Button 
-                onClick={() => navigate('/dashboard')}
-                className="w-full"
-                size="lg"
-              >
-                Acessar
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Solicitar Patrocinado */}
-          <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-nt-light">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <Megaphone className="w-16 h-16 mx-auto text-nt-light" />
-              </div>
-              <h2 className="text-2xl font-bold text-nt-dark mb-4">
-                Solicitar Patrocinado
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Solicite impulsionamento de vagas nas redes sociais.
-              </p>
-              <Button 
-                onClick={handlePatrocinado}
-                className="w-full"
-                size="lg"
-              >
-                Acessar
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-12 text-muted-foreground">
-          <p>© 2024 Novo Tempo Consultoria e RH</p>
-        </div>
-      </div>
+      {/* Main Content */}
+      <RecrutadoraDashboard />
     </div>
   );
 };
