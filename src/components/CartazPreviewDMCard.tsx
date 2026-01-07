@@ -28,12 +28,12 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillRect(0, 0, W, H);
 
     // ===== ÁREA DA FOTO (retângulo branco arredondado) =====
-    // Posicionado mais à direita e estendendo além do canvas na parte inferior direita
-    const photoX = 450;
+    // Menos largo e menos alto
+    const photoX = 480;
     const photoY = 280;
-    const photoW = 700;
-    const photoH = 1000;
-    const photoRadius = 50;
+    const photoW = 560;
+    const photoH = 820;
+    const photoRadius = 40;
     
     ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
@@ -188,11 +188,11 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(local, localPillX + 25, localPillY + 42);
 
-    // ===== CAIXA INSCREVA-SE =====
+    // ===== CAIXA INSCREVA-SE (alinhada com base do retângulo branco) =====
     const inscrevaseBoxX = 50;
-    const inscrevaseBoxY = 780;
-    const inscrevaseBoxW = 470;
-    const inscrevaseBoxH = 150;
+    const inscrevaseBoxY = photoY + photoH - 160; // Alinhado com a parte inferior do retângulo branco
+    const inscrevaseBoxW = 500;
+    const inscrevaseBoxH = 160;
     
     // Fundo cyan claro com cantos arredondados
     ctx.fillStyle = "#A8E6E2";
@@ -203,12 +203,12 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     // Texto "Inscreva-se em:"
     ctx.font = "28px 'Montserrat', sans-serif";
     ctx.fillStyle = "#1E4FD8";
-    ctx.fillText("Inscreva-se em:", inscrevaseBoxX + 25, inscrevaseBoxY + 45);
+    ctx.fillText("Inscreva-se em:", inscrevaseBoxX + 25, inscrevaseBoxY + 50);
     
     // Pill com site
     const sitePillX = inscrevaseBoxX + 20;
-    const sitePillY = inscrevaseBoxY + 65;
-    const sitePillW = 430;
+    const sitePillY = inscrevaseBoxY + 70;
+    const sitePillW = 460;
     const sitePillH = 60;
     
     ctx.strokeStyle = "#1E4FD8";
@@ -224,8 +224,9 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.textAlign = "left";
 
     // ===== ESTRELA DECORATIVA (rosa - 4 pontas) =====
-    const starX = 520;
-    const starY = 1180;
+    // Posicionada na borda inferior do retângulo branco
+    const starX = photoX + 80;
+    const starY = photoY + photoH + 30;
     const starSize = 50;
     
     ctx.fillStyle = "#E8A4A4";
