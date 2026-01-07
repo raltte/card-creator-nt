@@ -54,9 +54,9 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Canvas 1080x1080 (1:1) — o template DM Card é quadrado
+    // Canvas 1080x1350 (4:5)
     const W = 1080;
-    const H = 1080;
+    const H = 1350;
     canvas.width = W;
     canvas.height = H;
 
@@ -72,9 +72,9 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
     const PHOTO = {
       x: 565,
-      y: 250,
+      y: 320,
       w: 470,
-      h: 640,
+      h: 750,
       r: 44,
     };
 
@@ -205,24 +205,24 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
       // ===== DYNAMIC TEXTS =====
       const cargo = data.cargo || "Cargo";
-      drawWrappedTitle(cargo, LEFT_X, 300, LEFT_MAX_W);
+      drawWrappedTitle(cargo, LEFT_X, 420, LEFT_MAX_W);
 
       // Código da vaga
       ctx.textBaseline = "top";
-      ctx.font = "400 30px Arial, sans-serif";
+      ctx.font = "400 32px Arial, sans-serif";
       ctx.fillStyle = "#FFFFFF";
       const codigoLabel = "Código da vaga:";
-      const codigoY = 515;
+      const codigoY = 640;
       ctx.fillText(codigoLabel, LEFT_X, codigoY);
 
       const codigo = data.codigo || "00000";
-      ctx.font = "bold 30px Arial, sans-serif";
+      ctx.font = "bold 32px Arial, sans-serif";
       const codigoLabelWidth = ctx.measureText(codigoLabel).width;
       const codigoWidth = ctx.measureText(codigo).width;
       const pillX = LEFT_X + codigoLabelWidth + 18;
       const pillY = codigoY - 8;
       const pillPadding = 18;
-      const pillHeight = 44;
+      const pillHeight = 48;
 
       ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
       ctx.lineWidth = 2;
@@ -232,7 +232,7 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
         pillY,
         codigoWidth + pillPadding * 2,
         pillHeight,
-        22
+        24
       );
       ctx.stroke();
 
@@ -240,21 +240,21 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       ctx.fillText(codigo, pillX + pillPadding, codigoY);
 
       // Tipo de contrato + local
-      ctx.font = "400 30px Arial, sans-serif";
+      ctx.font = "400 32px Arial, sans-serif";
       ctx.fillStyle = "#FFFFFF";
       const tipoContrato =
         data.tipoContrato === "temporario" ? "Vaga temporária" : "Vaga efetiva";
-      const tipoY = 605;
+      const tipoY = 750;
       ctx.fillText(`${tipoContrato} para atuar em:`, LEFT_X, tipoY);
 
       const local =
         data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : "Local";
-      ctx.font = "bold 34px Arial, sans-serif";
+      ctx.font = "bold 36px Arial, sans-serif";
       const localWidth = ctx.measureText(local).width;
       const localPillX = LEFT_X;
-      const localPillY = 665;
+      const localPillY = 810;
       const localPillPadding = 26;
-      const localPillHeight = 56;
+      const localPillHeight = 58;
 
       ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
       ctx.lineWidth = 2;
@@ -264,25 +264,25 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
         localPillY,
         localWidth + localPillPadding * 2,
         localPillHeight,
-        28
+        29
       );
       ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(local, localPillX + localPillPadding, localPillY + 10);
+      ctx.fillText(local, localPillX + localPillPadding, localPillY + 12);
 
       // Inscreva-se (área ciano)
-      ctx.font = "400 28px Arial, sans-serif";
+      ctx.font = "400 30px Arial, sans-serif";
       ctx.fillStyle = "#1E4FD8";
-      ctx.fillText("Inscreva-se em:", LEFT_X, 785);
+      ctx.fillText("Inscreva-se em:", LEFT_X, 1030);
 
-      ctx.font = "bold 34px Arial, sans-serif";
+      ctx.font = "bold 36px Arial, sans-serif";
       const website = "novotemporh.com.br";
       const websiteWidth = ctx.measureText(website).width;
       const websitePillX = LEFT_X;
-      const websitePillY = 822;
-      const websitePillPadding = 22;
-      const websitePillHeight = 56;
+      const websitePillY = 1075;
+      const websitePillPadding = 24;
+      const websitePillHeight = 58;
 
       ctx.strokeStyle = "#1E4FD8";
       ctx.lineWidth = 2;
@@ -292,12 +292,12 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
         websitePillY,
         websiteWidth + websitePillPadding * 2,
         websitePillHeight,
-        28
+        29
       );
       ctx.stroke();
 
       ctx.fillStyle = "#1E4FD8";
-      ctx.fillText(website, websitePillX + websitePillPadding, websitePillY + 10);
+      ctx.fillText(website, websitePillX + websitePillPadding, websitePillY + 12);
     } catch (error) {
       console.error("Error loading DM Card assets:", error);
     }
