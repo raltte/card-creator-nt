@@ -136,102 +136,89 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       ctx.drawImage(vemTrabalharImg, 0, 0, W, H);
 
       // ===== DYNAMIC TEXTS =====
+      // All texts positioned below the "Vem trabalhar com a gente!" header
 
-      // Cargo (Job title) - Large bold white text
+      // Cargo (Job title) - positioned below "com a gente!"
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 72px Arial, sans-serif";
+      ctx.font = "bold 56px Arial, sans-serif";
       ctx.textBaseline = "top";
       
       const cargo = data.cargo || "Cargo";
-      const cargoLines = cargo.split(" ");
-      let cargoY = 300;
-      
-      // Split cargo into 2 lines if needed
-      if (cargoLines.length > 2) {
-        const midPoint = Math.ceil(cargoLines.length / 2);
-        const line1 = cargoLines.slice(0, midPoint).join(" ");
-        const line2 = cargoLines.slice(midPoint).join(" ");
-        ctx.fillText(line1, 70, cargoY);
-        ctx.fillText(line2, 70, cargoY + 80);
-      } else if (cargoLines.length === 2) {
-        ctx.fillText(cargoLines[0], 70, cargoY);
-        ctx.fillText(cargoLines[1], 70, cargoY + 80);
-      } else {
-        ctx.fillText(cargo, 70, cargoY);
-      }
+      // Cargo appears at Y ~350 (below the header which ends around Y 300)
+      ctx.fillText(cargo, 70, 350);
 
-      // "Código da vaga:" + code in pill
-      ctx.font = "400 32px Arial, sans-serif";
+      // "Código da vaga:" + code in pill - positioned at Y ~480
+      ctx.font = "400 28px Arial, sans-serif";
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText("Código da vaga:", 70, 540);
+      ctx.fillText("Código da vaga:", 70, 480);
       
       // Code pill
       const codigo = data.codigo || "00000";
-      ctx.font = "bold 32px Arial, sans-serif";
+      ctx.font = "bold 28px Arial, sans-serif";
       const codigoWidth = ctx.measureText(codigo).width;
-      const pillX = 290;
-      const pillY = 532;
-      const pillPadding = 20;
-      const pillHeight = 48;
+      const pillX = 265;
+      const pillY = 470;
+      const pillPadding = 18;
+      const pillHeight = 42;
       
-      // Draw pill background (semi-transparent)
+      // Draw pill border
       ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
       ctx.lineWidth = 2;
-      drawRoundedRect(ctx, pillX, pillY, codigoWidth + pillPadding * 2, pillHeight, 24);
+      drawRoundedRect(ctx, pillX, pillY, codigoWidth + pillPadding * 2, pillHeight, 21);
       ctx.stroke();
       
       // Draw code text
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(codigo, pillX + pillPadding, 540);
+      ctx.fillText(codigo, pillX + pillPadding, 480);
 
-      // "Vaga efetiva para atuar em:"
-      ctx.font = "400 32px Arial, sans-serif";
+      // "Vaga efetiva para atuar em:" - Y ~560
+      ctx.font = "400 28px Arial, sans-serif";
       ctx.fillStyle = "#FFFFFF";
       const tipoContrato = data.tipoContrato === "temporario" ? "Vaga temporária" : "Vaga efetiva";
-      ctx.fillText(tipoContrato + " para atuar em:", 70, 630);
+      ctx.fillText(tipoContrato + " para atuar em:", 70, 560);
 
-      // Location pill (rounded rectangle with border)
+      // Location pill - Y ~610
       const local = data.cidade && data.estado ? `${data.cidade} - ${data.estado}` : "Local";
-      ctx.font = "bold 36px Arial, sans-serif";
+      ctx.font = "bold 32px Arial, sans-serif";
       const localWidth = ctx.measureText(local).width;
       const localPillX = 70;
-      const localPillY = 680;
-      const localPillPadding = 30;
-      const localPillHeight = 56;
+      const localPillY = 600;
+      const localPillPadding = 25;
+      const localPillHeight = 50;
       
-      // Draw location pill background
+      // Draw location pill border
       ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
       ctx.lineWidth = 2;
-      drawRoundedRect(ctx, localPillX, localPillY, localWidth + localPillPadding * 2, localPillHeight, 28);
+      drawRoundedRect(ctx, localPillX, localPillY, localWidth + localPillPadding * 2, localPillHeight, 25);
       ctx.stroke();
       
       // Draw location text
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(local, localPillX + localPillPadding, 692);
+      ctx.fillText(local, localPillX + localPillPadding, 612);
 
-      // "Inscreva-se em:" (in the cyan area)
-      ctx.font = "400 28px Arial, sans-serif";
+      // "Inscreva-se em:" (in the cyan area) - Y ~990
+      ctx.font = "400 26px Arial, sans-serif";
       ctx.fillStyle = "#1E4FD8";
-      ctx.fillText("Inscreva-se em:", 90, 1050);
+      ctx.fillText("Inscreva-se em:", 70, 1000);
 
-      // Website URL in pill
-      ctx.font = "bold 36px Arial, sans-serif";
+      // Website URL in pill - Y ~1040
+      ctx.font = "bold 32px Arial, sans-serif";
       const website = "novotemporh.com.br";
       const websiteWidth = ctx.measureText(website).width;
-      const websitePillX = 85;
-      const websitePillY = 1090;
-      const websitePillPadding = 25;
-      const websitePillHeight = 54;
+      const websitePillX = 65;
+      const websitePillY = 1035;
+      const websitePillPadding = 22;
+      const websitePillHeight = 48;
       
-      // Draw website pill
+      // Draw website pill border
       ctx.strokeStyle = "#1E4FD8";
       ctx.lineWidth = 2;
-      drawRoundedRect(ctx, websitePillX, websitePillY, websiteWidth + websitePillPadding * 2, websitePillHeight, 27);
+      drawRoundedRect(ctx, websitePillX, websitePillY, websiteWidth + websitePillPadding * 2, websitePillHeight, 24);
       ctx.stroke();
       
       // Draw website text
       ctx.fillStyle = "#1E4FD8";
-      ctx.fillText(website, websitePillX + websitePillPadding, 1102);
+      ctx.fillText(website, websitePillX + websitePillPadding, 1047);
 
     } catch (error) {
       console.error("Error loading DM Card assets:", error);
