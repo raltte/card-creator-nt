@@ -52,11 +52,21 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
         loadImage(circuloNumero),
       ]);
 
-      // Draw each image at full canvas size (they're already 1080x1350 with correct placement)
+      // Layer 1: Quadrado azul (cyan rectangle at bottom)
       ctx.drawImage(quadradoImg, 0, 0, W, H);
-      ctx.drawImage(vemTrabalharImg, 0, 0, W, H);
+
+      // Layer 2: Quadrado branco para imagem do usuário
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(50, 50, W - 100, 600); // Área branca para foto
+
+      // Layer 3: Estrela
       ctx.drawImage(estrelaImg, 0, 0, W, H);
+
+      // Layer 4: Círculo número da vaga
       ctx.drawImage(circuloImg, 0, 0, W, H);
+
+      // Layer 5: Vem trabalhar (texto)
+      ctx.drawImage(vemTrabalharImg, 0, 0, W, H);
 
     } catch (error) {
       console.error("Error loading DM Card assets:", error);
