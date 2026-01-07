@@ -28,10 +28,10 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillRect(0, 0, W, H);
 
     // ===== ÁREA DA FOTO (retângulo branco arredondado) =====
-    // Menos largo e menos alto
-    const photoX = 480;
+    // 30% menos largo
+    const photoX = 520;
     const photoY = 280;
-    const photoW = 560;
+    const photoW = 392; // 560 * 0.7 = 392
     const photoH = 820;
     const photoRadius = 40;
     
@@ -77,18 +77,20 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       }
     }
 
+    // Margem geral dobrada
+    const margin = 120;
+
     // ===== TEXTOS "Vem trabalhar com a gente!" =====
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "italic 58px 'Montserrat', sans-serif";
-    ctx.fillText("Vem trabalhar", 60, 100);
+    ctx.fillText("Vem trabalhar", margin, 120);
     
     ctx.font = "italic 700 58px 'Montserrat', sans-serif";
-    ctx.fillText("com a gente!", 60, 170);
+    ctx.fillText("com a gente!", margin, 190);
 
     // ===== LOGO NOVO TEMPO =====
-    // Círculo com NT
-    const logoX = 700;
-    const logoY = 90;
+    const logoX = 720;
+    const logoY = 110;
     
     ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 3;
@@ -102,7 +104,6 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillText("NT", logoX, logoY + 12);
     ctx.textAlign = "left";
     
-    // Texto "Novo Tempo"
     ctx.font = "bold 32px 'Montserrat', sans-serif";
     ctx.fillText("Novo Tempo", logoX + 55, logoY - 5);
     ctx.font = "20px 'Montserrat', sans-serif";
@@ -113,7 +114,6 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.font = "bold 80px 'Montserrat', sans-serif";
     ctx.fillStyle = "#FFFFFF";
     
-    // Quebrar cargo em linhas
     const cargoWords = cargo.split(" ");
     let cargoLine1 = "";
     let cargoLine2 = "";
@@ -125,21 +125,20 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
       cargoLine1 = cargo;
     }
     
-    ctx.fillText(cargoLine1, 60, 320);
+    ctx.fillText(cargoLine1, margin, 340);
     if (cargoLine2) {
-      ctx.fillText(cargoLine2, 60, 410);
+      ctx.fillText(cargoLine2, margin, 430);
     }
 
     // ===== CÓDIGO DA VAGA =====
     const codigo = data.codigo || "00000";
     ctx.font = "italic 32px 'Montserrat', sans-serif";
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillText("Código da vaga:", 60, 530);
+    ctx.fillText("Código da vaga:", margin, 550);
     
-    // Oval com código (contorno cyan)
     const codigoTextWidth = ctx.measureText("Código da vaga:").width;
-    const codigoX = 60 + codigoTextWidth + 20;
-    const codigoY = 515;
+    const codigoX = margin + codigoTextWidth + 20;
+    const codigoY = 535;
     const codigoW = 130;
     const codigoH = 45;
     
@@ -158,24 +157,22 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     const tipoContrato = data.tipoContrato || "Vaga efetiva";
     ctx.font = "bold 32px 'Montserrat', sans-serif";
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillText(tipoContrato, 60, 620);
+    ctx.fillText(tipoContrato, margin, 640);
     
     const tipoWidth = ctx.measureText(tipoContrato).width;
     ctx.font = "32px 'Montserrat', sans-serif";
-    ctx.fillText(" para atuar em:", 60 + tipoWidth, 620);
+    ctx.fillText(" para atuar em:", margin + tipoWidth, 640);
 
-    // ===== LOCAL (pill com borda rosa - canto esquerdo reto, direito arredondado) =====
+    // ===== LOCAL (pill com borda rosa) =====
     const local = data.cidade || "Cidade - UF";
-    const localPillX = 50;
-    const localPillY = 660;
+    const localPillX = margin - 10;
+    const localPillY = 680;
     const localPillW = 380;
     const localPillH = 60;
     
-    // Desenhar pill com cantos mistos
     ctx.strokeStyle = "#E8A4A4";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    // Canto esquerdo reto, direito arredondado
     ctx.moveTo(localPillX, localPillY);
     ctx.lineTo(localPillX + localPillW - 30, localPillY);
     ctx.quadraticCurveTo(localPillX + localPillW, localPillY, localPillX + localPillW, localPillY + 30);
@@ -188,46 +185,42 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(local, localPillX + 25, localPillY + 42);
 
-    // ===== CAIXA INSCREVA-SE (alinhada com base do retângulo branco) =====
-    const inscrevaseBoxX = 50;
-    const inscrevaseBoxY = photoY + photoH - 160; // Alinhado com a parte inferior do retângulo branco
-    const inscrevaseBoxW = 500;
-    const inscrevaseBoxH = 160;
+    // ===== CAIXA INSCREVA-SE (25% maior e alinhada com base do retângulo branco) =====
+    const inscrevaseBoxX = margin - 20;
+    const inscrevaseBoxY = photoY + photoH - 200;
+    const inscrevaseBoxW = 625; // 500 * 1.25 = 625
+    const inscrevaseBoxH = 200; // 160 * 1.25 = 200
     
-    // Fundo cyan claro com cantos arredondados
     ctx.fillStyle = "#A8E6E2";
     ctx.beginPath();
-    ctx.roundRect(inscrevaseBoxX, inscrevaseBoxY, inscrevaseBoxW, inscrevaseBoxH, 20);
+    ctx.roundRect(inscrevaseBoxX, inscrevaseBoxY, inscrevaseBoxW, inscrevaseBoxH, 25);
     ctx.fill();
     
-    // Texto "Inscreva-se em:"
-    ctx.font = "28px 'Montserrat', sans-serif";
+    ctx.font = "32px 'Montserrat', sans-serif";
     ctx.fillStyle = "#1E4FD8";
-    ctx.fillText("Inscreva-se em:", inscrevaseBoxX + 25, inscrevaseBoxY + 50);
+    ctx.fillText("Inscreva-se em:", inscrevaseBoxX + 30, inscrevaseBoxY + 60);
     
-    // Pill com site
-    const sitePillX = inscrevaseBoxX + 20;
-    const sitePillY = inscrevaseBoxY + 70;
-    const sitePillW = 460;
-    const sitePillH = 60;
+    const sitePillX = inscrevaseBoxX + 25;
+    const sitePillY = inscrevaseBoxY + 85;
+    const sitePillW = 575;
+    const sitePillH = 75;
     
     ctx.strokeStyle = "#1E4FD8";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.roundRect(sitePillX, sitePillY, sitePillW, sitePillH, 30);
+    ctx.roundRect(sitePillX, sitePillY, sitePillW, sitePillH, 37);
     ctx.stroke();
     
-    ctx.font = "bold 32px 'Montserrat', sans-serif";
+    ctx.font = "bold 36px 'Montserrat', sans-serif";
     ctx.fillStyle = "#1E4FD8";
     ctx.textAlign = "center";
-    ctx.fillText("novotemporh.com.br", sitePillX + sitePillW / 2, sitePillY + 42);
+    ctx.fillText("novotemporh.com.br", sitePillX + sitePillW / 2, sitePillY + 50);
     ctx.textAlign = "left";
 
-    // ===== ESTRELA DECORATIVA (rosa - 4 pontas) =====
-    // Posicionada na borda inferior do retângulo branco
+    // ===== ESTRELA DECORATIVA =====
     const starX = photoX + 80;
-    const starY = photoY + photoH + 30;
-    const starSize = 50;
+    const starY = photoY + photoH + 40;
+    const starSize = 55;
     
     ctx.fillStyle = "#E8A4A4";
     ctx.beginPath();
