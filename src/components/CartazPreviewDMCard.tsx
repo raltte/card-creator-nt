@@ -3,6 +3,7 @@ import { CartazData } from "./CartazGenerator";
 
 // Import DM Card assets
 import quadradoAzul from "@/assets/dm-card/quadrado-azul.png";
+import quadradoBranco from "@/assets/dm-card/quadrado-branco.png";
 import vemTrabalhar from "@/assets/dm-card/vem-trabalhar-2.png";
 import estrela from "@/assets/dm-card/estrela-3.png";
 import circuloNumero from "@/assets/dm-card/circulo-numero-vaga-3.png";
@@ -45,19 +46,19 @@ export const CartazPreviewDMCard = ({ data }: CartazPreviewDMCardProps) => {
 
     try {
       // Load all overlay images
-      const [quadradoImg, vemTrabalharImg, estrelaImg, circuloImg] = await Promise.all([
+      const [quadradoAzulImg, quadradoBrancoImg, vemTrabalharImg, estrelaImg, circuloImg] = await Promise.all([
         loadImage(quadradoAzul),
+        loadImage(quadradoBranco),
         loadImage(vemTrabalhar),
         loadImage(estrela),
         loadImage(circuloNumero),
       ]);
 
       // Layer 1: Quadrado azul (cyan rectangle at bottom)
-      ctx.drawImage(quadradoImg, 0, 0, W, H);
+      ctx.drawImage(quadradoAzulImg, 0, 0, W, H);
 
       // Layer 2: Quadrado branco para imagem do usuário
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(50, 50, W - 100, 600); // Área branca para foto
+      ctx.drawImage(quadradoBrancoImg, 0, 0, W, H);
 
       // Layer 3: Estrela
       ctx.drawImage(estrelaImg, 0, 0, W, H);
