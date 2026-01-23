@@ -319,167 +319,162 @@ export const RecrutadoraDashboard = () => {
     setDadosCompilado(updated);
   };
 
+  const renderPreview = () => {
+    if (tipoCartaz === 'individual') {
+      return (
+        <>
+          {modeloSelecionado === 'padrao' && <CartazPreview data={getIndividualPreviewData()} />}
+          {modeloSelecionado === 'vaga-interna' && <CartazPreviewVagaInterna data={getIndividualPreviewData()} />}
+          {modeloSelecionado === 'weg' && <CartazPreviewWeg data={getIndividualPreviewData()} />}
+          {modeloSelecionado === 'marisa' && <CartazPreviewMarisa data={getIndividualPreviewData()} />}
+          {modeloSelecionado === 'dm-card' && <CartazPreviewDMCard data={getIndividualPreviewData()} />}
+        </>
+      );
+    }
+    return dadosCompilado.clientTemplate === 'padrao' 
+      ? <CompiladoPreview data={dadosCompilado} />
+      : <CompiladoPreviewMarisa data={dadosCompilado} />;
+  };
+
   return (
-    <div className="min-h-screen gradient-subtle">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-primary">Solicitar Cartaz de Vaga</h1>
-          </div>
+      <header className="border-b bg-card/95 backdrop-blur-sm z-50 shrink-0">
+        <div className="px-6 py-3 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-primary">Solicitar Cartaz de Vaga</h1>
           <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
             ← Voltar
           </Button>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <Card className="shadow-lg border-0 overflow-hidden">
-          <CardContent className="p-8">
-            <Tabs 
-              defaultValue="individual" 
-              onValueChange={(value) => setTipoCartaz(value as 'individual' | 'compilado')}
-              className="space-y-8"
-            >
-              <div className="flex flex-col sm:flex-row gap-6 sm:items-end">
-                <div className="space-y-2 flex-1">
-                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Tipo de Cartaz</h3>
-                  <TabsList className="grid w-full max-w-xs grid-cols-2 h-12">
-                    <TabsTrigger value="individual" className="text-sm font-medium">Individual</TabsTrigger>
-                    <TabsTrigger value="compilado" className="text-sm font-medium">Compilado</TabsTrigger>
+      {/* Split Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel - Form (Scrollable) */}
+        <div className="w-full lg:w-1/2 overflow-y-auto border-r bg-background">
+          <div className="p-6 space-y-6">
+            {/* Type & Model Selection */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Tipo de Cartaz</h3>
+                <Tabs 
+                  defaultValue="individual" 
+                  onValueChange={(value) => setTipoCartaz(value as 'individual' | 'compilado')}
+                >
+                  <TabsList className="grid w-full max-w-xs grid-cols-2 h-10">
+                    <TabsTrigger value="individual" className="text-sm">Individual</TabsTrigger>
+                    <TabsTrigger value="compilado" className="text-sm">Compilado</TabsTrigger>
                   </TabsList>
-                </div>
+                </Tabs>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Modelo</h3>
-                 <Tabs 
-                   defaultValue="padrao" 
-                   onValueChange={(value) => {
-                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
-                     if (tipoCartaz === 'compilado') {
-                       const updated = new CompiladoDataImpl();
-                       Object.assign(updated, dadosCompilado);
-                       updated.clientTemplate = value as 'padrao' | 'marisa' | 'weg';
-                       if (updated.contato.tipo === 'site') {
-                         updated.contato = { 
-                           tipo: 'site',
-                           valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
-                         };
-                       }
-                       setDadosCompilado(updated);
-                     }
-                   }}
-                 >
-                   <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-4'}>
-                     <TabsTrigger value="padrao">Tradicional</TabsTrigger>
-                     {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
-                     {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
-                     <TabsTrigger value="marisa">Marisa</TabsTrigger>
-                   </TabsList>
-                 </Tabs>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Modelo</h3>
+                <Tabs 
+                  defaultValue="padrao" 
+                  onValueChange={(value) => {
+                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
+                    if (tipoCartaz === 'compilado') {
+                      const updated = new CompiladoDataImpl();
+                      Object.assign(updated, dadosCompilado);
+                      updated.clientTemplate = value as 'padrao' | 'marisa' | 'weg';
+                      if (updated.contato.tipo === 'site') {
+                        updated.contato = { 
+                          tipo: 'site',
+                          valor: value === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br'
+                        };
+                      }
+                      setDadosCompilado(updated);
+                    }
+                  }}
+                >
+                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full max-w-xs grid-cols-2' : 'grid w-full max-w-md grid-cols-4'}>
+                    <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                    {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
+                    {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
+                    <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
+            </div>
 
-              <TabsContent value="individual" className="space-y-8 mt-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  <div className="space-y-6">
-                    <RecrutadoraForm 
-                      onSubmit={handleFormSubmit} 
-                      data={dadosIndividual}
-                      onChange={setDadosIndividual}
-                    />
-                  </div>
-                  <div className="lg:sticky lg:top-24">
-                    <div className="bg-muted/30 rounded-2xl p-6 border border-border/50">
-                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide mb-4">Preview em Tempo Real</h3>
-                      <div className="flex justify-center">
-                        {modeloSelecionado === 'padrao' && (
-                          <CartazPreview data={getIndividualPreviewData()} />
-                        )}
-                        {modeloSelecionado === 'vaga-interna' && (
-                          <CartazPreviewVagaInterna data={getIndividualPreviewData()} />
-                        )}
-                        {modeloSelecionado === 'weg' && (
-                          <CartazPreviewWeg data={getIndividualPreviewData()} />
-                        )}
-                        {modeloSelecionado === 'marisa' && (
-                          <CartazPreviewMarisa data={getIndividualPreviewData()} />
-                        )}
-                        {modeloSelecionado === 'dm-card' && (
-                          <CartazPreviewDMCard data={getIndividualPreviewData()} />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="pt-6 border-t">
-                  {isEditor ? (
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1 h-14 text-base" size="lg">
-                        <Send className="w-5 h-5 mr-2" />
-                        Enviar ao Monday
-                      </Button>
-                      <Button onClick={() => handleFinalizarDireto(dadosIndividual)} variant="outline" className="flex-1 h-14 text-base border-2" size="lg">
-                        <Edit className="w-5 h-5 mr-2" />
-                        Finalizar Cartaz
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full h-14 text-base" size="lg">
-                      <Send className="w-5 h-5 mr-2" />
-                      Enviar ao Monday
-                    </Button>
-                  )}
-                </div>
-              </TabsContent>
+            {/* Divider */}
+            <div className="border-t" />
 
-              <TabsContent value="compilado" className="space-y-8 mt-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  <div className="space-y-6">
-                    <CompiladoForm 
-                      data={dadosCompilado} 
-                      onChange={updateCompiladoData}
-                    />
-                  </div>
-                  <div className="lg:sticky lg:top-24">
-                    <div className="bg-muted/30 rounded-2xl p-6 border border-border/50">
-                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide mb-4">Preview em Tempo Real</h3>
-                      <div className="flex justify-center">
-                        {dadosCompilado.clientTemplate === 'padrao' ? (
-                          <CompiladoPreview data={dadosCompilado} />
-                        ) : (
-                          <CompiladoPreviewMarisa data={dadosCompilado} />
-                        )}
-                      </div>
-                    </div>
-                  </div>
+            {/* Form */}
+            {tipoCartaz === 'individual' ? (
+              <RecrutadoraForm 
+                onSubmit={handleFormSubmit} 
+                data={dadosIndividual}
+                onChange={setDadosIndividual}
+              />
+            ) : (
+              <CompiladoForm 
+                data={dadosCompilado} 
+                onChange={updateCompiladoData}
+              />
+            )}
+
+            {/* Actions */}
+            <div className="pt-4 border-t pb-6">
+              {isEditor ? (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                    className="flex-1 h-12" 
+                    size="lg"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar ao Monday
+                  </Button>
+                  <Button 
+                    onClick={() => tipoCartaz === 'individual' ? handleFinalizarDireto(dadosIndividual) : handleFinalizarCompiladoDireto()} 
+                    variant="outline" 
+                    className="flex-1 h-12 border-2" 
+                    size="lg"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Finalizar Cartaz
+                  </Button>
                 </div>
-                
-                <div className="pt-6 border-t">
-                  {isEditor ? (
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <Button onClick={handleCompiladoGenerate} className="flex-1 h-14 text-base" size="lg">
-                        <Send className="w-5 h-5 mr-2" />
-                        Enviar ao Monday
-                      </Button>
-                      <Button onClick={handleFinalizarCompiladoDireto} variant="outline" className="flex-1 h-14 text-base border-2" size="lg">
-                        <Edit className="w-5 h-5 mr-2" />
-                        Finalizar Cartaz
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button onClick={handleCompiladoGenerate} className="w-full h-14 text-base" size="lg">
-                      <Send className="w-5 h-5 mr-2" />
-                      Enviar ao Monday
-                    </Button>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </main>
+              ) : (
+                <Button 
+                  onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                  className="w-full h-12" 
+                  size="lg"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Enviar ao Monday
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Preview (Fixed) */}
+        <div className="hidden lg:flex w-1/2 bg-muted/30 items-center justify-center p-8 overflow-hidden">
+          <div className="flex flex-col items-center gap-4 max-h-full">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Preview em Tempo Real</h3>
+            <div className="flex-1 flex items-center justify-center overflow-auto">
+              {renderPreview()}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Preview Toggle - shows at bottom on mobile */}
+      <div className="lg:hidden fixed bottom-4 right-4 z-50">
+        <Button 
+          size="lg" 
+          className="rounded-full shadow-lg h-14 w-14"
+          onClick={() => {
+            // Could implement a mobile preview modal here
+            toast({ title: "Preview", description: "Use um dispositivo maior para ver a preview em tempo real." });
+          }}
+        >
+          👁️
+        </Button>
+      </div>
 
       <MondayItemSelector
         open={showMondaySelector}
