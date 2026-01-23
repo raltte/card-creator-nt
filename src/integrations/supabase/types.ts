@@ -34,6 +34,7 @@ export type Database = {
           status: string | null
           tipo_contrato: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           atividades?: string | null
@@ -54,6 +55,7 @@ export type Database = {
           status?: string | null
           tipo_contrato: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           atividades?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           status?: string | null
           tipo_contrato?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

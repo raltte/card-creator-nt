@@ -36,7 +36,8 @@ serve(async (req) => {
         link_vaga: solicitacaoData.linkVaga,
         email_solicitante: solicitacaoData.emailSolicitante,
         is_pcd: solicitacaoData.isPcd || false,
-        status: 'pendente_imagem'
+        status: 'pendente_imagem',
+        user_id: solicitacaoData.userId || null
       })
       .select()
       .single();

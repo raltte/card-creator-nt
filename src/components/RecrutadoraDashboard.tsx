@@ -36,7 +36,7 @@ class CompiladoDataImpl implements CompiladoData {
 export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
@@ -163,7 +163,8 @@ export const RecrutadoraDashboard = () => {
           atividades: null,
           linkVaga: null,
           emailSolicitante: dados.emailSolicitante || null,
-          isPcd: dados.isPcd || false
+          isPcd: dados.isPcd || false,
+          userId: user?.id || null
         }
       });
 
@@ -204,6 +205,7 @@ export const RecrutadoraDashboard = () => {
           linkVaga: null,
           emailSolicitante: dados.emailSolicitante || null,
           isPcd: dados.isPcd || false,
+          userId: user?.id || null,
           skipMonday: true // Flag para não criar item no Monday
         }
       });
@@ -240,6 +242,7 @@ export const RecrutadoraDashboard = () => {
           linkVaga: null,
           emailSolicitante: null,
           isPcd: dadosCompilado.isPcd || false,
+          userId: user?.id || null,
           skipMonday: true
         }
       });
@@ -274,7 +277,8 @@ export const RecrutadoraDashboard = () => {
           atividades: null,
           linkVaga: null,
           emailSolicitante: null,
-          isPcd: dadosCompilado.isPcd || false
+          isPcd: dadosCompilado.isPcd || false,
+          userId: user?.id || null
         }
       });
 
