@@ -20,7 +20,6 @@ export interface RecrutadoraData {
   emailCaptacao?: string;
   requisitos: string[];
   setorAtuacao: string;
-  emailSolicitante: string;
   sugestaoImagem?: string;
   isPcd?: boolean;
 }
@@ -48,7 +47,6 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     emailCaptacao: "email@novotemporh.com.br",
     requisitos: [],
     setorAtuacao: "",
-    emailSolicitante: "",
     sugestaoImagem: "",
     isPcd: false
   });
@@ -102,7 +100,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
   const handleSubmit = () => {
     // Validação básica
     if (!formData.nomeVaga || !formData.codigoPS || !formData.tipoContrato || 
-        !formData.cidade || !formData.estado || !formData.emailSolicitante || !formData.setorAtuacao) {
+        !formData.cidade || !formData.estado || !formData.setorAtuacao) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos obrigatórios antes de enviar.",
@@ -372,19 +370,6 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
       </div>
 
       {/* A imagem será gerada automaticamente pela IA */}
-
-      {/* E-mail do Solicitante */}
-      <div>
-        <Label htmlFor="email-solicitante">E-mail do Solicitante *</Label>
-        <Input
-          id="email-solicitante"
-          placeholder="seu.email@novotemporh.com.br"
-          value={formData.emailSolicitante}
-          onChange={(e) => updateFormData('emailSolicitante', e.target.value)}
-          type="email"
-          className="mt-1"
-        />
-      </div>
 
       {/* Botão de Envio */}
     </div>

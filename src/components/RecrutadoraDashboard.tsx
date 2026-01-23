@@ -49,7 +49,6 @@ export const RecrutadoraDashboard = () => {
     emailCaptacao: "email@novotemporh.com.br",
     requisitos: [],
     setorAtuacao: "",
-    emailSolicitante: "",
     image: '',
     sugestaoImagem: ''
   });
@@ -86,10 +85,6 @@ export const RecrutadoraDashboard = () => {
     }
     if (!dados.setorAtuacao?.trim()) {
       toast({ title: "Campo obrigatório", description: "Selecione o setor de atuação.", variant: "destructive" });
-      return false;
-    }
-    if (!dados.emailSolicitante?.trim()) {
-      toast({ title: "Campo obrigatório", description: "Preencha o e-mail do solicitante.", variant: "destructive" });
       return false;
     }
     if (!dados.requisitos || dados.requisitos.length === 0) {
@@ -162,7 +157,6 @@ export const RecrutadoraDashboard = () => {
           requisitos: dados.requisitos.join('\n• '),
           atividades: null,
           linkVaga: null,
-          emailSolicitante: dados.emailSolicitante || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null
         }
@@ -203,7 +197,6 @@ export const RecrutadoraDashboard = () => {
           requisitos: dados.requisitos.join('\n• '),
           atividades: null,
           linkVaga: null,
-          emailSolicitante: dados.emailSolicitante || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null,
           skipMonday: true // Flag para não criar item no Monday
