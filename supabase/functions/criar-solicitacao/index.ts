@@ -20,6 +20,12 @@ serve(async (req) => {
     const solicitacaoData = await req.json();
     console.log('Criando solicitação:', solicitacaoData);
 
+    // Validar se userId é um UUID válido, senão usar null
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const validUserId = solicitacaoData.userId && uuidRegex.test(solicitacaoData.userId) 
+      ? solicitacaoData.userId 
+      : null;
+
     // Inserir solicitação no banco
     const { data: solicitacao, error: insertError } = await supabase
       .from('solicitacoes_cartaz')
@@ -37,7 +43,7 @@ serve(async (req) => {
         email_solicitante: solicitacaoData.emailSolicitante,
         is_pcd: solicitacaoData.isPcd || false,
         status: 'pendente_imagem',
-        user_id: solicitacaoData.userId || null
+        user_id: validUserId
       })
       .select()
       .single();
