@@ -62,7 +62,88 @@ export const RecrutadoraDashboard = () => {
 
   const { isEditor } = useAuth();
 
+  // Validação centralizada para formulário individual
+  const validateIndividualForm = (dados: RecrutadoraData): boolean => {
+    if (!dados.nomeVaga?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o nome da vaga.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.codigoPS?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o código PS.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.tipoContrato?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Selecione o tipo de contrato.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.cidade?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha a cidade.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.estado?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o estado.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.setorAtuacao?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Selecione o setor de atuação.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.emailSolicitante?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o e-mail do solicitante.", variant: "destructive" });
+      return false;
+    }
+    if (!dados.requisitos || dados.requisitos.length === 0) {
+      toast({ title: "Campo obrigatório", description: "Adicione pelo menos um requisito.", variant: "destructive" });
+      return false;
+    }
+    // Validar contato de captação
+    if (dados.captacaoCurriculo === 'whatsapp' && !dados.whatsappNumber?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o número de WhatsApp.", variant: "destructive" });
+      return false;
+    }
+    if (dados.captacaoCurriculo === 'email' && !dados.emailCaptacao?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o e-mail de captação.", variant: "destructive" });
+      return false;
+    }
+    return true;
+  };
+
+  // Validação para formulário compilado
+  const validateCompiladoForm = (): boolean => {
+    if (!dadosCompilado.cidade?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha a cidade.", variant: "destructive" });
+      return false;
+    }
+    if (!dadosCompilado.estado?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o estado.", variant: "destructive" });
+      return false;
+    }
+    if (!dadosCompilado.vagas || dadosCompilado.vagas.length === 0) {
+      toast({ title: "Campo obrigatório", description: "Adicione pelo menos uma vaga.", variant: "destructive" });
+      return false;
+    }
+    // Verificar se todas as vagas têm código e cargo preenchidos
+    const vagasInvalidas = dadosCompilado.vagas.some(v => !v.codigo?.trim() || !v.cargo?.trim());
+    if (vagasInvalidas) {
+      toast({ title: "Campo obrigatório", description: "Preencha o código e cargo de todas as vagas.", variant: "destructive" });
+      return false;
+    }
+    // Validar contato de captação
+    if (dadosCompilado.contato.tipo === 'whatsapp' && !dadosCompilado.contato.valor?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o número de WhatsApp.", variant: "destructive" });
+      return false;
+    }
+    if (dadosCompilado.contato.tipo === 'email' && !dadosCompilado.contato.valor?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o e-mail de captação.", variant: "destructive" });
+      return false;
+    }
+    return true;
+  };
+
   const handleFormSubmit = async (dados: RecrutadoraData) => {
+    // Validar antes de enviar
+    if (!validateIndividualForm(dados)) return;
+
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
@@ -99,6 +180,9 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleFinalizarDireto = async (dados: RecrutadoraData) => {
+    // Validar antes de enviar
+    if (!validateIndividualForm(dados)) return;
+
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
@@ -137,6 +221,9 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleFinalizarCompiladoDireto = async () => {
+    // Validar antes de enviar
+    if (!validateCompiladoForm()) return;
+
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
@@ -169,6 +256,9 @@ export const RecrutadoraDashboard = () => {
   };
 
   const handleCompiladoGenerate = async () => {
+    // Validar antes de enviar
+    if (!validateCompiladoForm()) return;
+
     try {
       toast({ title: "Processando...", description: "Criando solicitação..." });
 
