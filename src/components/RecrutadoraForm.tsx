@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X, Briefcase, MapPin, MessageSquare, ListChecks, ImageIcon } from "lucide-react";
+import { Plus, X, Briefcase, MapPin, MessageSquare, ListChecks, ImageIcon, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface RecrutadoraData {
@@ -20,6 +20,7 @@ export interface RecrutadoraData {
   emailCaptacao?: string;
   requisitos: string[];
   setorAtuacao: string;
+  setorAtuacaoOutro?: string;
   sugestaoImagem?: string;
   isPcd?: boolean;
 }
@@ -47,6 +48,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     emailCaptacao: "email@novotemporh.com.br",
     requisitos: [],
     setorAtuacao: "",
+    setorAtuacaoOutro: "",
     sugestaoImagem: "",
     isPcd: false
   });
@@ -78,6 +80,14 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
 
   const removerRequisito = (index: number) => {
     updateFormData('requisitos', formData.requisitos.filter((_, i) => i !== index));
+  };
+
+  const moverRequisito = (index: number, direction: 'up' | 'down') => {
+    const newRequisitos = [...formData.requisitos];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= newRequisitos.length) return;
+    [newRequisitos[index], newRequisitos[newIndex]] = [newRequisitos[newIndex], newRequisitos[index]];
+    updateFormData('requisitos', newRequisitos);
   };
 
   const formatWhatsAppNumber = (value: string) => {
@@ -184,6 +194,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
                 <SelectItem value="Administração">Administração</SelectItem>
                 <SelectItem value="Atendimento ao Cliente">Atendimento ao Cliente</SelectItem>
                 <SelectItem value="Educação">Educação</SelectItem>
+                <SelectItem value="Engenharia">Engenharia</SelectItem>
                 <SelectItem value="Financeiro">Financeiro</SelectItem>
                 <SelectItem value="Indústria">Indústria</SelectItem>
                 <SelectItem value="Limpeza">Limpeza</SelectItem>
@@ -196,8 +207,17 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
                 <SelectItem value="Segurança">Segurança</SelectItem>
                 <SelectItem value="Tecnologia">Tecnologia</SelectItem>
                 <SelectItem value="Vendas">Vendas</SelectItem>
+                <SelectItem value="outro">Outro</SelectItem>
               </SelectContent>
             </Select>
+            {formData.setorAtuacao === 'outro' && (
+              <Input
+                placeholder="Digite o setor de atuação"
+                value={formData.setorAtuacaoOutro || ""}
+                onChange={(e) => updateFormData('setorAtuacaoOutro', e.target.value)}
+                className="mt-2 h-11"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -358,7 +378,29 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
         
         <div className="space-y-2">
           {formData.requisitos.map((requisito, index) => (
-            <div key={index} className="flex items-center gap-2 p-3 bg-secondary/10 border border-secondary/20 rounded-lg">
+            <div key={index} className="flex items-center gap-2 p-3 bg-secondary/10 border border-secondary/20 rounded-lg group">
+              <div className="flex flex-col gap-0.5">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => moverRequisito(index, 'up')}
+                  disabled={index === 0}
+                  className="h-5 w-5 p-0 hover:bg-secondary/20 disabled:opacity-30"
+                  title="Mover para cima"
+                >
+                  <ChevronUp className="w-3 h-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => moverRequisito(index, 'down')}
+                  disabled={index === formData.requisitos.length - 1}
+                  className="h-5 w-5 p-0 hover:bg-secondary/20 disabled:opacity-30"
+                  title="Mover para baixo"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </div>
               <span className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center text-xs font-semibold text-secondary">
                 {index + 1}
               </span>
@@ -378,7 +420,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Adicionar requisito..."
+                  placeholder="Requisito ou atividade"
                   value={novoRequisito}
                   onChange={(e) => setNovoRequisito(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && adicionarRequisito()}
