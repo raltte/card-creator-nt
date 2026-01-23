@@ -351,8 +351,8 @@ export const RecrutadoraDashboard = () => {
       {/* Split Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Form (Scrollable) */}
-        <div className="w-full lg:w-1/2 overflow-y-auto border-r bg-background">
-          <div className="p-6 space-y-6">
+        <div className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto border-r bg-background">
+          <div className="p-6 xl:px-10 xl:py-8 max-w-2xl mx-auto space-y-6">
             {/* Type & Model Selection */}
             <div className="space-y-4">
               <div className="space-y-2">
@@ -452,8 +452,8 @@ export const RecrutadoraDashboard = () => {
         </div>
 
         {/* Right Panel - Preview (Fixed) */}
-        <div className="hidden lg:flex w-1/2 xl:w-[55%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 overflow-hidden">
-          <div className="flex flex-col items-center gap-3 h-full w-full max-w-[600px]">
+        <div className="hidden lg:flex w-1/2 xl:w-[55%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-6 xl:p-10 overflow-hidden">
+          <div className="flex flex-col items-center gap-4 h-full w-full max-w-[520px] xl:max-w-[580px]">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Preview em Tempo Real</h3>
             <div className="flex-1 flex items-center justify-center w-full min-h-0">
               <div className="cartaz-container-large">

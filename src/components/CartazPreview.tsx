@@ -345,12 +345,12 @@ export const CartazPreview = ({ data }: CartazPreviewProps) => {
     // Desenhar tarja azul PCD no topo se for vaga PCD
     if (data.isPcd) {
       ctx.fillStyle = '#3B5998';
-      ctx.fillRect(0, 0, canvas.width, 67);
+      ctx.fillRect(0, 0, baseWidth, 67);
       
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', canvas.width / 2, 43);
+      ctx.fillText('*Vaga exclusiva ou afirmativa para Pessoa com Deficiência', baseWidth / 2, 43);
       ctx.textAlign = 'left';
     }
   };

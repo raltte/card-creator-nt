@@ -70,7 +70,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
 
 
   const adicionarRequisito = () => {
-    if (novoRequisito.trim() && formData.requisitos.length < 5) {
+    if (novoRequisito.trim() && formData.requisitos.length < 4) {
       updateFormData('requisitos', [...formData.requisitos, novoRequisito.trim()]);
       setNovoRequisito("");
     }
@@ -353,7 +353,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
         </div>
         
         <p className="text-xs text-muted-foreground mb-3">
-          Adicione até 5 tópicos curtos que aparecerão no cartaz
+          Adicione até 4 tópicos curtos que aparecerão no cartaz
         </p>
         
         <div className="space-y-2">
@@ -374,7 +374,7 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
             </div>
           ))}
           
-          {formData.requisitos.length < 5 && (
+          {formData.requisitos.length < 4 && (
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input
