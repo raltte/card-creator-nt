@@ -320,26 +320,35 @@ export const RecrutadoraDashboard = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-5xl mx-auto">
-        <Card className="shadow-lg">
-          <CardHeader className="border-b">
-            <CardTitle className="text-2xl font-bold text-center">
-              Solicitar Cartaz de Vaga
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
+    <div className="min-h-screen gradient-subtle">
+      {/* Header */}
+      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-primary">Solicitar Cartaz de Vaga</h1>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+            ← Voltar
+          </Button>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <Card className="shadow-lg border-0 overflow-hidden">
+          <CardContent className="p-8">
             <Tabs 
               defaultValue="individual" 
               onValueChange={(value) => setTipoCartaz(value as 'individual' | 'compilado')}
-              className="space-y-6"
+              className="space-y-8"
             >
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Tipo de Cartaz</h3>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="individual">Individual</TabsTrigger>
-                  <TabsTrigger value="compilado">Compilado</TabsTrigger>
-                </TabsList>
+              <div className="flex flex-col sm:flex-row gap-6 sm:items-end">
+                <div className="space-y-2 flex-1">
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Tipo de Cartaz</h3>
+                  <TabsList className="grid w-full max-w-xs grid-cols-2 h-12">
+                    <TabsTrigger value="individual" className="text-sm font-medium">Individual</TabsTrigger>
+                    <TabsTrigger value="compilado" className="text-sm font-medium">Compilado</TabsTrigger>
+                  </TabsList>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -362,108 +371,115 @@ export const RecrutadoraDashboard = () => {
                      }
                    }}
                  >
-                   <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-5'}>
+                   <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full grid-cols-2' : 'grid w-full grid-cols-4'}>
                      <TabsTrigger value="padrao">Tradicional</TabsTrigger>
                      {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
                      {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
                      <TabsTrigger value="marisa">Marisa</TabsTrigger>
-                     {tipoCartaz === 'individual' && <TabsTrigger value="dm-card">DM Card</TabsTrigger>}
                    </TabsList>
                  </Tabs>
               </div>
 
-              <TabsContent value="individual" className="space-y-6 mt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
+              <TabsContent value="individual" className="space-y-8 mt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  <div className="space-y-6">
                     <RecrutadoraForm 
                       onSubmit={handleFormSubmit} 
                       data={dadosIndividual}
                       onChange={setDadosIndividual}
                     />
                   </div>
-                  <div className="sticky top-6">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    <div>
-                      {modeloSelecionado === 'padrao' && (
-                        <CartazPreview data={getIndividualPreviewData()} />
-                      )}
-                      {modeloSelecionado === 'vaga-interna' && (
-                        <CartazPreviewVagaInterna data={getIndividualPreviewData()} />
-                      )}
-                      {modeloSelecionado === 'weg' && (
-                        <CartazPreviewWeg data={getIndividualPreviewData()} />
-                      )}
-                      {modeloSelecionado === 'marisa' && (
-                        <CartazPreviewMarisa data={getIndividualPreviewData()} />
-                      )}
-                      {modeloSelecionado === 'dm-card' && (
-                        <CartazPreviewDMCard data={getIndividualPreviewData()} />
-                      )}
+                  <div className="lg:sticky lg:top-24">
+                    <div className="bg-muted/30 rounded-2xl p-6 border border-border/50">
+                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide mb-4">Preview em Tempo Real</h3>
+                      <div className="flex justify-center">
+                        {modeloSelecionado === 'padrao' && (
+                          <CartazPreview data={getIndividualPreviewData()} />
+                        )}
+                        {modeloSelecionado === 'vaga-interna' && (
+                          <CartazPreviewVagaInterna data={getIndividualPreviewData()} />
+                        )}
+                        {modeloSelecionado === 'weg' && (
+                          <CartazPreviewWeg data={getIndividualPreviewData()} />
+                        )}
+                        {modeloSelecionado === 'marisa' && (
+                          <CartazPreviewMarisa data={getIndividualPreviewData()} />
+                        )}
+                        {modeloSelecionado === 'dm-card' && (
+                          <CartazPreviewDMCard data={getIndividualPreviewData()} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {isEditor ? (
-                  <div className="flex gap-3">
-                    <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1" size="lg">
-                      <Send className="w-4 h-4 mr-2" />
+                <div className="pt-6 border-t">
+                  {isEditor ? (
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button onClick={() => handleFormSubmit(dadosIndividual)} className="flex-1 h-14 text-base" size="lg">
+                        <Send className="w-5 h-5 mr-2" />
+                        Enviar ao Monday
+                      </Button>
+                      <Button onClick={() => handleFinalizarDireto(dadosIndividual)} variant="outline" className="flex-1 h-14 text-base border-2" size="lg">
+                        <Edit className="w-5 h-5 mr-2" />
+                        Finalizar Cartaz
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full h-14 text-base" size="lg">
+                      <Send className="w-5 h-5 mr-2" />
                       Enviar ao Monday
                     </Button>
-                    <Button onClick={() => handleFinalizarDireto(dadosIndividual)} variant="secondary" className="flex-1" size="lg">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Finalizar Cartaz
-                    </Button>
-                  </div>
-                ) : (
-                  <Button onClick={() => handleFormSubmit(dadosIndividual)} className="w-full" size="lg">
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                )}
+                  )}
+                </div>
               </TabsContent>
 
-              <TabsContent value="compilado" className="space-y-6 mt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
+              <TabsContent value="compilado" className="space-y-8 mt-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  <div className="space-y-6">
                     <CompiladoForm 
                       data={dadosCompilado} 
                       onChange={updateCompiladoData}
                     />
                   </div>
-                  <div className="sticky top-6">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Preview em Tempo Real</h3>
-                    <div>
-                      {dadosCompilado.clientTemplate === 'padrao' ? (
-                        <CompiladoPreview data={dadosCompilado} />
-                      ) : (
-                        <CompiladoPreviewMarisa data={dadosCompilado} />
-                      )}
+                  <div className="lg:sticky lg:top-24">
+                    <div className="bg-muted/30 rounded-2xl p-6 border border-border/50">
+                      <h3 className="text-sm font-semibold text-primary uppercase tracking-wide mb-4">Preview em Tempo Real</h3>
+                      <div className="flex justify-center">
+                        {dadosCompilado.clientTemplate === 'padrao' ? (
+                          <CompiladoPreview data={dadosCompilado} />
+                        ) : (
+                          <CompiladoPreviewMarisa data={dadosCompilado} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {isEditor ? (
-                  <div className="flex gap-3">
-                    <Button onClick={handleCompiladoGenerate} className="flex-1" size="lg">
-                      <Send className="w-4 h-4 mr-2" />
+                <div className="pt-6 border-t">
+                  {isEditor ? (
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button onClick={handleCompiladoGenerate} className="flex-1 h-14 text-base" size="lg">
+                        <Send className="w-5 h-5 mr-2" />
+                        Enviar ao Monday
+                      </Button>
+                      <Button onClick={handleFinalizarCompiladoDireto} variant="outline" className="flex-1 h-14 text-base border-2" size="lg">
+                        <Edit className="w-5 h-5 mr-2" />
+                        Finalizar Cartaz
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={handleCompiladoGenerate} className="w-full h-14 text-base" size="lg">
+                      <Send className="w-5 h-5 mr-2" />
                       Enviar ao Monday
                     </Button>
-                    <Button onClick={handleFinalizarCompiladoDireto} variant="secondary" className="flex-1" size="lg">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Finalizar Cartaz
-                    </Button>
-                  </div>
-                ) : (
-                  <Button onClick={handleCompiladoGenerate} className="w-full" size="lg">
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                )}
+                  )}
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
-      </div>
+      </main>
 
       <MondayItemSelector
         open={showMondaySelector}
