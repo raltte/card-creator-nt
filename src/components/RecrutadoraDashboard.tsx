@@ -452,11 +452,13 @@ export const RecrutadoraDashboard = () => {
         </div>
 
         {/* Right Panel - Preview (Fixed) */}
-        <div className="hidden lg:flex w-1/2 bg-muted/30 items-center justify-center p-8 overflow-hidden">
-          <div className="flex flex-col items-center gap-4 max-h-full">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Preview em Tempo Real</h3>
-            <div className="flex-1 flex items-center justify-center overflow-auto">
-              {renderPreview()}
+        <div className="hidden lg:flex w-1/2 xl:w-[55%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 overflow-hidden">
+          <div className="flex flex-col items-center gap-3 h-full w-full max-w-[600px]">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Preview em Tempo Real</h3>
+            <div className="flex-1 flex items-center justify-center w-full min-h-0">
+              <div className="cartaz-container-large">
+                {renderPreview()}
+              </div>
             </div>
           </div>
         </div>

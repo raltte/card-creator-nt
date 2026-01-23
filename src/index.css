@@ -111,9 +111,16 @@
 
   /* Cartaz Styles */
   .cartaz-container {
-    @apply relative w-full;
+    @apply relative w-full h-auto shadow-2xl rounded-lg overflow-hidden;
     aspect-ratio: 4/5;
-    max-width: 400px;
+    max-width: 540px;
+  }
+  
+  .cartaz-container-large {
+    @apply relative w-full h-auto shadow-2xl rounded-lg overflow-hidden;
+    aspect-ratio: 4/5;
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
   }
 
   .cartaz-left {

@@ -16,11 +16,17 @@ export const CartazPreviewMarisa = ({ data }: CartazPreviewMarisaProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configurar canvas 4:5 (1080x1350)
-    canvas.width = 1080;
-    canvas.height = 1350;
+    // Configurar canvas 4:5 em alta resolução (2x para exports nítidos)
+    const scale = 2;
+    const baseWidth = 1080;
+    const baseHeight = 1350;
+    canvas.width = baseWidth * scale;
+    canvas.height = baseHeight * scale;
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Escalar o contexto para manter as coordenadas originais
+    ctx.scale(scale, scale);
+    
+    ctx.clearRect(0, 0, baseWidth, baseHeight);
 
     // Carregar e desenhar imagem principal
     if (data.image) {
