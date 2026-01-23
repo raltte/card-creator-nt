@@ -141,11 +141,11 @@ serve(async (req) => {
           }
           break;
           
-        // link__1 - link da vaga
+        // link__1 - link da vaga (gerado automaticamente com código)
         case "link__1":
-          if (cartazData.linkVaga) {
+          if (cartazData.codigo) {
             columnValues[col.id] = {
-              "url": cartazData.linkVaga,
+              "url": `https://novotemporh.com.br/vagas/?search=${cartazData.codigo}`,
               "text": "Link da Vaga"
             };
           }

@@ -50,11 +50,8 @@ serve(async (req) => {
         change_column_value (
           board_id: 7854209602,
           item_id: ${solicitacao.monday_item_id},
-          column_id: "link__1",
-          value: ${JSON.stringify(JSON.stringify({
-            url: novoLink,
-            text: "Finalizar Cartaz"
-          }))}
+          column_id: "text_mkzwcjb9",
+          value: ${JSON.stringify(novoLink)}
         ) {
           id
         }

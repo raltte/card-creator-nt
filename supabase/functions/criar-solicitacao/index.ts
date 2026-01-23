@@ -86,9 +86,10 @@ serve(async (req) => {
         : '', // e-mail whatsapp
       "texto_longo9__1": solicitacaoData.requisitos || solicitacaoData.atividades || '', // requisitos e atividades
       "link__1": {
-        "url": finalizacaoUrl,
-        "text": "Finalizar Cartaz"
-      }, // link para finalização
+        "url": `https://novotemporh.com.br/vagas/?search=${solicitacaoData.codigo}`,
+        "text": "Link da Vaga"
+      }, // link da vaga para candidatos
+      "text_mkzwcjb9": finalizacaoUrl, // link de finalização do cartaz (texto simples)
       "e_mail__1": solicitacaoData.emailSolicitante 
         ? {
             "email": solicitacaoData.emailSolicitante,
