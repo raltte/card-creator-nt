@@ -9,6 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Loader2, LogIn, UserPlus } from "lucide-react";
 import novoTempoLogo from "@/assets/novo-tempo-logo.png";
 import { z } from "zod";
+import { isAllowedEmail, getEmailDomainError } from "@/lib/emailValidation";
+
 const emailSchema = z.string().email("Email inválido");
 const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres");
 const Auth = () => {
@@ -48,6 +50,10 @@ const Auth = () => {
     } = {};
     try {
       emailSchema.parse(email);
+      // Verificar se é um domínio corporativo permitido
+      if (!isAllowedEmail(email)) {
+        newErrors.email = getEmailDomainError();
+      }
     } catch (e) {
       if (e instanceof z.ZodError) {
         newErrors.email = e.errors[0].message;
