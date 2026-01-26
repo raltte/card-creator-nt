@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { isAllowedEmail, getEmailDomainError } from '@/lib/emailValidation';
 
 /**
  * Página de SSO - recebe dados do usuário do sistema principal e autentica automaticamente
@@ -29,6 +30,13 @@ const SSOLogin = () => {
       if (!email) {
         setError('Email não fornecido. Redirecionando para login...');
         setTimeout(() => navigate('/auth'), 2000);
+        return;
+      }
+
+      // Verificar se é um domínio corporativo permitido
+      if (!isAllowedEmail(email)) {
+        setError(getEmailDomainError());
+        setTimeout(() => navigate('/auth'), 3000);
         return;
       }
 
