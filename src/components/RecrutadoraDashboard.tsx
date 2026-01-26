@@ -157,6 +157,7 @@ export const RecrutadoraDashboard = () => {
           requisitos: dados.requisitos.join('\n• '),
           atividades: null,
           linkVaga: null,
+          emailSolicitante: user?.email || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null
         }
@@ -197,6 +198,7 @@ export const RecrutadoraDashboard = () => {
           requisitos: dados.requisitos.join('\n• '),
           atividades: null,
           linkVaga: null,
+          emailSolicitante: user?.email || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null,
           skipMonday: true // Flag para não criar item no Monday
@@ -233,7 +235,7 @@ export const RecrutadoraDashboard = () => {
           requisitos: dadosCompilado.requisitos,
           atividades: null,
           linkVaga: null,
-          emailSolicitante: null,
+          emailSolicitante: user?.email || null,
           isPcd: dadosCompilado.isPcd || false,
           userId: user?.id || null,
           skipMonday: true
@@ -269,7 +271,7 @@ export const RecrutadoraDashboard = () => {
           requisitos: dadosCompilado.requisitos,
           atividades: null,
           linkVaga: null,
-          emailSolicitante: null,
+          emailSolicitante: user?.email || null,
           isPcd: dadosCompilado.isPcd || false,
           userId: user?.id || null
         }
