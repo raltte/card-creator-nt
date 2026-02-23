@@ -108,12 +108,17 @@ serve(async (req) => {
         : ''
     };
 
+    // Escapar aspas duplas no nome do item para evitar quebra no GraphQL
+    const itemName = `${solicitacaoData.cargo} - ${solicitacaoData.local || 'Local não especificado'}`
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"');
+
     // Criar item no Monday
     const createMutation = `
       mutation {
         create_item (
           board_id: ${BOARD_ID},
-          item_name: "${solicitacaoData.cargo} - ${solicitacaoData.local || 'Local não especificado'}",
+          item_name: "${itemName}",
           column_values: ${JSON.stringify(JSON.stringify(columnValues))}
         ) {
           id
