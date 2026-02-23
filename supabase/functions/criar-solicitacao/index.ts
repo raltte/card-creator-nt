@@ -81,18 +81,22 @@ serve(async (req) => {
 
     const BOARD_ID = "7854209602";
 
+    // Mapear tipo de contrato para os labels exatos do Monday (feminino)
+    const tipoContratoMondayLabel = getContratoMondayLabel(solicitacaoData.tipoContrato);
+    console.log('Mapeamento tipo contrato:', solicitacaoData.tipoContrato, '->', tipoContratoMondayLabel);
+
     // Mapear valores para as colunas do Monday
     const columnValues: Record<string, any> = {
       "texto6__1": solicitacaoData.codigo, // código vaga
-      "status0__1": { "labels": [getModeloLabel(solicitacaoData.modeloCartaz)] }, // tipo de cartaz
-      "status__1": { "labels": [solicitacaoData.tipoContrato] }, // tipo de contrato
+      "status0__1": { "label": getModeloLabel(solicitacaoData.modeloCartaz) }, // tipo de cartaz
+      "status__1": { "label": tipoContratoMondayLabel }, // tipo de contrato
       "texto8__1": solicitacaoData.local || '', // cidade estado
       "texto_longo__1": solicitacaoData.contato?.valor 
         ? `${solicitacaoData.contato.tipo}: ${solicitacaoData.contato.valor}`
         : '', // e-mail whatsapp
       "texto_longo9__1": solicitacaoData.requisitos || solicitacaoData.atividades || '', // requisitos e atividades
       "link__1": {
-        "url": `https://novotemporh.com.br/vagas/?search=${solicitacaoData.codigo}`,
+        "url": `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacaoData.codigo)}`,
         "text": "Link da Vaga"
       }, // link da vaga para candidatos
       "text_mkzwcjb9": finalizacaoUrl, // link de finalização do cartaz (texto simples)
@@ -167,11 +171,26 @@ serve(async (req) => {
 
 function getModeloLabel(modelo: string): string {
   const map: Record<string, string> = {
-    'padrao': 'tradicional',
-    'marisa': 'marisa',
-    'weg': 'weg',
-    'compilado-padrao': 'compilado',
-    'compilado-marisa': 'compilado'
+    'padrao': 'Tradicional',
+    'marisa': 'Marisa',
+    'weg': 'WEG',
+    'vaga-interna': 'Vaga Interna',
+    'dm-card': 'DM Card',
+    'compilado-padrao': 'Compilado',
+    'compilado-marisa': 'Compilado'
   };
-  return map[modelo] || 'tradicional';
+  return map[modelo] || 'Tradicional';
+}
+
+// Mapeia os tipos de contrato do formulário para os labels exatos do Monday.com
+function getContratoMondayLabel(tipoContrato: string): string {
+  const map: Record<string, string> = {
+    'Efetivo': 'Efetiva',
+    'Temporário': 'Temporária',
+    'PJ': 'PJ',
+    'Estágio': 'Estágio',
+    'Terceirizado': 'Terceirizada',
+    'Compilado': 'Compilado'
+  };
+  return map[tipoContrato] || tipoContrato;
 }
