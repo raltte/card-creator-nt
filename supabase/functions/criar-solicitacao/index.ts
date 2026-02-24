@@ -176,15 +176,15 @@ serve(async (req) => {
 
 function getModeloLabel(modelo: string): string {
   const map: Record<string, string> = {
-    'padrao': 'Tradicional',
+    'padrao': 'TRADICIONAL',
     'marisa': 'Marisa',
     'weg': 'WEG',
-    'vaga-interna': 'Vaga Interna',
-    'dm-card': 'DM Card',
-    'compilado-padrao': 'Compilado',
-    'compilado-marisa': 'Compilado'
+    'vaga-interna': 'VAGA INTERNA',
+    'dm-card': 'DM',
+    'compilado-padrao': 'COMPILADO',
+    'compilado-marisa': 'Marisa COMPILADO'
   };
-  return map[modelo] || 'Tradicional';
+  return map[modelo] || 'TRADICIONAL';
 }
 
 // Mapeia os tipos de contrato do formulário para os labels exatos do Monday.com
