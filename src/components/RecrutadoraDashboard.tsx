@@ -372,8 +372,8 @@ export const RecrutadoraDashboard = () => {
 
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Modelo</h3>
-                <Tabs 
-                  defaultValue="padrao" 
+              <Tabs 
+                  value={modeloSelecionado} 
                   onValueChange={(value) => {
                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
                     if (tipoCartaz === 'compilado') {
