@@ -89,6 +89,7 @@ serve(async (req) => {
       ...solicitacao,
       link_vaga: solicitacao.link_vaga || candidateUrl,
       finalizacao_url: finalizacaoUrl,
+      sugestao_imagem: solicitacaoData.sugestaoImagem || null,
     });
 
     console.log('Column values resolvidos:', JSON.stringify(columnValues, null, 2));
