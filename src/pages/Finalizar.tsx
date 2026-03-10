@@ -10,6 +10,8 @@ import { ImageSelector } from "@/components/ImageSelector";
 import { CartazPreview } from "@/components/CartazPreview";
 import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
 import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
+import { CartazPreviewVagaInterna } from "@/components/CartazPreviewVagaInterna";
+import { CartazPreviewDMCard } from "@/components/CartazPreviewDMCard";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
 import { MondayItemSelector } from "@/components/MondayItemSelector";
