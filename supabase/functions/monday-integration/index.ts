@@ -88,17 +88,16 @@ serve(async (req) => {
         case "status0__1":
           if (cartazData.modeloCartaz) {
             const tipoMap: Record<string, string> = {
-              "padrao": "tradicional",
-              "marisa": "marisa",
-              "compilado-padrao": "compilado",
-              "compilado-marisa": "compilado"
+              "padrao": "TRADICIONAL",
+              "marisa": "Marisa",
+              "weg": "WEG",
+              "vaga-interna": "VAGA INTERNA",
+              "dm-card": "DM",
+              "compilado-padrao": "COMPILADO",
+              "compilado-marisa": "Marisa COMPILADO"
             };
-            const tipo = tipoMap[cartazData.modeloCartaz] || "tradicional";
-            if (col.type === "dropdown" || col.type === "color") {
-              columnValues[col.id] = {"labels": [tipo]};
-            } else {
-              columnValues[col.id] = tipo;
-            }
+            const tipo = tipoMap[cartazData.modeloCartaz] || "TRADICIONAL";
+            columnValues[col.id] = { label: tipo };
           }
           break;
           
