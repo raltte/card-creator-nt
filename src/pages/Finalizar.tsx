@@ -116,7 +116,7 @@ const Finalizar = () => {
         tipoContrato: solicitacao.tipo_contrato,
         requisitos: solicitacao.requisitos || '',
         isPcd: solicitacao.is_pcd || false,
-        clientTemplate: solicitacao.modelo_cartaz === 'marisa' ? 'marisa' : (solicitacao.modelo_cartaz === 'weg' ? 'weg' : 'padrao'),
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(solicitacao.modelo_cartaz) ? solicitacao.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
         contato: {
           tipo: solicitacao.contato_tipo || 'site',
           valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
