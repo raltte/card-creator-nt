@@ -16,6 +16,7 @@ type SolicitacaoLike = {
   contato_valor?: string | null;
   requisitos?: string | null;
   atividades?: string | null;
+  sugestao_imagem?: string | null;
   link_vaga?: string | null;
   email_solicitante?: string | null;
   finalizacao_url?: string | null;
