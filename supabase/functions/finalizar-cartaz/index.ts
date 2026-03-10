@@ -112,10 +112,19 @@ serve(async (req) => {
             break;
           case "status__1":
             if (solicitacao.tipo_contrato) {
+              const contratoMap: Record<string, string> = {
+                'Efetivo': 'Efetiva',
+                'Temporário': 'Temporária',
+                'Terceirizado': 'Terceirizada',
+                'PJ': 'PJ',
+                'Estágio': 'Estágio',
+                'Compilado': 'Compilado'
+              };
+              const contratoLabel = contratoMap[solicitacao.tipo_contrato] || solicitacao.tipo_contrato;
               if (col.type === "dropdown" || col.type === "color") {
-                columnValues[col.id] = {"labels": [solicitacao.tipo_contrato]};
+                columnValues[col.id] = {"labels": [contratoLabel]};
               } else {
-                columnValues[col.id] = solicitacao.tipo_contrato;
+                columnValues[col.id] = contratoLabel;
               }
             }
             break;
