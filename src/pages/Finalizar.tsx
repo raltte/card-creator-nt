@@ -253,7 +253,11 @@ const Finalizar = () => {
                     <CompiladoPreview data={compiladoData} />
                   ) : null
                 ) : (
-                  isWeg && cartazData ? (
+                  isVagaInterna && cartazData ? (
+                    <CartazPreviewVagaInterna data={cartazData} />
+                  ) : isDMCard && cartazData ? (
+                    <CartazPreviewDMCard data={cartazData} />
+                  ) : isWeg && cartazData ? (
                     <CartazPreviewWeg data={cartazData} />
                   ) : isMarisa && cartazData ? (
                     <CartazPreviewMarisa data={cartazData} />
