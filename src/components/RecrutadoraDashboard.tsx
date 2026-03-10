@@ -361,7 +361,14 @@ export const RecrutadoraDashboard = () => {
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Tipo de Cartaz</h3>
                 <Tabs 
                   defaultValue="individual" 
-                  onValueChange={(value) => setTipoCartaz(value as 'individual' | 'compilado')}
+                  onValueChange={(value) => {
+                    const tipo = value as 'individual' | 'compilado';
+                    setTipoCartaz(tipo);
+                    // Reset modelo se for compilado e o modelo atual não é válido
+                    if (tipo === 'compilado' && !['padrao', 'marisa'].includes(modeloSelecionado)) {
+                      setModeloSelecionado('padrao');
+                    }
+                  }}
                 >
                   <TabsList className="grid w-full max-w-xs grid-cols-2 h-10">
                     <TabsTrigger value="individual" className="text-sm">Individual</TabsTrigger>
@@ -372,8 +379,8 @@ export const RecrutadoraDashboard = () => {
 
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Modelo</h3>
-                <Tabs 
-                  defaultValue="padrao" 
+              <Tabs 
+                  value={modeloSelecionado} 
                   onValueChange={(value) => {
                     setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
                     if (tipoCartaz === 'compilado') {
@@ -390,12 +397,19 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full max-w-xs grid-cols-2' : 'grid w-full max-w-md grid-cols-4'}>
-                    <TabsTrigger value="padrao">Tradicional</TabsTrigger>
-                    {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
-                    {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
-                    <TabsTrigger value="marisa">Marisa</TabsTrigger>
-                  </TabsList>
+                  {tipoCartaz === 'compilado' ? (
+                    <TabsList className="grid w-full max-w-xs grid-cols-2">
+                      <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                      <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                    </TabsList>
+                  ) : (
+                    <TabsList className="grid w-full max-w-md grid-cols-4">
+                      <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                      <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>
+                      <TabsTrigger value="weg">WEG</TabsTrigger>
+                      <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                    </TabsList>
+                  )}
                 </Tabs>
               </div>
             </div>
@@ -454,7 +468,7 @@ export const RecrutadoraDashboard = () => {
         </div>
 
         {/* Right Panel - Preview (Fixed) */}
-        <div className="hidden lg:flex w-1/2 xl:w-[55%] 2xl:w-[60%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 xl:p-6 2xl:p-10 overflow-hidden">
+        <div className="hidden lg:flex w-1/2 xl:w-[55%] 2xl:w-[60%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 xl:p-6 2xl:p-10 overflow-y-auto">
           <div className="flex flex-col items-center gap-3 h-full w-full max-w-[480px] xl:max-w-[520px] 2xl:max-w-[580px]">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Preview em Tempo Real</h3>
             <div className="flex-1 flex items-center justify-center w-full min-h-0">
