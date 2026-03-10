@@ -461,7 +461,7 @@ export const RecrutadoraDashboard = () => {
         </div>
 
         {/* Right Panel - Preview (Fixed) */}
-        <div className="hidden lg:flex w-1/2 xl:w-[55%] 2xl:w-[60%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 xl:p-6 2xl:p-10 overflow-hidden">
+        <div className="hidden lg:flex w-1/2 xl:w-[55%] 2xl:w-[60%] bg-gradient-to-br from-muted/40 to-muted/20 items-center justify-center p-4 xl:p-6 2xl:p-10 overflow-y-auto">
           <div className="flex flex-col items-center gap-3 h-full w-full max-w-[480px] xl:max-w-[520px] 2xl:max-w-[580px]">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Preview em Tempo Real</h3>
             <div className="flex-1 flex items-center justify-center w-full min-h-0">
