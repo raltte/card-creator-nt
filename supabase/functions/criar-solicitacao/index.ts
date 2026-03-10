@@ -1,5 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+import {
+  buildSolicitacaoColumnValues,
+  fetchBoardColumns,
+  getModeloLabel,
+  labelsMatch,
+  sanitizeItemName,
+  updateMondayItemColumns,
+  verifyMondayItemLabels,
+} from "../_shared/monday.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,13 +29,11 @@ serve(async (req) => {
     const solicitacaoData = await req.json();
     console.log('Criando solicitação:', solicitacaoData);
 
-    // Validar se userId é um UUID válido, senão usar null
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const validUserId = solicitacaoData.userId && uuidRegex.test(solicitacaoData.userId) 
-      ? solicitacaoData.userId 
+    const validUserId = solicitacaoData.userId && uuidRegex.test(solicitacaoData.userId)
+      ? solicitacaoData.userId
       : null;
 
-    // Inserir solicitação no banco
     const { data: solicitacao, error: insertError } = await supabase
       .from('solicitacoes_cartaz')
       .insert({
@@ -55,7 +62,6 @@ serve(async (req) => {
 
     console.log('Solicitação criada:', solicitacao);
 
-    // Se skipMonday = true, retornar apenas o ID da solicitação
     if (solicitacaoData.skipMonday) {
       return new Response(JSON.stringify({
         success: true,
@@ -67,59 +73,33 @@ serve(async (req) => {
       });
     }
 
-    // Gerar link de finalização usando a URL de origem do request
     const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || Deno.env.get('APP_URL') || 'https://jqpjcoitrmochijrgfbc.lovable.app';
     const finalizacaoUrl = `${origin}/finalizar/${solicitacao.id}`;
-    
     console.log('Link de finalização gerado:', finalizacaoUrl);
 
-    // Enviar para Monday.com
     const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
     if (!mondayApiToken) {
       throw new Error('Monday.com API token não configurado');
     }
 
-    const BOARD_ID = "7854209602";
+    const BOARD_ID = '7854209602';
+    const columns = await fetchBoardColumns(mondayApiToken, BOARD_ID);
+    const candidateUrl = `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`;
+    const columnValues = buildSolicitacaoColumnValues(columns, {
+      ...solicitacao,
+      link_vaga: solicitacao.link_vaga || candidateUrl,
+      finalizacao_url: finalizacaoUrl,
+    });
 
-    // Mapear tipo de contrato para os labels exatos do Monday (feminino)
-    const tipoContratoMondayLabel = getContratoMondayLabel(solicitacaoData.tipoContrato);
-    console.log('Mapeamento tipo contrato:', solicitacaoData.tipoContrato, '->', tipoContratoMondayLabel);
+    console.log('Column values resolvidos:', JSON.stringify(columnValues, null, 2));
 
-    // Mapear valores para as colunas do Monday
-    const columnValues: Record<string, any> = {
-      "texto6__1": solicitacaoData.codigo, // código vaga
-      "status0__1": { "label": getModeloLabel(solicitacaoData.modeloCartaz) }, // tipo de cartaz
-      "status__1": { "label": tipoContratoMondayLabel }, // tipo de contrato
-      "texto8__1": solicitacaoData.local || '', // cidade estado
-      "texto_longo__1": solicitacaoData.contato?.valor 
-        ? `${solicitacaoData.contato.tipo}: ${solicitacaoData.contato.valor}`
-        : '', // e-mail whatsapp
-      "texto_longo9__1": solicitacaoData.requisitos || solicitacaoData.atividades || '', // requisitos e atividades
-      "link__1": {
-        "url": `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacaoData.codigo)}`,
-        "text": "Link da Vaga"
-      }, // link da vaga para candidatos
-      "text_mkzwcjb9": finalizacaoUrl, // link de finalização do cartaz (texto simples)
-      "e_mail__1": solicitacaoData.emailSolicitante 
-        ? {
-            "email": solicitacaoData.emailSolicitante,
-            "text": solicitacaoData.emailSolicitante
-          }
-        : ''
-    };
+    const itemName = sanitizeItemName(`${solicitacao.cargo} - ${solicitacao.local || 'Local não especificado'}`);
 
-    // Escapar aspas duplas no nome do item para evitar quebra no GraphQL
-    const itemName = `${solicitacaoData.cargo} - ${solicitacaoData.local || 'Local não especificado'}`
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"');
-
-    // Criar item no Monday
     const createMutation = `
       mutation {
         create_item (
           board_id: ${BOARD_ID},
-          item_name: "${itemName}",
-          column_values: ${JSON.stringify(JSON.stringify(columnValues))}
+          item_name: "${itemName}"
         ) {
           id
           name
@@ -145,57 +125,47 @@ serve(async (req) => {
       throw new Error(`Erro do Monday.com: ${mondayResult.errors[0].message}`);
     }
 
-    // Atualizar solicitação com ID do Monday
     const mondayItemId = mondayResult.data?.create_item?.id;
-    if (mondayItemId) {
-      await supabase
-        .from('solicitacoes_cartaz')
-        .update({ monday_item_id: mondayItemId })
-        .eq('id', solicitacao.id);
+    if (!mondayItemId) {
+      throw new Error('Falha ao obter o ID do item criado no Monday');
     }
+
+    await updateMondayItemColumns(mondayApiToken, BOARD_ID, mondayItemId, columnValues);
+
+    const verifiedValues = await verifyMondayItemLabels(mondayApiToken, mondayItemId);
+    const expectedModelLabel = getModeloLabel(solicitacao.modelo_cartaz);
+
+    console.log('Validação após criação:', {
+      expectedModelLabel,
+      actualModelLabel: verifiedValues.modelo,
+      actualContractLabel: verifiedValues.contrato,
+    });
+
+    if (!labelsMatch(verifiedValues.modelo, expectedModelLabel)) {
+      throw new Error(`Falha ao gravar o tipo de cartaz no Monday. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}`);
+    }
+
+    await supabase
+      .from('solicitacoes_cartaz')
+      .update({ monday_item_id: mondayItemId })
+      .eq('id', solicitacao.id);
 
     return new Response(JSON.stringify({
       success: true,
       solicitacaoId: solicitacao.id,
-      mondayItemId: mondayItemId,
-      finalizacaoUrl: finalizacaoUrl
+      mondayItemId,
+      finalizacaoUrl
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
     console.error('Erro:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Erro desconhecido' 
+    return new Response(JSON.stringify({
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
-
-function getModeloLabel(modelo: string): string {
-  const map: Record<string, string> = {
-    'padrao': 'TRADICIONAL',
-    'marisa': 'Marisa',
-    'weg': 'WEG',
-    'vaga-interna': 'VAGA INTERNA',
-    'dm-card': 'DM',
-    'compilado-padrao': 'COMPILADO',
-    'compilado-marisa': 'Marisa COMPILADO'
-  };
-  return map[modelo] || 'TRADICIONAL';
-}
-
-// Mapeia os tipos de contrato do formulário para os labels exatos do Monday.com
-function getContratoMondayLabel(tipoContrato: string): string {
-  const map: Record<string, string> = {
-    'Efetivo': 'Efetiva',
-    'Temporário': 'Temporária',
-    'PJ': 'PJ',
-    'Estágio': 'Estágio',
-    'Terceirizado': 'Terceirizada',
-    'Compilado': 'Compilado'
-  };
-  return map[tipoContrato] || tipoContrato;
-}
