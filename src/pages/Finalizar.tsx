@@ -237,7 +237,7 @@ const Finalizar = () => {
             }}
             onImageSelect={handleImagemSelecionada}
             onBack={() => navigate('/')}
-            clientTemplate={isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
+            clientTemplate={isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
         )}
 
