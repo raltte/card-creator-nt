@@ -125,15 +125,16 @@ export function buildSolicitacaoColumnValues(columns: MondayColumn[], solicitaca
             : solicitacao.contato_valor;
         }
         break;
-      case "texto_longo9__1":
-        if (solicitacao.requisitos && solicitacao.atividades) {
-          columnValues[col.id] = `Requisitos: ${solicitacao.requisitos}\n\nAtividades: ${solicitacao.atividades}`;
-        } else if (solicitacao.requisitos) {
-          columnValues[col.id] = solicitacao.requisitos;
-        } else if (solicitacao.atividades) {
-          columnValues[col.id] = solicitacao.atividades;
+      case "texto_longo9__1": {
+        const parts: string[] = [];
+        if (solicitacao.requisitos) parts.push(`Requisitos: ${solicitacao.requisitos}`);
+        if (solicitacao.atividades) parts.push(`Atividades: ${solicitacao.atividades}`);
+        if (solicitacao.sugestao_imagem) parts.push(`Sugestão de imagem: ${solicitacao.sugestao_imagem}`);
+        if (parts.length > 0) {
+          columnValues[col.id] = parts.join('\n\n');
         }
         break;
+      }
       case "link__1":
         if (solicitacao.link_vaga) {
           columnValues[col.id] = {
