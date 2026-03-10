@@ -176,7 +176,7 @@ serve(async (req) => {
           create_item (
             board_id: ${BOARD_ID},
             group_id: "${createInGroupId}",
-            item_name: "${solicitacao.cargo} - ${solicitacao.local || ''}",
+            item_name: "${(solicitacao.cargo + ' - ' + (solicitacao.local || '')).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",
             column_values: ${JSON.stringify(JSON.stringify(columnValues))}
           ) {
             id
