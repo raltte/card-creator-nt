@@ -38,6 +38,90 @@ serve(async (req) => {
       throw new Error('MONDAY_API_TOKEN não configurado');
     }
 
+    const buildColumnValues = (columns: any[]) => {
+      const columnValues: Record<string, any> = {};
+
+      columns.forEach((col: any) => {
+        const colId = col.id.toLowerCase().trim();
+
+        switch (colId) {
+          case "texto6__1":
+            if (solicitacao.codigo) {
+              columnValues[col.id] = solicitacao.codigo;
+            }
+            break;
+          case "status0__1": {
+            const tipoMap: Record<string, string> = {
+              "padrao": "TRADICIONAL",
+              "marisa": "Marisa",
+              "weg": "WEG",
+              "vaga-interna": "VAGA INTERNA",
+              "dm-card": "DM",
+              "compilado-padrao": "COMPILADO",
+              "compilado-marisa": "Marisa COMPILADO"
+            };
+            const tipo = tipoMap[solicitacao.modelo_cartaz] || "TRADICIONAL";
+            columnValues[col.id] = { label: tipo };
+            break;
+          }
+          case "status__1":
+            if (solicitacao.tipo_contrato) {
+              const contratoMap: Record<string, string> = {
+                'Efetivo': 'Efetiva',
+                'Temporário': 'Temporária',
+                'Terceirizado': 'Terceirizada',
+                'PJ': 'PJ',
+                'Estágio': 'Estágio',
+                'Compilado': 'Compilado'
+              };
+              const contratoLabel = contratoMap[solicitacao.tipo_contrato] || solicitacao.tipo_contrato;
+              columnValues[col.id] = { label: contratoLabel };
+            }
+            break;
+          case "texto8__1":
+            if (solicitacao.local) {
+              columnValues[col.id] = solicitacao.local;
+            }
+            break;
+          case "texto_longo__1":
+            if (solicitacao.contato_valor) {
+              const contatoTexto = solicitacao.contato_tipo
+                ? `${solicitacao.contato_tipo}: ${solicitacao.contato_valor}`
+                : solicitacao.contato_valor;
+              columnValues[col.id] = contatoTexto;
+            }
+            break;
+          case "texto_longo9__1":
+            if (solicitacao.requisitos && solicitacao.atividades) {
+              columnValues[col.id] = `Requisitos: ${solicitacao.requisitos}\n\nAtividades: ${solicitacao.atividades}`;
+            } else if (solicitacao.requisitos) {
+              columnValues[col.id] = solicitacao.requisitos;
+            } else if (solicitacao.atividades) {
+              columnValues[col.id] = solicitacao.atividades;
+            }
+            break;
+          case "link__1":
+            if (solicitacao.link_vaga) {
+              columnValues[col.id] = {
+                url: solicitacao.link_vaga,
+                text: "Link da Vaga"
+              };
+            }
+            break;
+          case "e_mail__1":
+            if (solicitacao.email_solicitante) {
+              columnValues[col.id] = {
+                email: solicitacao.email_solicitante,
+                text: solicitacao.email_solicitante
+              };
+            }
+            break;
+        }
+      });
+
+      return columnValues;
+    };
+
     // Converter base64 para blob
     let imageBlob: Blob;
     if (imagemUrl.startsWith('data:')) {
