@@ -160,13 +160,13 @@ serve(async (req) => {
     const fileColumn = columns.find((col: any) => col.id === "enviar_arquivo__1");
 
     let targetItemId = mondayItemId || solicitacao.monday_item_id;
+    const columnValues = buildColumnValues(columns);
 
     // Se createInGroupId foi fornecido, criar novo item no grupo
     if (createInGroupId && !targetItemId) {
       console.log('Criando novo item no grupo:', createInGroupId);
+      console.log('Column values para novo item:', JSON.stringify(columnValues, null, 2));
 
-      // Preparar valores das colunas
-      const columnValues: Record<string, any> = {};
       
       columns.forEach((col: any) => {
         const colId = col.id.toLowerCase().trim();
