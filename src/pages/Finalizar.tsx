@@ -203,6 +203,8 @@ const Finalizar = () => {
   const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
   const isMarisa = solicitacao.modelo_cartaz.includes('marisa');
   const isWeg = solicitacao.modelo_cartaz === 'weg';
+  const isVagaInterna = solicitacao.modelo_cartaz === 'vaga-interna';
+  const isDMCard = solicitacao.modelo_cartaz === 'dm-card';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
