@@ -390,12 +390,19 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className={tipoCartaz === 'compilado' ? 'grid w-full max-w-xs grid-cols-2' : 'grid w-full max-w-md grid-cols-4'}>
-                    <TabsTrigger value="padrao">Tradicional</TabsTrigger>
-                    {tipoCartaz === 'individual' && <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>}
-                    {tipoCartaz === 'individual' && <TabsTrigger value="weg">WEG</TabsTrigger>}
-                    <TabsTrigger value="marisa">Marisa</TabsTrigger>
-                  </TabsList>
+                  {tipoCartaz === 'compilado' ? (
+                    <TabsList className="grid w-full max-w-xs grid-cols-2">
+                      <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                      <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                    </TabsList>
+                  ) : (
+                    <TabsList className="grid w-full max-w-md grid-cols-4">
+                      <TabsTrigger value="padrao">Tradicional</TabsTrigger>
+                      <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>
+                      <TabsTrigger value="weg">WEG</TabsTrigger>
+                      <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                    </TabsList>
+                  )}
                 </Tabs>
               </div>
             </div>
