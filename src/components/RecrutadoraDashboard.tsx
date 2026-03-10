@@ -202,6 +202,7 @@ export const RecrutadoraDashboard = () => {
           emailSolicitante: user?.email || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null,
+          sugestaoImagem: dados.sugestaoImagem || null,
           skipMonday: true // Flag para não criar item no Monday
         }
       });
