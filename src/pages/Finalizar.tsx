@@ -408,7 +408,16 @@ const Finalizar = () => {
                   )}
                 </div>
 
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 space-y-3">
+                  <Button
+                    onClick={salvarAlteracoes}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Salvar Alterações
+                  </Button>
+                  <div className="flex gap-3">
                   <Button
                     onClick={() => setEtapa('selecaoImagem')}
                     variant="outline"
