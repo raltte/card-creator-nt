@@ -1,0 +1,1 @@
+ALTER TABLE public.solicitacoes_cartaz ADD COLUMN imagem_base_url text;

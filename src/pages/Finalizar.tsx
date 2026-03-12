@@ -44,56 +44,6 @@ const Finalizar = () => {
     }
   }, [id]);
 
-  const extrairImagemBaseDoCartazFinal = async (imagemUrl: string, modeloCartaz: string) => {
-    // Em modelos com foto no painel esquerdo, reaproveitamos apenas esse recorte
-    if (!["padrao", "weg", "vaga-interna"].includes(modeloCartaz)) {
-      return imagemUrl;
-    }
-
-    return new Promise<string>((resolve) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-
-      img.onload = () => {
-        try {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          if (!ctx) return resolve(imagemUrl);
-
-          const targetWidth = 1080;
-          const targetHeight = 1350;
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-
-          const cropX = 0;
-          const cropY = 0;
-          const cropWidth = Math.floor(img.width * 0.45);
-          const cropHeight = img.height;
-
-          const sourceAspect = cropWidth / cropHeight;
-          const targetAspect = targetWidth / targetHeight;
-
-          if (sourceAspect > targetAspect) {
-            const srcWidth = cropHeight * targetAspect;
-            const srcX = cropX + (cropWidth - srcWidth) / 2;
-            ctx.drawImage(img, srcX, cropY, srcWidth, cropHeight, 0, 0, targetWidth, targetHeight);
-          } else {
-            const srcHeight = cropWidth / targetAspect;
-            const srcY = cropY + (cropHeight - srcHeight) / 2;
-            ctx.drawImage(img, cropX, srcY, cropWidth, srcHeight, 0, 0, targetWidth, targetHeight);
-          }
-
-          resolve(canvas.toDataURL("image/png"));
-        } catch {
-          resolve(imagemUrl);
-        }
-      };
-
-      img.onerror = () => resolve(imagemUrl);
-      img.src = imagemUrl;
-    });
-  };
-
   const carregarSolicitacao = async () => {
     try {
       const { data, error } = await supabase
@@ -124,11 +74,15 @@ const Finalizar = () => {
 
       setSolicitacao(data);
       
-      // Se já tem imagem final, reaproveita a foto base e pula direto para o preview
-      if (data.imagem_url) {
-        const imagemBaseReaproveitada = await extrairImagemBaseDoCartazFinal(data.imagem_url, data.modelo_cartaz);
-        setImagemBaseUrl(imagemBaseReaproveitada);
-        handleImagemSelecionada(imagemBaseReaproveitada, data);
+      // Usar imagem base salva, ou fallback para seleção de imagem
+      if (data.imagem_base_url) {
+        setImagemBaseUrl(data.imagem_base_url);
+        handleImagemSelecionada(data.imagem_base_url, data);
+      } else if (data.imagem_url) {
+        // Fallback antigo: sem imagem base salva, ir para seleção
+        // Não tenta extrair - deixa o usuário escolher nova imagem ou ajustar
+        setLoading(false);
+        return;
       }
       
       setLoading(false);
@@ -211,6 +165,11 @@ const Finalizar = () => {
   const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
     const sol = solicitacaoOverride || solicitacao;
     if (!sol) return;
+    
+    // Salvar imagem base para reutilização futura
+    if (!solicitacaoOverride) {
+      setImagemBaseUrl(imagemUrl);
+    }
 
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
@@ -274,6 +233,7 @@ const Finalizar = () => {
         body: {
           solicitacaoId: id,
           imagemUrl: imagemUrl,
+          imagemBaseUrl: imagemBaseUrl || null,
           mondayItemId: mondayItemId || solicitacao?.monday_item_id,
           createInGroupId: createInGroupId
         }
