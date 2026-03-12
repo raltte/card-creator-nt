@@ -211,6 +211,11 @@ const Finalizar = () => {
   const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
     const sol = solicitacaoOverride || solicitacao;
     if (!sol) return;
+    
+    // Salvar imagem base para reutilização futura
+    if (!solicitacaoOverride) {
+      setImagemBaseUrl(imagemUrl);
+    }
 
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
