@@ -467,6 +467,9 @@ export const RecrutadoraDashboard = () => {
                 </Button>
               )}
             </div>
+
+            {/* Histórico */}
+            <HistoricoCartazes />
           </div>
         </div>
 
