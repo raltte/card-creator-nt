@@ -337,10 +337,10 @@ const Finalizar = () => {
           />
         )}
 
-        {etapa === 'enquadramento' && imagemBaseUrl && (
+        {etapa === 'enquadramento' && (imagemOriginalUrl || imagemBaseUrl) && (
           <div className="max-w-2xl mx-auto">
             <ImageFraming
-              imageUrl={imagemBaseUrl}
+              imageUrl={imagemOriginalUrl || imagemBaseUrl!}
               onFramingComplete={(croppedImageData) => {
                 setImagemBaseUrl(croppedImageData);
                 handleImagemSelecionada(croppedImageData);
