@@ -21,6 +21,7 @@ interface Solicitacao {
   created_at: string;
   updated_at: string;
   imagem_url: string | null;
+  imagem_base_url: string | null;
 }
 
 const modeloLabels: Record<string, string> = {
@@ -49,7 +50,7 @@ export const HistoricoCartazes = () => {
     try {
       const { data, error } = await supabase
         .from("solicitacoes_cartaz")
-        .select("id, cargo, codigo, local, modelo_cartaz, tipo_contrato, status, created_at, updated_at, imagem_url")
+        .select("id, cargo, codigo, local, modelo_cartaz, tipo_contrato, status, created_at, updated_at, imagem_url, imagem_base_url")
         .order("created_at", { ascending: false })
         .limit(10);
 
@@ -134,10 +135,10 @@ export const HistoricoCartazes = () => {
                 >
                   <div className="flex items-start gap-3">
                     {/* Thumbnail */}
-                    {s.imagem_url ? (
+                    {(s.imagem_base_url || s.imagem_url) ? (
                       <div className="shrink-0 w-14 h-14 rounded-md overflow-hidden border bg-muted">
                         <img
-                          src={s.imagem_url}
+                          src={s.imagem_base_url || s.imagem_url || ''}
                           alt={s.cargo}
                           className="w-full h-full object-cover"
                         />
