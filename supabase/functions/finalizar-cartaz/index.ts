@@ -166,13 +166,18 @@ serve(async (req) => {
       }
     }
 
+    const updateData: Record<string, any> = {
+      imagem_url: imagemUrl,
+      status: 'concluido',
+      monday_item_id: targetItemId
+    };
+    if (imagemBaseUrl) {
+      updateData.imagem_base_url = imagemBaseUrl;
+    }
+
     const { error: updateError } = await supabase
       .from('solicitacoes_cartaz')
-      .update({
-        imagem_url: imagemUrl,
-        status: 'concluido',
-        monday_item_id: targetItemId
-      })
+      .update(updateData)
       .eq('id', solicitacaoId);
 
     if (updateError) {
