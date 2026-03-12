@@ -36,7 +36,8 @@ const Finalizar = () => {
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
-  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null);
+  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null); // framed image for enquadramento
+  const [imagemOriginalUrl, setImagemOriginalUrl] = useState<string | null>(null); // original unframed image
 
   useEffect(() => {
     if (id) {
