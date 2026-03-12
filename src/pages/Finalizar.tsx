@@ -30,7 +30,7 @@ const Finalizar = () => {
   
   const [loading, setLoading] = useState(true);
   const [solicitacao, setSolicitacao] = useState<any>(null);
-  const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview'>('selecaoImagem');
+  const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview' | 'enquadramento'>('selecaoImagem');
   const [cartazData, setCartazData] = useState<CartazData | null>(null);
   const [compiladoData, setCompiladoData] = useState<CompiladoData | null>(null);
   const [isFinalizando, setIsFinalizando] = useState(false);
