@@ -135,10 +135,10 @@ export const HistoricoCartazes = () => {
                 >
                   <div className="flex items-start gap-3">
                     {/* Thumbnail */}
-                    {s.imagem_url ? (
+                    {(s.imagem_base_url || s.imagem_url) ? (
                       <div className="shrink-0 w-14 h-14 rounded-md overflow-hidden border bg-muted">
                         <img
-                          src={s.imagem_url}
+                          src={s.imagem_base_url || s.imagem_url || ''}
                           alt={s.cargo}
                           className="w-full h-full object-cover"
                         />
