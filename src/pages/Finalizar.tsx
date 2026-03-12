@@ -466,7 +466,7 @@ const Finalizar = () => {
                   <div className="flex gap-3">
                   <Button
                     onClick={() => {
-                      if (imagemBaseUrl) {
+                      if (imagemOriginalUrl || imagemBaseUrl) {
                         setEtapa('enquadramento');
                       } else {
                         setEtapa('selecaoImagem');
