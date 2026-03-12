@@ -60,9 +60,10 @@ const Finalizar = () => {
       }
 
       if (data.status === 'concluido') {
+        // Permitir re-edição de cartazes já concluídos
         toast({
-          title: "Aviso",
-          description: "Esta solicitação já foi concluída.",
+          title: "Reabrindo cartaz",
+          description: "Você pode editar e gerar novamente este cartaz.",
         });
       }
 
