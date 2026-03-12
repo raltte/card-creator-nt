@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageSelector } from "@/components/ImageSelector";
+import { ImageFraming } from "@/components/ImageFraming";
 import { CartazPreview } from "@/components/CartazPreview";
 import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
 import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
