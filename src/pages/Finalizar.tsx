@@ -83,6 +83,71 @@ const Finalizar = () => {
     }
   };
 
+  // Atualiza o preview em tempo real quando campos são editados
+  const atualizarPreview = (sol: any) => {
+    if (!sol) return;
+    const currentImage = cartazData?.image || compiladoData?.image || '';
+    const isCompilado = sol.modelo_cartaz.includes('compilado');
+    const localParts = (sol.local || '').split(' - ');
+
+    if (isCompilado) {
+      setCompiladoData({
+        image: currentImage,
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
+        vagas: [{ codigo: sol.codigo, cargo: sol.cargo }],
+        requisitos: sol.requisitos || sol.atividades || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: sol.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
+        contato: {
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || 'novotemporh.com.br'
+        },
+        get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
+      });
+    } else {
+      setCartazData({
+        image: currentImage,
+        cargo: sol.cargo,
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
+        codigo: sol.codigo,
+        tipoContrato: sol.tipo_contrato,
+        requisitos: sol.requisitos || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
+        contato: {
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || 'novotemporh.com.br'
+        },
+        get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
+      });
+    }
+  };
+
+  const salvarAlteracoes = async () => {
+    if (!solicitacao || !id) return;
+    try {
+      const { error } = await supabase
+        .from('solicitacoes_cartaz')
+        .update({
+          cargo: solicitacao.cargo,
+          codigo: solicitacao.codigo,
+          local: solicitacao.local,
+          requisitos: solicitacao.requisitos,
+          atividades: solicitacao.atividades,
+          tipo_contrato: solicitacao.tipo_contrato,
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+      toast({ title: "Salvo!", description: "Alterações salvas com sucesso." });
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      toast({ title: "Erro", description: "Não foi possível salvar.", variant: "destructive" });
+    }
+  };
+
   const handleImagemSelecionada = (imagemUrl: string) => {
     if (!solicitacao) return;
 
