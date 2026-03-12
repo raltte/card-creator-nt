@@ -71,6 +71,12 @@ const Finalizar = () => {
       }
 
       setSolicitacao(data);
+      
+      // Se já tem imagem, pular direto para o preview
+      if (data.imagem_url) {
+        handleImagemSelecionada(data.imagem_url, data);
+      }
+      
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar solicitação:', error);
