@@ -36,6 +36,7 @@ const Finalizar = () => {
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
+  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
