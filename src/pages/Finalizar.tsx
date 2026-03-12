@@ -154,10 +154,11 @@ const Finalizar = () => {
     }
   };
 
-  const handleImagemSelecionada = (imagemUrl: string) => {
-    if (!solicitacao) return;
+  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
+    const sol = solicitacaoOverride || solicitacao;
+    if (!sol) return;
 
-    const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
+    const isCompilado = sol.modelo_cartaz.includes('compilado');
 
     if (isCompilado) {
       // Dados do compilado
