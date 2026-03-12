@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, Send, Upload } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, Loader2, Send, Upload, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,9 +63,10 @@ const Finalizar = () => {
       }
 
       if (data.status === 'concluido') {
+        // Permitir re-edição de cartazes já concluídos
         toast({
-          title: "Aviso",
-          description: "Esta solicitação já foi concluída.",
+          title: "Reabrindo cartaz",
+          description: "Você pode editar e gerar novamente este cartaz.",
         });
       }
 
@@ -76,6 +80,71 @@ const Finalizar = () => {
         variant: "destructive"
       });
       navigate('/');
+    }
+  };
+
+  // Atualiza o preview em tempo real quando campos são editados
+  const atualizarPreview = (sol: any) => {
+    if (!sol) return;
+    const currentImage = cartazData?.image || compiladoData?.image || '';
+    const isCompilado = sol.modelo_cartaz.includes('compilado');
+    const localParts = (sol.local || '').split(' - ');
+
+    if (isCompilado) {
+      setCompiladoData({
+        image: currentImage,
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
+        vagas: [{ codigo: sol.codigo, cargo: sol.cargo }],
+        requisitos: sol.requisitos || sol.atividades || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: sol.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
+        contato: {
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || 'novotemporh.com.br'
+        },
+        get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
+      });
+    } else {
+      setCartazData({
+        image: currentImage,
+        cargo: sol.cargo,
+        cidade: localParts[0] || '',
+        estado: localParts[1] || '',
+        codigo: sol.codigo,
+        tipoContrato: sol.tipo_contrato,
+        requisitos: sol.requisitos || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
+        contato: {
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || 'novotemporh.com.br'
+        },
+        get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
+      });
+    }
+  };
+
+  const salvarAlteracoes = async () => {
+    if (!solicitacao || !id) return;
+    try {
+      const { error } = await supabase
+        .from('solicitacoes_cartaz')
+        .update({
+          cargo: solicitacao.cargo,
+          codigo: solicitacao.codigo,
+          local: solicitacao.local,
+          requisitos: solicitacao.requisitos,
+          atividades: solicitacao.atividades,
+          tipo_contrato: solicitacao.tipo_contrato,
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+      toast({ title: "Salvo!", description: "Alterações salvas com sucesso." });
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      toast({ title: "Erro", description: "Não foi possível salvar.", variant: "destructive" });
     }
   };
 
@@ -270,39 +339,85 @@ const Finalizar = () => {
 
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Informações da Vaga</h2>
+                <h2 className="text-xl font-semibold mb-4">Editar Informações</h2>
                 <div className="space-y-3">
-                  <div>
-                    <span className="font-medium">Código:</span> {solicitacao.codigo}
-                  </div>
-                  <div>
-                    <span className="font-medium">Cargo:</span> {solicitacao.cargo}
-                  </div>
-                  <div>
-                    <span className="font-medium">Tipo de Contrato:</span> {solicitacao.tipo_contrato}
-                  </div>
-                  <div>
-                    <span className="font-medium">Local:</span> {solicitacao.local}
-                  </div>
-                  {solicitacao.requisitos && (
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <span className="font-medium">Requisitos:</span>
-                      <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                        {solicitacao.requisitos}
-                      </p>
+                      <Label className="text-xs">Código</Label>
+                      <Input
+                        value={solicitacao.codigo}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, codigo: e.target.value });
+                          atualizarPreview({ ...solicitacao, codigo: e.target.value });
+                        }}
+                      />
                     </div>
-                  )}
+                    <div>
+                      <Label className="text-xs">Tipo de Contrato</Label>
+                      <Input
+                        value={solicitacao.tipo_contrato}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, tipo_contrato: e.target.value });
+                          atualizarPreview({ ...solicitacao, tipo_contrato: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Cargo</Label>
+                    <Input
+                      value={solicitacao.cargo}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, cargo: e.target.value });
+                        atualizarPreview({ ...solicitacao, cargo: e.target.value });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Local</Label>
+                    <Input
+                      value={solicitacao.local || ''}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, local: e.target.value });
+                        atualizarPreview({ ...solicitacao, local: e.target.value });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Requisitos</Label>
+                    <Textarea
+                      value={solicitacao.requisitos || ''}
+                      rows={4}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, requisitos: e.target.value });
+                        atualizarPreview({ ...solicitacao, requisitos: e.target.value });
+                      }}
+                    />
+                  </div>
                   {solicitacao.atividades && (
                     <div>
-                      <span className="font-medium">Atividades:</span>
-                      <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                        {solicitacao.atividades}
-                      </p>
+                      <Label className="text-xs">Atividades</Label>
+                      <Textarea
+                        value={solicitacao.atividades || ''}
+                        rows={3}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, atividades: e.target.value });
+                        }}
+                      />
                     </div>
                   )}
                 </div>
 
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 space-y-3">
+                  <Button
+                    onClick={salvarAlteracoes}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Salvar Alterações
+                  </Button>
+                  <div className="flex gap-3">
                   <Button
                     onClick={() => setEtapa('selecaoImagem')}
                     variant="outline"
@@ -344,6 +459,7 @@ const Finalizar = () => {
                       )}
                     </Button>
                   )}
+                  </div>
                 </div>
 
                 <MondayItemSelector
