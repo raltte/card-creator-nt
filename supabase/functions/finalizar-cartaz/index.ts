@@ -28,7 +28,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { solicitacaoId, imagemUrl, mondayItemId, createInGroupId } = await req.json();
+    const { solicitacaoId, imagemUrl, imagemBaseUrl, mondayItemId, createInGroupId } = await req.json();
     console.log('Finalizando cartaz:', { solicitacaoId, mondayItemId, createInGroupId });
 
     const { data: solicitacao, error: fetchError } = await supabase
