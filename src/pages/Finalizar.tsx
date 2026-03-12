@@ -75,13 +75,13 @@ const Finalizar = () => {
 
       setSolicitacao(data);
       
-      // Usar imagem base salva, ou fallback para seleção de imagem
+      // Usar imagem base salva (original não cropada) para re-enquadramento
       if (data.imagem_base_url) {
-        setImagemBaseUrl(data.imagem_base_url);
-        handleImagemSelecionada(data.imagem_base_url, data);
+        setImagemOriginalUrl(data.imagem_base_url);
+        // Ir direto para enquadramento para que o usuário ajuste o crop
+        setEtapa('enquadramento');
       } else if (data.imagem_url) {
-        // Fallback antigo: sem imagem base salva, ir para seleção
-        // Não tenta extrair - deixa o usuário escolher nova imagem ou ajustar
+        // Fallback antigo: sem imagem base salva, ir para seleção de nova imagem
         setLoading(false);
         return;
       }
