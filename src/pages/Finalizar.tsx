@@ -331,7 +331,7 @@ const Finalizar = () => {
               tipoContrato: solicitacao.tipo_contrato,
               requisitos: solicitacao.requisitos ? solicitacao.requisitos.split('\n') : []
             }}
-            onImageSelect={handleImagemSelecionada}
+            onImageSelect={(framedUrl, originalUrl) => handleImagemSelecionada(framedUrl, undefined, originalUrl)}
             onBack={() => navigate('/')}
             clientTemplate={isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
