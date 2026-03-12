@@ -21,6 +21,7 @@ interface Solicitacao {
   created_at: string;
   updated_at: string;
   imagem_url: string | null;
+  imagem_base_url: string | null;
 }
 
 const modeloLabels: Record<string, string> = {
