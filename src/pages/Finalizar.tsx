@@ -36,7 +36,8 @@ const Finalizar = () => {
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
-  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null);
+  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null); // framed image for enquadramento
+  const [imagemOriginalUrl, setImagemOriginalUrl] = useState<string | null>(null); // original unframed image
 
   useEffect(() => {
     if (id) {
@@ -74,13 +75,13 @@ const Finalizar = () => {
 
       setSolicitacao(data);
       
-      // Usar imagem base salva, ou fallback para seleção de imagem
+      // Usar imagem base salva (original não cropada) para re-enquadramento
       if (data.imagem_base_url) {
-        setImagemBaseUrl(data.imagem_base_url);
-        handleImagemSelecionada(data.imagem_base_url, data);
+        setImagemOriginalUrl(data.imagem_base_url);
+        // Ir direto para enquadramento para que o usuário ajuste o crop
+        setEtapa('enquadramento');
       } else if (data.imagem_url) {
-        // Fallback antigo: sem imagem base salva, ir para seleção
-        // Não tenta extrair - deixa o usuário escolher nova imagem ou ajustar
+        // Fallback antigo: sem imagem base salva, ir para seleção de nova imagem
         setLoading(false);
         return;
       }
@@ -162,14 +163,21 @@ const Finalizar = () => {
     }
   };
 
-  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
-    const sol = solicitacaoOverride || solicitacao;
+  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverrideOrOriginal?: any, originalUrl?: string) => {
+    // If called from ImageSelector: (framedUrl, undefined, originalUrl)
+    // If called from enquadramento: (framedUrl) — originalUrl already set
+    // If called from carregarSolicitacao: (framedUrl, solicitacaoData)
+    const sol = (typeof solicitacaoOverrideOrOriginal === 'object' && solicitacaoOverrideOrOriginal !== null && solicitacaoOverrideOrOriginal.modelo_cartaz) 
+      ? solicitacaoOverrideOrOriginal 
+      : solicitacao;
     if (!sol) return;
     
-    // Salvar imagem base para reutilização futura
-    if (!solicitacaoOverride) {
-      setImagemBaseUrl(imagemUrl);
+    // Save the original unframed image if provided
+    if (originalUrl) {
+      setImagemOriginalUrl(originalUrl);
     }
+    // Save the framed image for re-framing
+    setImagemBaseUrl(imagemUrl);
 
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
@@ -233,7 +241,7 @@ const Finalizar = () => {
         body: {
           solicitacaoId: id,
           imagemUrl: imagemUrl,
-          imagemBaseUrl: imagemBaseUrl || null,
+          imagemBaseUrl: imagemOriginalUrl || imagemBaseUrl || null,
           mondayItemId: mondayItemId || solicitacao?.monday_item_id,
           createInGroupId: createInGroupId
         }
@@ -323,16 +331,16 @@ const Finalizar = () => {
               tipoContrato: solicitacao.tipo_contrato,
               requisitos: solicitacao.requisitos ? solicitacao.requisitos.split('\n') : []
             }}
-            onImageSelect={handleImagemSelecionada}
+            onImageSelect={(framedUrl, originalUrl) => handleImagemSelecionada(framedUrl, undefined, originalUrl)}
             onBack={() => navigate('/')}
             clientTemplate={isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
         )}
 
-        {etapa === 'enquadramento' && imagemBaseUrl && (
+        {etapa === 'enquadramento' && (imagemOriginalUrl || imagemBaseUrl) && (
           <div className="max-w-2xl mx-auto">
             <ImageFraming
-              imageUrl={imagemBaseUrl}
+              imageUrl={imagemOriginalUrl || imagemBaseUrl!}
               onFramingComplete={(croppedImageData) => {
                 setImagemBaseUrl(croppedImageData);
                 handleImagemSelecionada(croppedImageData);
@@ -458,7 +466,7 @@ const Finalizar = () => {
                   <div className="flex gap-3">
                   <Button
                     onClick={() => {
-                      if (imagemBaseUrl) {
+                      if (imagemOriginalUrl || imagemBaseUrl) {
                         setEtapa('enquadramento');
                       } else {
                         setEtapa('selecaoImagem');

@@ -16,7 +16,7 @@ interface ImageSelectorProps {
     requisitos: string[];
     sugestaoImagem?: string;
   };
-  onImageSelect: (imageUrl: string) => void;
+  onImageSelect: (imageUrl: string, originalImageUrl?: string) => void;
   onBack: () => void;
   clientTemplate?: 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card';
 }
@@ -71,7 +71,7 @@ export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate =
   };
 
   const handleFramingComplete = (croppedImageData: string) => {
-    onImageSelect(croppedImageData);
+    onImageSelect(croppedImageData, selectedImage || undefined);
   };
 
   const handleBackFromFraming = () => {
