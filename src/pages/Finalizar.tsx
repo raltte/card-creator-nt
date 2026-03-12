@@ -274,34 +274,71 @@ const Finalizar = () => {
 
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Informações da Vaga</h2>
+                <h2 className="text-xl font-semibold mb-4">Editar Informações</h2>
                 <div className="space-y-3">
-                  <div>
-                    <span className="font-medium">Código:</span> {solicitacao.codigo}
-                  </div>
-                  <div>
-                    <span className="font-medium">Cargo:</span> {solicitacao.cargo}
-                  </div>
-                  <div>
-                    <span className="font-medium">Tipo de Contrato:</span> {solicitacao.tipo_contrato}
-                  </div>
-                  <div>
-                    <span className="font-medium">Local:</span> {solicitacao.local}
-                  </div>
-                  {solicitacao.requisitos && (
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <span className="font-medium">Requisitos:</span>
-                      <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                        {solicitacao.requisitos}
-                      </p>
+                      <Label className="text-xs">Código</Label>
+                      <Input
+                        value={solicitacao.codigo}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, codigo: e.target.value });
+                          atualizarPreview({ ...solicitacao, codigo: e.target.value });
+                        }}
+                      />
                     </div>
-                  )}
+                    <div>
+                      <Label className="text-xs">Tipo de Contrato</Label>
+                      <Input
+                        value={solicitacao.tipo_contrato}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, tipo_contrato: e.target.value });
+                          atualizarPreview({ ...solicitacao, tipo_contrato: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Cargo</Label>
+                    <Input
+                      value={solicitacao.cargo}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, cargo: e.target.value });
+                        atualizarPreview({ ...solicitacao, cargo: e.target.value });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Local</Label>
+                    <Input
+                      value={solicitacao.local || ''}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, local: e.target.value });
+                        atualizarPreview({ ...solicitacao, local: e.target.value });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Requisitos</Label>
+                    <Textarea
+                      value={solicitacao.requisitos || ''}
+                      rows={4}
+                      onChange={(e) => {
+                        setSolicitacao({ ...solicitacao, requisitos: e.target.value });
+                        atualizarPreview({ ...solicitacao, requisitos: e.target.value });
+                      }}
+                    />
+                  </div>
                   {solicitacao.atividades && (
                     <div>
-                      <span className="font-medium">Atividades:</span>
-                      <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                        {solicitacao.atividades}
-                      </p>
+                      <Label className="text-xs">Atividades</Label>
+                      <Textarea
+                        value={solicitacao.atividades || ''}
+                        rows={3}
+                        onChange={(e) => {
+                          setSolicitacao({ ...solicitacao, atividades: e.target.value });
+                        }}
+                      />
                     </div>
                   )}
                 </div>
