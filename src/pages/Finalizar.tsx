@@ -341,7 +341,7 @@ const Finalizar = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => etapa === 'preview' ? setEtapa('selecaoImagem') : navigate('/')}
+            onClick={() => etapa === 'enquadramento' ? setEtapa('preview') : etapa === 'preview' ? setEtapa('selecaoImagem') : navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
