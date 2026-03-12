@@ -71,7 +71,7 @@ export const ImageSelector = ({ jobData, onImageSelect, onBack, clientTemplate =
   };
 
   const handleFramingComplete = (croppedImageData: string) => {
-    onImageSelect(croppedImageData);
+    onImageSelect(croppedImageData, selectedImage || undefined);
   };
 
   const handleBackFromFraming = () => {
