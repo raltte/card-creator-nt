@@ -50,7 +50,7 @@ export const HistoricoCartazes = () => {
     try {
       const { data, error } = await supabase
         .from("solicitacoes_cartaz")
-        .select("id, cargo, codigo, local, modelo_cartaz, tipo_contrato, status, created_at, updated_at, imagem_url")
+        .select("id, cargo, codigo, local, modelo_cartaz, tipo_contrato, status, created_at, updated_at, imagem_url, imagem_base_url")
         .order("created_at", { ascending: false })
         .limit(10);
 
