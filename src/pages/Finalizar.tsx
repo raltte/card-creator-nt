@@ -71,6 +71,12 @@ const Finalizar = () => {
       }
 
       setSolicitacao(data);
+      
+      // Se já tem imagem, pular direto para o preview
+      if (data.imagem_url) {
+        handleImagemSelecionada(data.imagem_url, data);
+      }
+      
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar solicitação:', error);
@@ -148,25 +154,25 @@ const Finalizar = () => {
     }
   };
 
-  const handleImagemSelecionada = (imagemUrl: string) => {
-    if (!solicitacao) return;
+  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
+    const sol = solicitacaoOverride || solicitacao;
+    if (!sol) return;
 
-    const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
+    const isCompilado = sol.modelo_cartaz.includes('compilado');
 
     if (isCompilado) {
-      // Dados do compilado
-      const localParts = (solicitacao.local || '').split(' - ');
+      const localParts = (sol.local || '').split(' - ');
       const dados: CompiladoData = {
         image: imagemUrl,
         cidade: localParts[0] || '',
         estado: localParts[1] || '',
-        vagas: [{ codigo: solicitacao.codigo, cargo: solicitacao.cargo }],
-        requisitos: solicitacao.requisitos || solicitacao.atividades || '',
-        isPcd: solicitacao.is_pcd || false,
-        clientTemplate: solicitacao.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
+        vagas: [{ codigo: sol.codigo, cargo: sol.cargo }],
+        requisitos: sol.requisitos || sol.atividades || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: sol.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
         contato: {
-          tipo: solicitacao.contato_tipo || 'site',
-          valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz.includes('marisa') ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || (sol.modelo_cartaz.includes('marisa') ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
@@ -174,21 +180,20 @@ const Finalizar = () => {
       };
       setCompiladoData(dados);
     } else {
-      // Dados do cartaz tradicional
-      const localParts = (solicitacao.local || '').split(' - ');
+      const localParts = (sol.local || '').split(' - ');
       const dados: CartazData = {
         image: imagemUrl,
-        cargo: solicitacao.cargo,
+        cargo: sol.cargo,
         cidade: localParts[0] || '',
         estado: localParts[1] || '',
-        codigo: solicitacao.codigo,
-        tipoContrato: solicitacao.tipo_contrato,
-        requisitos: solicitacao.requisitos || '',
-        isPcd: solicitacao.is_pcd || false,
-        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(solicitacao.modelo_cartaz) ? solicitacao.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
+        codigo: sol.codigo,
+        tipoContrato: sol.tipo_contrato,
+        requisitos: sol.requisitos || '',
+        isPcd: sol.is_pcd || false,
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
         contato: {
-          tipo: solicitacao.contato_tipo || 'site',
-          valor: solicitacao.contato_valor || (solicitacao.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
+          tipo: sol.contato_tipo || 'site',
+          valor: sol.contato_valor || (sol.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";

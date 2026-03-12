@@ -132,7 +132,22 @@ export const HistoricoCartazes = () => {
                   onClick={() => handleEditar(s.id)}
                   className="w-full text-left rounded-lg border bg-card p-3 hover:bg-accent/50 transition-colors group cursor-pointer"
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-3">
+                    {/* Thumbnail */}
+                    {s.imagem_url ? (
+                      <div className="shrink-0 w-14 h-14 rounded-md overflow-hidden border bg-muted">
+                        <img
+                          src={s.imagem_url}
+                          alt={s.cargo}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="shrink-0 w-14 h-14 rounded-md border bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                        Sem img
+                      </div>
+                    )}
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm truncate">{s.cargo}</span>
