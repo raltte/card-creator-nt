@@ -369,6 +369,21 @@ const Finalizar = () => {
           />
         )}
 
+        {etapa === 'enquadramento' && imagemBaseUrl && (
+          <div className="max-w-2xl mx-auto">
+            <ImageFraming
+              imageUrl={imagemBaseUrl}
+              onFramingComplete={(croppedImageData) => {
+                setImagemBaseUrl(croppedImageData);
+                handleImagemSelecionada(croppedImageData);
+                setEtapa('preview');
+              }}
+              onBack={() => setEtapa('preview')}
+              modelType={isMarisa ? 'tradicional-marisa' : isCompilado ? 'compilado' : 'tradicional-nt'}
+            />
+          </div>
+        )}
+
         {etapa === 'preview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
