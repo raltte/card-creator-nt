@@ -124,11 +124,15 @@ const Finalizar = () => {
 
       setSolicitacao(data);
       
-      // Se já tem imagem final, reaproveita a foto base e pula direto para o preview
-      if (data.imagem_url) {
-        const imagemBaseReaproveitada = await extrairImagemBaseDoCartazFinal(data.imagem_url, data.modelo_cartaz);
-        setImagemBaseUrl(imagemBaseReaproveitada);
-        handleImagemSelecionada(imagemBaseReaproveitada, data);
+      // Usar imagem base salva, ou fallback para seleção de imagem
+      if (data.imagem_base_url) {
+        setImagemBaseUrl(data.imagem_base_url);
+        handleImagemSelecionada(data.imagem_base_url, data);
+      } else if (data.imagem_url) {
+        // Fallback antigo: sem imagem base salva, ir para seleção
+        // Não tenta extrair - deixa o usuário escolher nova imagem ou ajustar
+        setLoading(false);
+        return;
       }
       
       setLoading(false);
