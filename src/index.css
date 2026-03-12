@@ -144,6 +144,12 @@
     max-height: calc(100vh - 120px);
   }
 
+  .cartaz-container-large canvas {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+  }
+
   .cartaz-left {
     @apply absolute left-0 top-0 w-1/2 h-full overflow-hidden;
   }
