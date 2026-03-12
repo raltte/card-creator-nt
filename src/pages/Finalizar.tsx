@@ -127,6 +127,7 @@ const Finalizar = () => {
       // Se já tem imagem final, reaproveita a foto base e pula direto para o preview
       if (data.imagem_url) {
         const imagemBaseReaproveitada = await extrairImagemBaseDoCartazFinal(data.imagem_url, data.modelo_cartaz);
+        setImagemBaseUrl(imagemBaseReaproveitada);
         handleImagemSelecionada(imagemBaseReaproveitada, data);
       }
       
