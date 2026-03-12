@@ -16,7 +16,7 @@ interface ImageSelectorProps {
     requisitos: string[];
     sugestaoImagem?: string;
   };
-  onImageSelect: (imageUrl: string) => void;
+  onImageSelect: (imageUrl: string, originalImageUrl?: string) => void;
   onBack: () => void;
   clientTemplate?: 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card';
 }
