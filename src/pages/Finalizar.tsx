@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Send, Upload, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Upload, Save, Crop } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageSelector } from "@/components/ImageSelector";
+import { ImageFraming } from "@/components/ImageFraming";
 import { CartazPreview } from "@/components/CartazPreview";
 import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
 import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
@@ -29,12 +30,13 @@ const Finalizar = () => {
   
   const [loading, setLoading] = useState(true);
   const [solicitacao, setSolicitacao] = useState<any>(null);
-  const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview'>('selecaoImagem');
+  const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview' | 'enquadramento'>('selecaoImagem');
   const [cartazData, setCartazData] = useState<CartazData | null>(null);
   const [compiladoData, setCompiladoData] = useState<CompiladoData | null>(null);
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
+  const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -125,6 +127,7 @@ const Finalizar = () => {
       // Se já tem imagem final, reaproveita a foto base e pula direto para o preview
       if (data.imagem_url) {
         const imagemBaseReaproveitada = await extrairImagemBaseDoCartazFinal(data.imagem_url, data.modelo_cartaz);
+        setImagemBaseUrl(imagemBaseReaproveitada);
         handleImagemSelecionada(imagemBaseReaproveitada, data);
       }
       
@@ -338,7 +341,7 @@ const Finalizar = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => etapa === 'preview' ? setEtapa('selecaoImagem') : navigate('/')}
+            onClick={() => etapa === 'enquadramento' ? setEtapa('preview') : etapa === 'preview' ? setEtapa('selecaoImagem') : navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -364,6 +367,21 @@ const Finalizar = () => {
             onBack={() => navigate('/')}
             clientTemplate={isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
+        )}
+
+        {etapa === 'enquadramento' && imagemBaseUrl && (
+          <div className="max-w-2xl mx-auto">
+            <ImageFraming
+              imageUrl={imagemBaseUrl}
+              onFramingComplete={(croppedImageData) => {
+                setImagemBaseUrl(croppedImageData);
+                handleImagemSelecionada(croppedImageData);
+                setEtapa('preview');
+              }}
+              onBack={() => setEtapa('preview')}
+              modelType={isMarisa ? 'tradicional-marisa' : isCompilado ? 'compilado' : 'tradicional-nt'}
+            />
+          </div>
         )}
 
         {etapa === 'preview' && (
@@ -478,6 +496,20 @@ const Finalizar = () => {
                     Salvar Alterações
                   </Button>
                   <div className="flex gap-3">
+                  <Button
+                    onClick={() => {
+                      if (imagemBaseUrl) {
+                        setEtapa('enquadramento');
+                      } else {
+                        setEtapa('selecaoImagem');
+                      }
+                    }}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Crop className="mr-2 h-4 w-4" />
+                    Ajustar Imagem
+                  </Button>
                   <Button
                     onClick={() => setEtapa('selecaoImagem')}
                     variant="outline"
