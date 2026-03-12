@@ -459,6 +459,7 @@ const Finalizar = () => {
                       )}
                     </Button>
                   )}
+                  </div>
                 </div>
 
                 <MondayItemSelector
