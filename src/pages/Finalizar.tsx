@@ -320,25 +320,29 @@ const Finalizar = () => {
             <Card>
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Preview do Cartaz</h2>
-                {isCompilado ? (
-                  isMarisa && compiladoData ? (
-                    <CompiladoPreviewMarisa data={compiladoData} />
-                  ) : compiladoData ? (
-                    <CompiladoPreview data={compiladoData} />
-                  ) : null
-                ) : (
-                  isVagaInterna && cartazData ? (
-                    <CartazPreviewVagaInterna data={cartazData} />
-                  ) : isDMCard && cartazData ? (
-                    <CartazPreviewDMCard data={cartazData} />
-                  ) : isWeg && cartazData ? (
-                    <CartazPreviewWeg data={cartazData} />
-                  ) : isMarisa && cartazData ? (
-                    <CartazPreviewMarisa data={cartazData} />
-                  ) : cartazData ? (
-                    <CartazPreview data={cartazData} />
-                  ) : null
-                )}
+                <div className="w-full overflow-hidden" style={{ maxWidth: '100%' }}>
+                  <div className="cartaz-container-large">
+                    {isCompilado ? (
+                      isMarisa && compiladoData ? (
+                        <CompiladoPreviewMarisa data={compiladoData} />
+                      ) : compiladoData ? (
+                        <CompiladoPreview data={compiladoData} />
+                      ) : null
+                    ) : (
+                      isVagaInterna && cartazData ? (
+                        <CartazPreviewVagaInterna data={cartazData} />
+                      ) : isDMCard && cartazData ? (
+                        <CartazPreviewDMCard data={cartazData} />
+                      ) : isWeg && cartazData ? (
+                        <CartazPreviewWeg data={cartazData} />
+                      ) : isMarisa && cartazData ? (
+                        <CartazPreviewMarisa data={cartazData} />
+                      ) : cartazData ? (
+                        <CartazPreview data={cartazData} />
+                      ) : null
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
