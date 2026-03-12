@@ -163,14 +163,21 @@ const Finalizar = () => {
     }
   };
 
-  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverride?: any) => {
-    const sol = solicitacaoOverride || solicitacao;
+  const handleImagemSelecionada = (imagemUrl: string, solicitacaoOverrideOrOriginal?: any, originalUrl?: string) => {
+    // If called from ImageSelector: (framedUrl, undefined, originalUrl)
+    // If called from enquadramento: (framedUrl) — originalUrl already set
+    // If called from carregarSolicitacao: (framedUrl, solicitacaoData)
+    const sol = (typeof solicitacaoOverrideOrOriginal === 'object' && solicitacaoOverrideOrOriginal !== null && solicitacaoOverrideOrOriginal.modelo_cartaz) 
+      ? solicitacaoOverrideOrOriginal 
+      : solicitacao;
     if (!sol) return;
     
-    // Salvar imagem base para reutilização futura
-    if (!solicitacaoOverride) {
-      setImagemBaseUrl(imagemUrl);
+    // Save the original unframed image if provided
+    if (originalUrl) {
+      setImagemOriginalUrl(originalUrl);
     }
+    // Save the framed image for re-framing
+    setImagemBaseUrl(imagemUrl);
 
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
