@@ -47,14 +47,6 @@ export const HistoricoCartazes = () => {
   const carregarHistorico = async () => {
     setLoading(true);
     try {
-      // Ensure auth session is available before querying
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setSolicitacoes([]);
-        setLoading(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from("solicitacoes_cartaz")
         .select("id, cargo, codigo, local, modelo_cartaz, tipo_contrato, status, created_at, updated_at, imagem_url")
@@ -71,10 +63,8 @@ export const HistoricoCartazes = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      carregarHistorico();
-    }
-  }, [user]);
+    carregarHistorico();
+  }, []);
 
   const handleEditar = (id: string) => {
     navigate(`/finalizar/${id}`);
