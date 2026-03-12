@@ -482,6 +482,20 @@ const Finalizar = () => {
                   </Button>
                   <div className="flex gap-3">
                   <Button
+                    onClick={() => {
+                      if (imagemBaseUrl) {
+                        setEtapa('enquadramento');
+                      } else {
+                        setEtapa('selecaoImagem');
+                      }
+                    }}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Crop className="mr-2 h-4 w-4" />
+                    Ajustar Imagem
+                  </Button>
+                  <Button
                     onClick={() => setEtapa('selecaoImagem')}
                     variant="outline"
                     className="flex-1"
