@@ -241,7 +241,7 @@ const Finalizar = () => {
         body: {
           solicitacaoId: id,
           imagemUrl: imagemUrl,
-          imagemBaseUrl: imagemBaseUrl || null,
+          imagemBaseUrl: imagemOriginalUrl || imagemBaseUrl || null,
           mondayItemId: mondayItemId || solicitacao?.monday_item_id,
           createInGroupId: createInGroupId
         }
