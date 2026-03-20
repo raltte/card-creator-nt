@@ -9,9 +9,15 @@ interface AssinaturaPreviewProps {
   data: AssinaturaData;
 }
 
-const GRUPO_NVT_LOGO_URL = "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/grupo-nvt-logo.png";
+const LOGO_URLS: Record<string, string> = {
+  "Grupo Novo Tempo": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-grupo-nvt.png",
+  "Novo Tempo RH": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-novo-tempo-rh.png",
+  "Tramasso": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-tramasso.png",
+};
 
 const generateSignatureHtml = (data: AssinaturaData): string => {
+  const logoUrl = LOGO_URLS[data.empresa] || LOGO_URLS["Grupo Novo Tempo"];
+
   const fotoHtml = data.fotoUrl
     ? `<img src="${data.fotoUrl}" width="130" height="130" style="border-radius:12px;object-fit:cover;display:block;" alt="Foto" />`
     : `<div style="width:130px;height:130px;border-radius:12px;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:40px;color:#9ca3af;">👤</div>`;
@@ -27,33 +33,33 @@ const generateSignatureHtml = (data: AssinaturaData): string => {
           <td style="vertical-align:top;padding-right:20px;border-right:2px solid #e5e7eb;">
             <table cellpadding="0" cellspacing="0" border="0">
               <tr><td style="font-size:18px;font-weight:700;padding-bottom:4px;padding-right:20px;white-space:nowrap;">${data.nome || "Seu Nome"}</td></tr>
-              <tr><td style="font-size:14px;color:#555;padding-bottom:2px;padding-right:20px;">${data.cargo || "Cargo"}</td></tr>
-              <tr><td style="font-size:14px;color:#555;padding-right:20px;">${data.empresa}</td></tr>
+              <tr><td style="font-size:14px;color:#555;padding-bottom:2px;padding-right:20px;white-space:nowrap;">${data.cargo || "Cargo"}</td></tr>
+              <tr><td style="font-size:14px;color:#555;padding-right:20px;white-space:nowrap;">${data.empresa}</td></tr>
             </table>
           </td>
           <td style="vertical-align:top;padding-left:20px;">
             <table cellpadding="0" cellspacing="0" border="0">
               ${data.telefone ? `<tr>
                 <td style="padding-bottom:8px;vertical-align:middle;padding-right:10px;">
-                  <img src="https://cdn-icons-png.flaticon.com/16/455/455705.png" width="16" height="16" alt="phone" style="display:block;" />
+                  <img src="https://cdn-icons-png.flaticon.com/16/455/455705.png" width="16" height="16" alt="phone" style="display:block;filter:brightness(0);" />
                 </td>
-                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;">
-                  <a href="tel:${data.telefone.replace(/\D/g,'')}" style="color:#1a1a1a;text-decoration:none;">${data.telefone}</a>
+                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;white-space:nowrap;">
+                  <a href="tel:${data.telefone.replace(/\\D/g,'')}" style="color:#1a1a1a;text-decoration:none;">${data.telefone}</a>
                 </td>
               </tr>` : ''}
               ${data.site ? `<tr>
                 <td style="padding-bottom:8px;vertical-align:middle;padding-right:10px;">
-                  <img src="https://cdn-icons-png.flaticon.com/16/1006/1006771.png" width="16" height="16" alt="web" style="display:block;" />
+                  <img src="https://cdn-icons-png.flaticon.com/16/1006/1006771.png" width="16" height="16" alt="web" style="display:block;filter:brightness(0);" />
                 </td>
-                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;">
+                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;white-space:nowrap;">
                   <a href="https://${data.site}" style="color:#1a1a1a;text-decoration:none;">${data.site}</a>
                 </td>
               </tr>` : ''}
               ${data.local ? `<tr>
                 <td style="padding-bottom:8px;vertical-align:middle;padding-right:10px;">
-                  <img src="https://cdn-icons-png.flaticon.com/16/684/684908.png" width="16" height="16" alt="loc" style="display:block;" />
+                  <img src="https://cdn-icons-png.flaticon.com/16/684/684908.png" width="16" height="16" alt="loc" style="display:block;filter:brightness(0);" />
                 </td>
-                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;">${data.local}</td>
+                <td style="font-size:14px;padding-bottom:8px;vertical-align:middle;white-space:nowrap;">${data.local}</td>
               </tr>` : ''}
             </table>
           </td>
@@ -63,7 +69,7 @@ const generateSignatureHtml = (data: AssinaturaData): string => {
   </tr>
   <tr>
     <td style="border-top:2px solid #e5e7eb;padding-top:12px;">
-      <img src="${GRUPO_NVT_LOGO_URL}" width="140" height="auto" alt="Grupo NVT" style="display:block;" />
+      <img src="${logoUrl}" width="140" height="auto" alt="${data.empresa}" style="display:block;" />
     </td>
   </tr>
 </table>`;
