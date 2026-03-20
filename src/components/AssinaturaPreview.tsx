@@ -63,7 +63,7 @@ const generateSignatureHtml = (data: AssinaturaData): string => {
   </tr>
   <tr>
     <td style="border-top:2px solid #e5e7eb;padding-top:12px;">
-      <span style="font-family:'Trebuchet MS',Arial,sans-serif;font-size:22px;font-weight:700;color:#555;letter-spacing:-0.5px;">grupo </span><span style="font-family:'Trebuchet MS',Arial,sans-serif;font-size:22px;font-weight:900;color:#2dd4a8;letter-spacing:-0.5px;">NVT</span>
+      <img src="${GRUPO_NVT_LOGO_URL}" width="140" height="auto" alt="Grupo NVT" style="display:block;" />
     </td>
   </tr>
 </table>`;
