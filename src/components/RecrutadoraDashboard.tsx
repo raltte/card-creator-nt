@@ -468,8 +468,8 @@ export const RecrutadoraDashboard = () => {
               )}
             </div>
 
-            {/* Histórico */}
-            <HistoricoCartazes />
+            {/* Histórico - apenas admins */}
+            {isAdmin && <HistoricoCartazes />}
           </div>
         </div>
 
