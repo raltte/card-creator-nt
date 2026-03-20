@@ -66,6 +66,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
             <SelectContent>
               <SelectItem value="Grupo Novo Tempo">Grupo Novo Tempo</SelectItem>
               <SelectItem value="Novo Tempo RH">Novo Tempo RH</SelectItem>
+              <SelectItem value="Tramasso">Tramasso</SelectItem>
             </SelectContent>
           </Select>
         </div>

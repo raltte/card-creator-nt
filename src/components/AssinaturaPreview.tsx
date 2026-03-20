@@ -9,7 +9,11 @@ interface AssinaturaPreviewProps {
   data: AssinaturaData;
 }
 
-const GRUPO_NVT_LOGO_URL = "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/grupo-nvt-logo.png";
+const LOGO_URLS: Record<string, string> = {
+  "Grupo Novo Tempo": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-grupo-nvt.png",
+  "Novo Tempo RH": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-novo-tempo-rh.png",
+  "Tramasso": "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/logo-tramasso.png",
+};
 
 const generateSignatureHtml = (data: AssinaturaData): string => {
   const fotoHtml = data.fotoUrl
