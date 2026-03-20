@@ -13,6 +13,7 @@ import Finalizar from "./pages/Finalizar";
 import AtualizarLink from "./pages/AtualizarLink";
 import Auth from "./pages/Auth";
 import SSOLogin from "./pages/SSOLogin";
+import AssinaturaEmail from "./pages/AssinaturaEmail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,6 +77,14 @@ const AppRoutes = () => (
         element={
           <ProtectedRoute>
             <AtualizarLink />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/assinatura" 
+        element={
+          <ProtectedRoute>
+            <AssinaturaEmail />
           </ProtectedRoute>
         } 
       />
