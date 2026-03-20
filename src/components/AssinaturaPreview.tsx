@@ -19,8 +19,8 @@ const generateSignatureHtml = (data: AssinaturaData): string => {
   const logoUrl = LOGO_URLS[data.empresa] || LOGO_URLS["Grupo Novo Tempo"];
 
   const fotoHtml = data.fotoUrl
-    ? `<img src="${data.fotoUrl}" width="130" height="130" style="border-radius:12px;object-fit:cover;display:block;" alt="Foto" />`
-    : `<div style="width:130px;height:130px;border-radius:12px;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:40px;color:#9ca3af;">👤</div>`;
+    ? `<img src="${data.fotoUrl}" width="100" height="100" style="border-radius:10px;object-fit:cover;display:block;width:100px;height:100px;" alt="Foto" />`
+    : `<div style="width:100px;height:100px;border-radius:10px;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:32px;color:#9ca3af;">👤</div>`;
 
   return `<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;max-width:600px;">
   <tr>

@@ -13,6 +13,12 @@ export interface AssinaturaData {
   fotoUrl: string;
 }
 
+const SITE_MAP: Record<string, string> = {
+  "Grupo Novo Tempo": "gruponvt.com.br",
+  "Novo Tempo RH": "novotemporh.com.br",
+  "Tramasso": "tramassoidh.com.br",
+};
+
 interface AssinaturaFormProps {
   data: AssinaturaData;
   onChange: (data: AssinaturaData) => void;
@@ -23,12 +29,33 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
     onChange({ ...data, [field]: value });
   };
 
+  const handleEmpresaChange = (empresa: string) => {
+    onChange({ ...data, empresa, site: SITE_MAP[empresa] || data.site });
+  };
+
   const handleFotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = () => {
-      update("fotoUrl", reader.result as string);
+      const img = new Image();
+      img.onload = () => {
+        const size = 260;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d")!;
+
+        // Center-crop to square
+        const min = Math.min(img.width, img.height);
+        const sx = (img.width - min) / 2;
+        const sy = (img.height - min) / 2;
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+
+        update("fotoUrl", canvas.toDataURL("image/jpeg", 0.85));
+      };
+      img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
   };
@@ -59,7 +86,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
 
         <div className="space-y-2">
           <Label>Empresa</Label>
-          <Select value={data.empresa} onValueChange={(v) => update("empresa", v)}>
+          <Select value={data.empresa} onValueChange={handleEmpresaChange}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -105,7 +132,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
             <img
               src={data.fotoUrl}
               alt="Preview"
-              className="w-20 h-20 rounded-lg object-cover mt-2"
+              className="w-16 h-16 rounded-lg object-cover mt-2"
             />
           )}
         </div>
