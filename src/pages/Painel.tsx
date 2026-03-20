@@ -1,7 +1,7 @@
 import { RecrutadoraDashboard } from "@/components/RecrutadoraDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield, User } from "lucide-react";
+import { LogOut, Shield, User, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Painel = () => {
