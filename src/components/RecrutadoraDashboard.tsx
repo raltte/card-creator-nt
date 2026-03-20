@@ -60,7 +60,7 @@ export const RecrutadoraDashboard = () => {
     dados: any;
   } | null>(null);
 
-  const { isEditor } = useAuth();
+  const { isEditor, isAdmin } = useAuth();
 
   // Validação centralizada para formulário individual
   const validateIndividualForm = (dados: RecrutadoraData): boolean => {
@@ -468,8 +468,8 @@ export const RecrutadoraDashboard = () => {
               )}
             </div>
 
-            {/* Histórico */}
-            <HistoricoCartazes />
+            {/* Histórico - apenas admins */}
+            {isAdmin && <HistoricoCartazes />}
           </div>
         </div>
 
