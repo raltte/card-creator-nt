@@ -36,10 +36,16 @@ const Painel = () => {
               <p className="text-xs text-muted-foreground">{getRoleLabel()}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/assinatura')}>
+              <Mail className="w-4 h-4 mr-2" />
+              Assinatura de E-mail
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
