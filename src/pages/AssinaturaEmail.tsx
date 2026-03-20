@@ -12,7 +12,7 @@ const AssinaturaEmail = () => {
     cargo: "",
     empresa: "Grupo Novo Tempo",
     telefone: "",
-    site: "novotemporh.com.br",
+    site: "gruponvt.com.br",
     local: "",
     fotoUrl: "",
   });
