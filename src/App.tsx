@@ -80,6 +80,14 @@ const AppRoutes = () => (
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/assinatura" 
+        element={
+          <ProtectedRoute>
+            <AssinaturaEmail />
+          </ProtectedRoute>
+        } 
+      />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
