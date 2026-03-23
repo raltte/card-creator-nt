@@ -15,15 +15,6 @@ const AssinaturaEmail = () => {
   return (
     <div className="min-h-screen bg-muted/30 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => navigate("/painel")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar ao painel
-        </Button>
-
         <h1 className="text-2xl font-bold mb-6">Gerador de Assinatura de E-mail</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
