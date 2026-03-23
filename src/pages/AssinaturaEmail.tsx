@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { AssinaturaForm, AssinaturaData } from "@/components/AssinaturaForm";
 import { AssinaturaPreview } from "@/components/AssinaturaPreview";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
 const AssinaturaEmail = () => {
-  const navigate = useNavigate();
   const [data, setData] = useState<AssinaturaData>({
     nome: "",
     cargo: "",
