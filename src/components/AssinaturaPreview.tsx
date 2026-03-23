@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Globe, MapPin, Phone } from "lucide-react";
+import { Copy, Check, Globe, MapPin, Phone, X, Settings, MousePointerClick, ClipboardPaste, CheckCircle2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AssinaturaData } from "./AssinaturaForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AssinaturaPreviewProps {
   data: AssinaturaData;
