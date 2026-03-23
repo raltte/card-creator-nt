@@ -180,7 +180,7 @@ export const AssinaturaPreview = ({ data }: AssinaturaPreviewProps) => {
                                 )}
                                 {data.site && (
                                   <tr>
-                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><Globe size={16} strokeWidth={2} style={{ display: "block", color: "#000000" }} /></td>
+                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><img src={ICON_URLS.web} width={16} height={16} alt="web" style={{ display: "block", width: "16px", height: "16px" }} /></td>
                                     <td style={{ fontSize: "14px", paddingBottom: "8px", verticalAlign: "middle", whiteSpace: "nowrap" }}><a href={`https://${data.site}`} style={{ color: "#1a1a1a", textDecoration: "none" }}>{data.site}</a></td>
                                   </tr>
                                 )}
