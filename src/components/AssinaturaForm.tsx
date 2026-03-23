@@ -69,7 +69,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
         <div className="space-y-2">
           <Label>Nome completo</Label>
           <Input
-            placeholder="Ex: Vitor Alexandre"
+            placeholder="Digite seu nome completo"
             value={data.nome}
             onChange={(e) => update("nome", e.target.value)}
           />

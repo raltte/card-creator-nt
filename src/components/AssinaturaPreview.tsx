@@ -97,7 +97,7 @@ const steps = [
   {
     icon: <Settings className="h-8 w-8 text-primary" />,
     title: "2. Abra as Configurações do Gmail",
-    desc: 'No Gmail, clique na engrenagem ⚙️ no canto superior direito e depois em "Ver todas as configurações".',
+    desc: 'No Gmail, clique na engrenagem no canto superior direito e depois em "Ver todas as configurações".',
   },
   {
     icon: <MousePointerClick className="h-8 w-8 text-primary" />,
@@ -112,7 +112,7 @@ const steps = [
   {
     icon: <CheckCircle2 className="h-8 w-8 text-green-600" />,
     title: "5. Salve as alterações",
-    desc: 'Role até o final da página e clique em "Salvar alterações". Pronto! 🎉',
+    desc: 'Role até o final da página e clique em "Salvar alterações".',
   },
 ];
 
