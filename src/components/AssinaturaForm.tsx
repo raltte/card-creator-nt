@@ -29,6 +29,18 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
     onChange({ ...data, [field]: value });
   };
 
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10)
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    update("telefone", formatPhone(e.target.value));
+
   const handleEmpresaChange = (empresa: string) => {
     onChange({ ...data, empresa, site: SITE_MAP[empresa] || data.site });
   };
