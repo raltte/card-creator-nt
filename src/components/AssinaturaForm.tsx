@@ -40,6 +40,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     update("telefone", formatPhone(e.target.value));
+  };
 
   const handleEmpresaChange = (empresa: string) => {
     onChange({ ...data, empresa, site: SITE_MAP[empresa] || data.site });
