@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Globe, MapPin, Phone, X, Settings, MousePointerClick, ClipboardPaste, CheckCircle2 } from "lucide-react";
+import { Copy, Check, X, Settings, MousePointerClick, ClipboardPaste, CheckCircle2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AssinaturaData } from "./AssinaturaForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,15 +17,9 @@ const LOGO_URLS: Record<string, string> = {
 };
 
 const ICON_URLS = {
-  phone: `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.89.33 1.76.63 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.15a2 2 0 0 1 2.11-.45c.84.3 1.71.51 2.6.63A2 2 0 0 1 22 16.92z"/></svg>`
-  )}`,
-  web: `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>`
-  )}`,
-  location: `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`
-  )}`,
+  phone: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-phone.png",
+  web: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-globe.png",
+  location: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-location.png",
 };
 
 const generateSignatureHtml = (data: AssinaturaData): string => {
@@ -180,19 +174,19 @@ export const AssinaturaPreview = ({ data }: AssinaturaPreviewProps) => {
                               <tbody>
                                 {data.telefone && (
                                   <tr>
-                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><Phone size={16} strokeWidth={2} style={{ display: "block", color: "#000000" }} /></td>
+                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><img src={ICON_URLS.phone} width={16} height={16} alt="phone" style={{ display: "block", width: "16px", height: "16px" }} /></td>
                                     <td style={{ fontSize: "14px", paddingBottom: "8px", verticalAlign: "middle", whiteSpace: "nowrap" }}><a href={`tel:${data.telefone.replace(/\D/g, "")}`} style={{ color: "#1a1a1a", textDecoration: "none" }}>{data.telefone}</a></td>
                                   </tr>
                                 )}
                                 {data.site && (
                                   <tr>
-                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><Globe size={16} strokeWidth={2} style={{ display: "block", color: "#000000" }} /></td>
+                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><img src={ICON_URLS.web} width={16} height={16} alt="web" style={{ display: "block", width: "16px", height: "16px" }} /></td>
                                     <td style={{ fontSize: "14px", paddingBottom: "8px", verticalAlign: "middle", whiteSpace: "nowrap" }}><a href={`https://${data.site}`} style={{ color: "#1a1a1a", textDecoration: "none" }}>{data.site}</a></td>
                                   </tr>
                                 )}
                                 {data.local && (
                                   <tr>
-                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><MapPin size={16} strokeWidth={2} style={{ display: "block", color: "#000000" }} /></td>
+                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><img src={ICON_URLS.location} width={16} height={16} alt="loc" style={{ display: "block", width: "16px", height: "16px" }} /></td>
                                     <td style={{ fontSize: "14px", paddingBottom: "8px", verticalAlign: "middle", whiteSpace: "nowrap" }}>{data.local}</td>
                                   </tr>
                                 )}
