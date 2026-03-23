@@ -186,7 +186,7 @@ export const AssinaturaPreview = ({ data }: AssinaturaPreviewProps) => {
                                 )}
                                 {data.local && (
                                   <tr>
-                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><MapPin size={16} strokeWidth={2} style={{ display: "block", color: "#000000" }} /></td>
+                                    <td style={{ paddingBottom: "8px", verticalAlign: "middle", paddingRight: "10px" }}><img src={ICON_URLS.location} width={16} height={16} alt="loc" style={{ display: "block", width: "16px", height: "16px" }} /></td>
                                     <td style={{ fontSize: "14px", paddingBottom: "8px", verticalAlign: "middle", whiteSpace: "nowrap" }}>{data.local}</td>
                                   </tr>
                                 )}
