@@ -1,7 +1,7 @@
 import { RecrutadoraDashboard } from "@/components/RecrutadoraDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield, User, Mail } from "lucide-react";
+import { LogOut, Shield, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Painel = () => {
@@ -37,10 +37,6 @@ const Painel = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/assinatura')}>
-              <Mail className="w-4 h-4 mr-2" />
-              Assinatura de E-mail
-            </Button>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
               Sair
