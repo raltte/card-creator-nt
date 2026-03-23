@@ -113,9 +113,9 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
         <div className="space-y-2">
           <Label>Telefone</Label>
           <Input
-            placeholder="Ex: (12) 3008-0528"
+            placeholder="(12) 3008-0528"
             value={data.telefone}
-            onChange={(e) => update("telefone", e.target.value)}
+            onChange={handlePhoneChange}
           />
         </div>
 
