@@ -58,15 +58,19 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
         const canvas = document.createElement("canvas");
         canvas.width = size;
         canvas.height = size;
-        const ctx = canvas.getContext("2d")!;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-        // Center-crop to square
+        // Square crop biased toward top (where faces usually are)
         const min = Math.min(img.width, img.height);
         const sx = (img.width - min) / 2;
-        const sy = (img.height - min) / 2;
+        const sy = Math.min((img.height - min) * 0.25, img.height - min);
         ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
 
-        update("fotoUrl", canvas.toDataURL("image/jpeg", 0.85));
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        if (dataUrl && dataUrl !== "data:,") {
+          update("fotoUrl", dataUrl);
+        }
       };
       img.src = reader.result as string;
     };
