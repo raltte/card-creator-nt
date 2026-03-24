@@ -40,7 +40,7 @@ const generateSignatureHtml = (data: AssinaturaData): string => {
           <td style="vertical-align:top;padding-right:20px;border-right:2px solid #e5e7eb;">
             <table cellpadding="0" cellspacing="0" border="0">
               <tr><td style="font-size:18px;font-weight:700;padding-bottom:4px;padding-right:20px;white-space:nowrap;">${data.nome || "Seu Nome"}</td></tr>
-              <tr><td style="font-size:14px;color:#555;padding-bottom:2px;padding-right:20px;white-space:nowrap;">${data.cargo || "Cargo"}</td></tr>
+               <tr><td style="font-size:14px;color:#555;padding-bottom:2px;padding-right:20px;white-space:nowrap;">${data.cargo || "Setor"}</td></tr>
               <tr><td style="font-size:14px;color:#555;padding-right:20px;white-space:nowrap;">${data.empresa}</td></tr>
             </table>
           </td>

@@ -93,7 +93,7 @@ export const AssinaturaForm = ({ data, onChange }: AssinaturaFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label>Cargo / Setor</Label>
+           <Label>Setor</Label>
           <Input
             placeholder="Ex: Marketing"
             value={data.cargo}
