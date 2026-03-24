@@ -6,28 +6,58 @@
     <title>Cartazes NVT</title>
     <meta name="description" content="Geração de cartazes">
     <meta name="author" content="Lovable" />
-
-    
-    
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/yH0X7Fo0ENSiBY95oFeqMOPMOMn1/social-images/social-1759175581604-novo-tempo-rh-contratar.png">
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/yH0X7Fo0ENSiBY95oFeqMOPMOMn1/social-images/social-1759175581604-novo-tempo-rh-contratar.png">
-    
-  
-  
-  
-  <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/yH0X7Fo0ENSiBY95oFeqMOPMOMn1/uploads/1759175540042-Novo-TempoRH-1x1.png">
-  <meta property="og:title" content="Cartazes NVT">
-  <meta name="twitter:title" content="Cartazes NVT">
-  <meta property="og:description" content="Geração de cartazes">
-  <meta name="twitter:description" content="Geração de cartazes">
-</head>
-
+    <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/yH0X7Fo0ENSiBY95oFeqMOPMOMn1/uploads/1759175540042-Novo-TempoRH-1x1.png">
+    <meta property="og:title" content="Cartazes NVT">
+    <meta name="twitter:title" content="Cartazes NVT">
+    <meta property="og:description" content="Geração de cartazes">
+    <meta name="twitter:description" content="Geração de cartazes">
+    <style>
+      #app-loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        color: #888;
+      }
+      #app-loader .spinner {
+        width: 32px; height: 32px;
+        border: 3px solid #e5e7eb;
+        border-top-color: #20CE90;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-right: 12px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="app-loader">
+        <div class="spinner"></div>
+        <span>Carregando...</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // If JS fails to load (stale cache), auto-reload once
+      window.addEventListener('error', function(e) {
+        if (e.filename && (e.filename.includes('/assets/') || e.message.includes('Failed to fetch dynamically imported module'))) {
+          if (!sessionStorage.getItem('_reload')) {
+            sessionStorage.setItem('_reload', '1');
+            window.location.reload();
+          }
+        }
+      });
+      // Clear reload flag on successful load
+      window.addEventListener('load', function() {
+        sessionStorage.removeItem('_reload');
+      });
+    </script>
   </body>
 </html>
