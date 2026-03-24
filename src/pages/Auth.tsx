@@ -276,7 +276,7 @@ const Auth = () => {
           </form>
 
           <p className="text-xs text-muted-foreground text-center mt-4">
-            Apenas emails corporativos (@novotempo-rh.com.br, @tramassoidh.com.br)
+            Apenas emails corporativos (@novotemporh.com.br, @novotempo-rh.com.br, @tramassoidh.com.br)
           </p>
 
           <div className="mt-4 text-center">
