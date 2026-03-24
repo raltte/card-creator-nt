@@ -17,9 +17,9 @@ const LOGO_URLS: Record<string, string> = {
 };
 
 const ICON_URLS = {
-  phone: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-phone-v5.png?v=5",
-  web: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-globe-v5.png?v=5",
-  location: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-location-v5.png?v=5",
+  phone: "/email-signature-icons/icon-phone-original.png",
+  web: "/email-signature-icons/icon-web-original.png",
+  location: "/email-signature-icons/icon-location-original.png",
 };
 
 const generateSignatureHtml = (data: AssinaturaData): string => {
