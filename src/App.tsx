@@ -84,13 +84,10 @@ const AppRoutes = () => (
           </ProtectedRoute>
         } 
       />
+      {/* /assinatura agora redireciona para /painel?tab=assinatura */}
       <Route 
         path="/assinatura" 
-        element={
-          <ProtectedRoute>
-            <AssinaturaEmail />
-          </ProtectedRoute>
-        } 
+        element={<Navigate to="/painel?tab=assinatura" replace />} 
       />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
