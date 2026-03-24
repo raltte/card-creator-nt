@@ -18,7 +18,7 @@ const LOGO_URLS: Record<string, string> = {
 
 const ICON_URLS = {
   phone: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-phone-user.svg?v=1",
-  web: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-website-user.svg?v=1",
+  web: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-website-user.svg?v=2",
   location: "https://jqpjcoitrmochijrgfbc.supabase.co/storage/v1/object/public/email-assets/icon-location-user.svg?v=1",
 };
 
