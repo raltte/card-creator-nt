@@ -5,6 +5,9 @@ import { Copy, Check, X, Settings, MousePointerClick, ClipboardPaste, CheckCircl
 import { toast } from "@/hooks/use-toast";
 import { AssinaturaData } from "./AssinaturaForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import phoneIconUrl from "@/assets/email-signature-phone-original.png";
+import webIconUrl from "@/assets/email-signature-web-original.png";
+import locationIconUrl from "@/assets/email-signature-location-original.png";
 
 interface AssinaturaPreviewProps {
   data: AssinaturaData;
@@ -17,9 +20,9 @@ const LOGO_URLS: Record<string, string> = {
 };
 
 const ICON_URLS = {
-  phone: "/email-signature-icons/icon-phone-original.png",
-  web: "/email-signature-icons/icon-web-original.png",
-  location: "/email-signature-icons/icon-location-original.png",
+  phone: phoneIconUrl,
+  web: webIconUrl,
+  location: locationIconUrl,
 };
 
 const generateSignatureHtml = (data: AssinaturaData): string => {
