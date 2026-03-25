@@ -149,7 +149,7 @@ const Auth = () => {
           return;
         }
         toast({ title: "Conta criada!", description: "Você já pode acessar o sistema." });
-        navigate("/painel");
+        navigate(getRedirectPath(), { replace: true });
       }
     } catch {
       toast({
