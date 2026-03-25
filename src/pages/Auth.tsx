@@ -52,6 +52,11 @@ const Auth = () => {
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+    // Save redirect path before OAuth (state is lost on redirect)
+    const fromState = (location.state as { from?: string })?.from;
+    if (fromState) {
+      localStorage.setItem("auth_redirect", fromState);
+    }
     try {
       const { error } = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
