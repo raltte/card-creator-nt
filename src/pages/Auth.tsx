@@ -18,6 +18,7 @@ const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { user, loading: authLoading, signIn, signUp, isDevMode } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
@@ -31,6 +32,17 @@ const Auth = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
+
+  const getRedirectPath = () => {
+    const fromState = (location.state as { from?: string } | null)?.from;
+    if (fromState) return fromState;
+    const stored = localStorage.getItem("auth_redirect");
+    if (stored) {
+      localStorage.removeItem("auth_redirect");
+      return stored;
+    }
+    return "/painel";
+  };
 
   useEffect(() => {
     if (!authLoading && (user || isDevMode)) {
