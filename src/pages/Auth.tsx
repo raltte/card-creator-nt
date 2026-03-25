@@ -133,7 +133,7 @@ const Auth = () => {
           return;
         }
         toast({ title: "Bem-vindo(a)!", description: "Login realizado com sucesso." });
-        navigate("/painel");
+        navigate(getRedirectPath(), { replace: true });
       } else {
         const { error } = await signUp(email, password);
         if (error) {
