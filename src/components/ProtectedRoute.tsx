@@ -20,7 +20,7 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth" replace state={{ from: location.pathname + location.search }} />;
   }
 
   // Check role if required
