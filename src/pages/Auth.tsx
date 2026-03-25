@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ const passwordSchema = z.string().min(6, "Senha deve ter pelo menos 6 caracteres
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { user, loading: authLoading, signIn, signUp, isDevMode } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
@@ -31,6 +32,17 @@ const Auth = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
+
+  const getRedirectPath = () => {
+    const fromState = (location.state as { from?: string } | null)?.from;
+    if (fromState) return fromState;
+    const stored = localStorage.getItem("auth_redirect");
+    if (stored) {
+      localStorage.removeItem("auth_redirect");
+      return stored;
+    }
+    return "/painel";
+  };
 
   useEffect(() => {
     if (!authLoading && (user || isDevMode)) {
@@ -46,12 +58,17 @@ const Auth = () => {
           return;
         }
       }
-      navigate("/painel");
+      navigate(getRedirectPath(), { replace: true });
     }
   }, [user, authLoading, isDevMode, navigate]);
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+    // Save redirect path before OAuth (state is lost on redirect)
+    const fromState = (location.state as { from?: string } | null)?.from;
+    if (fromState) {
+      localStorage.setItem("auth_redirect", fromState);
+    }
     try {
       const { error } = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
@@ -128,7 +145,7 @@ const Auth = () => {
           return;
         }
         toast({ title: "Bem-vindo(a)!", description: "Login realizado com sucesso." });
-        navigate("/painel");
+        navigate(getRedirectPath(), { replace: true });
       } else {
         const { error } = await signUp(email, password);
         if (error) {
@@ -144,7 +161,7 @@ const Auth = () => {
           return;
         }
         toast({ title: "Conta criada!", description: "Você já pode acessar o sistema." });
-        navigate("/painel");
+        navigate(getRedirectPath(), { replace: true });
       }
     } catch {
       toast({
