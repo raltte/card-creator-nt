@@ -53,7 +53,7 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     // Save redirect path before OAuth (state is lost on redirect)
-    const fromState = (location.state as { from?: string })?.from;
+    const fromState = (location.state as { from?: string } | null)?.from;
     if (fromState) {
       localStorage.setItem("auth_redirect", fromState);
     }
