@@ -46,7 +46,7 @@ const Auth = () => {
           return;
         }
       }
-      navigate("/painel");
+      navigate(getRedirectPath(), { replace: true });
     }
   }, [user, authLoading, isDevMode, navigate]);
 
