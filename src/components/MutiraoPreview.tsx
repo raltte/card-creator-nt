@@ -14,223 +14,137 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
   const drawCartaz = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const scale = 2;
-    const baseWidth = 1080;
-    const baseHeight = 1350;
-    canvas.width = baseWidth * scale;
-    canvas.height = baseHeight * scale;
+    const W = 1080;
+    const H = 1350;
+    canvas.width = W * scale;
+    canvas.height = H * scale;
     ctx.scale(scale, scale);
-    ctx.clearRect(0, 0, baseWidth, baseHeight);
+    ctx.clearRect(0, 0, W, H);
 
-    // Background white
+    // Background
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, baseWidth, baseHeight);
+    ctx.fillRect(0, 0, W, H);
 
-    const leftWidth = Math.round(baseWidth * 0.45); // ~486px
+    const leftW = Math.round(W * 0.45);
 
-    // ─── Left side: image ───
+    // ── Left image ──
     if (data.image && data.image !== '') {
-      const leftImage = new Image();
-      leftImage.crossOrigin = 'anonymous';
-      leftImage.src = typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image as File);
-      await new Promise((resolve) => { leftImage.onload = resolve; leftImage.onerror = resolve; });
-
-      const imageAspect = leftImage.width / leftImage.height;
-      const canvasAspect = leftWidth / baseHeight;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image as File);
+      await new Promise(r => { img.onload = r; img.onerror = r; });
+      const ia = img.width / img.height, ca = leftW / H;
       let dw, dh, dx, dy;
-      if (imageAspect > canvasAspect) {
-        dh = baseHeight; dw = baseHeight * imageAspect;
-        dx = -(dw - leftWidth) / 2; dy = 0;
-      } else {
-        dw = leftWidth; dh = leftWidth / imageAspect;
-        dx = 0; dy = -(dh - baseHeight) / 2;
-      }
-      ctx.drawImage(leftImage, dx, dy, dw, dh);
+      if (ia > ca) { dh = H; dw = H * ia; dx = -(dw - leftW) / 2; dy = 0; }
+      else { dw = leftW; dh = leftW / ia; dx = 0; dy = -(dh - H) / 2; }
+      ctx.drawImage(img, dx, dy, dw, dh);
     } else {
       ctx.fillStyle = '#f3f4f6';
-      ctx.fillRect(0, 0, leftWidth, baseHeight);
+      ctx.fillRect(0, 0, leftW, H);
       ctx.fillStyle = '#9ca3af';
       ctx.font = '32px Montserrat, Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('Imagem', leftWidth / 2, baseHeight / 2);
+      ctx.fillText('Imagem', leftW / 2, H / 2);
       ctx.textAlign = 'left';
     }
 
-    // ─── Right side config ───
-    const rightX = leftWidth;
-    const rightWidth = baseWidth - leftWidth; // ~594px
-    const margin = 36;
-    const contentX = rightX + margin;
-    const maxTextWidth = rightWidth - margin * 2;
+    // ── Right side constants ──
+    const rX = leftW;
+    const rW = W - leftW;
+    const margin = 32;
+    const boxX = rX + margin;
+    const boxW = rW - margin * 2;
+    const padX = 36;
+    const innerW = boxW - padX * 2;
 
     // Helper: wrap text
-    const wrapText = (text: string, maxW: number, font: string): string[] => {
+    const wrap = (text: string, maxW: number, font: string): string[] => {
       ctx.font = font;
       const words = text.split(' ');
       const lines: string[] = [];
-      let currentLine = words[0] || '';
+      let cur = words[0] || '';
       for (let i = 1; i < words.length; i++) {
-        const test = currentLine + ' ' + words[i];
-        if (ctx.measureText(test).width < maxW) {
-          currentLine = test;
-        } else {
-          lines.push(currentLine);
-          currentLine = words[i];
-        }
+        const test = cur + ' ' + words[i];
+        if (ctx.measureText(test).width < maxW) cur = test;
+        else { lines.push(cur); cur = words[i]; }
       }
-      lines.push(currentLine);
+      lines.push(cur);
       return lines;
     };
 
-    // Helper: draw rounded rect
-    const drawRoundedRect = (x: number, y: number, w: number, h: number, r: number, color: string) => {
+    const rr = (x: number, y: number, w: number, h: number, r: number, color: string) => {
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       ctx.fill();
     };
 
-    // ─── Logos: Bombril & NT side by side ───
+    // ── Load logos ──
     const logoNT = new Image();
     logoNT.src = logoNTIcon;
     const logoBomb = new Image();
     logoBomb.src = logoBombril;
     await Promise.all([
-      new Promise((resolve) => { logoNT.onload = resolve; logoNT.onerror = resolve; }),
-      new Promise((resolve) => { logoBomb.onload = resolve; logoBomb.onerror = resolve; })
+      new Promise(r => { logoNT.onload = r; logoNT.onerror = r; }),
+      new Promise(r => { logoBomb.onload = r; logoBomb.onerror = r; })
     ]);
 
-    const logoH = 100;
-    const ntW = logoH; // square
+    // ── Pre-calculate total content height for vertical centering ──
+
+    // 1) Logo section
+    const logoH = 90;
     const bombAspect = logoBomb.width / logoBomb.height;
     const bombW = logoH * bombAspect;
-    const ampersandW = 36;
-    const totalLogosW = bombW + ampersandW + ntW;
-    const logosX = contentX + (maxTextWidth - totalLogosW) / 2;
-    const logoY = 36;
+    const ntW2 = logoH;
+    const ampW = 32;
+    const logoSectionH = logoH;
+    const logoGap = 20; // gap between logos and red box
 
-    ctx.drawImage(logoBomb, logosX, logoY, bombW, logoH);
-
-    // "&" between logos
-    ctx.fillStyle = '#E53935';
-    ctx.font = 'bold 36px Montserrat, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('&', logosX + bombW + ampersandW / 2, logoY + logoH / 2 + 12);
-    ctx.textAlign = 'left';
-
-    ctx.drawImage(logoNT, logosX + bombW + ampersandW, logoY, ntW, logoH);
-
-    // ─── Red content box ───
-    const boxMargin = 24;
-    const boxX = rightX + boxMargin;
-    const boxW = rightWidth - boxMargin * 2;
-    const boxPadX = 32;
-    const boxInnerW = boxW - boxPadX * 2;
-
-    // Pre-calculate all content height
+    // 2) Red box content height
     const titleLine1 = data.tipoMutirao === 'Entrevistas' ? 'Mutirão de'
       : data.tipoMutirao === 'Curriculos' ? 'Entrega de'
-      : data.tipoMutirao === 'Personalizado' ? (data.mensagemExtra || 'Mutirão') : 'Mutirão de';
+      : (data.mensagemExtra || 'Mutirão');
     const titleLine2 = data.tipoMutirao === 'Entrevistas' ? 'Entrevistas'
       : data.tipoMutirao === 'Curriculos' ? 'Currículos'
       : data.tipoMutirao === 'Personalizado' ? '' : data.tipoMutirao;
 
     const cargoText = `Vaga: ${data.cargo || 'Cargo'}`;
-    const cargoFont = 'bold 42px Montserrat, Arial';
-    const cargoLines = wrapText(cargoText, boxInnerW, cargoFont);
+    const cargoFont = 'bold 44px Montserrat, Arial';
+    const cargoLines = wrap(cargoText, innerW, cargoFont);
 
-    let contentH = 0;
-    contentH += 62; // title line 1
-    if (titleLine2) contentH += 62; // title line 2
-    contentH += 16; // gap
-    contentH += cargoLines.length * 50; // cargo
-    if (data.tipoContrato) { contentH += 16; contentH += 36; } // contract type
+    let redContentH = 36; // top padding
+    redContentH += 58; // title line 1
+    if (titleLine2) redContentH += 62;
+    redContentH += 12;
+    redContentH += cargoLines.length * 52;
+    if (data.tipoContrato) { redContentH += 14; redContentH += 34; }
     if (data.detalhes) {
-      contentH += 20;
-      const detLines = data.detalhes.split('\n');
-      detLines.forEach(line => {
+      redContentH += 18;
+      data.detalhes.split('\n').forEach(line => {
         if (line.trim()) {
           const isBold = /^(Turno|Segunda|Benefícios|Horário|Disponibilidade)/i.test(line.trim());
           const font = isBold ? 'bold 26px Montserrat, Arial' : '26px Montserrat, Arial';
-          const wrapped = wrapText(line.trim(), boxInnerW, font);
-          contentH += wrapped.length * 34;
+          redContentH += wrap(line.trim(), innerW, font).length * 34;
         } else {
-          contentH += 12;
+          redContentH += 14;
         }
       });
     }
-    contentH += 40; // padding top + bottom
+    redContentH += 36; // bottom padding
+    const redBoxH = redContentH;
 
-    const boxY = logoY + logoH + 24;
-    const boxH = contentH + 48;
+    // 3) Action section height
+    let actionSectionH = 0;
+    const actionGap = 12;
 
-    drawRoundedRect(boxX, boxY, boxW, boxH, 22, '#E53935');
-
-    // ─── Draw content inside red box ───
-    let y = boxY + 40;
-    const textCenterX = boxX + boxW / 2;
-
-    // Title - centered
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 54px Montserrat, Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(titleLine1, textCenterX, y);
-    y += 62;
-    if (titleLine2) {
-      ctx.fillText(titleLine2, textCenterX, y);
-      y += 62;
-    }
-
-    // Cargo - centered
-    y += 8;
-    ctx.font = cargoFont;
-    cargoLines.forEach(line => {
-      ctx.fillText(line, textCenterX, y);
-      y += 50;
-    });
-
-    // Contract type - left aligned inside box
-    if (data.tipoContrato) {
-      y += 8;
-      ctx.font = '28px Montserrat, Arial';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Tipo de Contrato: ${data.tipoContrato}`, boxX + boxPadX, y);
-      y += 36;
-    }
-
-    // Details - left aligned
-    if (data.detalhes) {
-      y += 12;
-      ctx.textAlign = 'left';
-      const detLines = data.detalhes.split('\n');
-      detLines.forEach(line => {
-        if (line.trim()) {
-          const isBold = /^(Turno|Segunda|Benefícios|Horário|Disponibilidade)/i.test(line.trim());
-          const font = isBold ? 'bold 26px Montserrat, Arial' : '26px Montserrat, Arial';
-          ctx.font = font;
-          const wrapped = wrapText(line.trim(), boxInnerW, font);
-          wrapped.forEach(wl => {
-            ctx.fillText(wl, boxX + boxPadX, y);
-            y += 34;
-          });
-        } else {
-          y += 12;
-        }
-      });
-    }
-
-    // ─── Action section below red box ───
-    let actionY = boxY + boxH + 18;
-    const actionBoxX = boxX;
-    const actionBoxW = boxW;
-
-    // Date/instruction red box
+    let actionText = '';
+    let actionLines: string[] = [];
+    let actionBoxH = 0;
     if (data.dataPrazo || data.localEntrega) {
-      let actionText = '';
       if (data.tipoMutirao === 'Curriculos') {
         actionText = data.dataPrazo
           ? `Entregue seu currículo ${data.dataPrazo} no endereço abaixo.`
@@ -240,81 +154,158 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
           ? `Compareça com o currículo em mãos ${data.dataPrazo} no endereço abaixo.`
           : 'Compareça com o currículo em mãos no endereço abaixo.';
       }
-
-      ctx.font = 'bold 24px Montserrat, Arial';
-      const actionLines = wrapText(actionText, actionBoxW - 48, 'bold 24px Montserrat, Arial');
-      const actionH = actionLines.length * 32 + 32;
-
-      drawRoundedRect(actionBoxX, actionY, actionBoxW, actionH, 18, '#E53935');
-
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 24px Montserrat, Arial';
-      ctx.textAlign = 'center';
-      let atY = actionY + 30;
-      actionLines.forEach(line => {
-        ctx.fillText(line, actionBoxX + actionBoxW / 2, atY);
-        atY += 32;
-      });
-
-      actionY += actionH + 10;
-
-      // Address white rounded box
-      if (data.localEntrega) {
-        ctx.font = 'bold 22px Montserrat, Arial';
-        const addrLines = wrapText(data.localEntrega, actionBoxW - 72, 'bold 22px Montserrat, Arial');
-        const addrH = addrLines.length * 30 + 32;
-
-        drawRoundedRect(actionBoxX + 12, actionY, actionBoxW - 24, addrH, 14, '#FFFFFF');
-
-        // Border
-        ctx.strokeStyle = '#e5e7eb';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(actionBoxX + 12, actionY, actionBoxW - 24, addrH, 14);
-        ctx.stroke();
-
-        ctx.fillStyle = '#333333';
-        ctx.font = 'bold 22px Montserrat, Arial';
-        ctx.textAlign = 'center';
-        let addrY = actionY + 26;
-        addrLines.forEach(line => {
-          ctx.fillText(line, actionBoxX + actionBoxW / 2, addrY);
-          addrY += 30;
-        });
-
-        actionY += addrH + 14;
-      }
+      actionLines = wrap(actionText, boxW - 48, 'bold 26px Montserrat, Arial');
+      actionBoxH = actionLines.length * 34 + 32;
+      actionSectionH += actionBoxH + actionGap;
     }
 
-    // Extra message box (red)
+    let addrLines: string[] = [];
+    let addrBoxH = 0;
+    if (data.localEntrega) {
+      addrLines = wrap(data.localEntrega, boxW - 72, 'bold 22px Montserrat, Arial');
+      addrBoxH = addrLines.length * 30 + 32;
+      actionSectionH += addrBoxH + actionGap;
+    }
+
+    let msgLines: string[] = [];
+    let msgBoxH = 0;
     if (data.tipoMutirao !== 'Personalizado' && data.mensagemExtra) {
+      msgLines = wrap(data.mensagemExtra, boxW - 72, 'bold 22px Montserrat, Arial');
+      msgBoxH = msgLines.length * 30 + 32;
+      actionSectionH += msgBoxH + actionGap;
+    }
+
+    // 4) Contact footer
+    const hasContact = !!data.contato.tipo;
+    const contactH = hasContact ? 100 : 0;
+    if (hasContact) actionSectionH += contactH;
+
+    // ── Total height & vertical offset ──
+    const totalH = logoSectionH + logoGap + redBoxH + (actionSectionH > 0 ? actionGap + actionSectionH : 0);
+    const startY = Math.max(24, (H - totalH) / 2);
+
+    // ══════════════════════════════════════
+    // ── DRAW ──
+    // ══════════════════════════════════════
+
+    let y = startY;
+
+    // ── Logos ──
+    const totalLogosW = bombW + ampW + ntW2;
+    const logosStartX = boxX + (boxW - totalLogosW) / 2;
+    ctx.drawImage(logoBomb, logosStartX, y, bombW, logoH);
+    ctx.fillStyle = '#E53935';
+    ctx.font = 'bold 32px Montserrat, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('&', logosStartX + bombW + ampW / 2, y + logoH / 2 + 10);
+    ctx.textAlign = 'left';
+    ctx.drawImage(logoNT, logosStartX + bombW + ampW, y, ntW2, logoH);
+    y += logoSectionH + logoGap;
+
+    // ── Red box ──
+    const redBoxY = y;
+    rr(boxX, redBoxY, boxW, redBoxH, 22, '#E53935');
+
+    let ty = redBoxY + 36;
+    const textLeft = boxX + padX;
+
+    // Title - LEFT aligned
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 54px Montserrat, Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(titleLine1, textLeft, ty + 46);
+    ty += 58;
+    if (titleLine2) {
+      ctx.fillText(titleLine2, textLeft, ty + 46);
+      ty += 62;
+    }
+
+    // Cargo - LEFT aligned
+    ty += 12;
+    ctx.font = cargoFont;
+    cargoLines.forEach(line => {
+      ctx.fillText(line, textLeft, ty + 38);
+      ty += 52;
+    });
+
+    // Contract type
+    if (data.tipoContrato) {
+      ty += 14;
+      ctx.font = '28px Montserrat, Arial';
+      ctx.fillText(`Tipo de Contrato: ${data.tipoContrato}`, textLeft, ty + 22);
+      ty += 34;
+    }
+
+    // Details - LEFT aligned
+    if (data.detalhes) {
+      ty += 18;
+      data.detalhes.split('\n').forEach(line => {
+        if (line.trim()) {
+          const isBold = /^(Turno|Segunda|Benefícios|Horário|Disponibilidade)/i.test(line.trim());
+          const font = isBold ? 'bold 26px Montserrat, Arial' : '26px Montserrat, Arial';
+          ctx.font = font;
+          wrap(line.trim(), innerW, font).forEach(wl => {
+            ctx.fillText(wl, textLeft, ty + 22);
+            ty += 34;
+          });
+        } else {
+          ty += 14;
+        }
+      });
+    }
+
+    y = redBoxY + redBoxH + actionGap;
+
+    // ── Action instruction box (red) ──
+    if (actionLines.length > 0) {
+      rr(boxX, y, boxW, actionBoxH, 18, '#E53935');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      let atY = y + 26;
+      actionLines.forEach(line => {
+        ctx.fillText(line, boxX + boxW / 2, atY);
+        atY += 34;
+      });
+      y += actionBoxH + actionGap;
+    }
+
+    // ── Address box (white) ──
+    if (addrLines.length > 0) {
+      rr(boxX + 12, y, boxW - 24, addrBoxH, 14, '#FFFFFF');
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(boxX + 12, y, boxW - 24, addrBoxH, 14);
+      ctx.stroke();
+      ctx.fillStyle = '#333333';
       ctx.font = 'bold 22px Montserrat, Arial';
-      const msgLines = wrapText(data.mensagemExtra, actionBoxW - 72, 'bold 22px Montserrat, Arial');
-      const msgH = msgLines.length * 30 + 32;
+      ctx.textAlign = 'center';
+      let addrY = y + 26;
+      addrLines.forEach(line => {
+        ctx.fillText(line, boxX + boxW / 2, addrY);
+        addrY += 30;
+      });
+      y += addrBoxH + actionGap;
+    }
 
-      drawRoundedRect(actionBoxX + 12, actionY, actionBoxW - 24, msgH, 14, '#E53935');
-
+    // ── Extra message box (red) ──
+    if (msgLines.length > 0) {
+      rr(boxX + 12, y, boxW - 24, msgBoxH, 14, '#E53935');
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 22px Montserrat, Arial';
       ctx.textAlign = 'center';
-      let msgY = actionY + 26;
+      let msgY = y + 26;
       msgLines.forEach(line => {
-        ctx.fillText(line, actionBoxX + actionBoxW / 2, msgY);
+        ctx.fillText(line, boxX + boxW / 2, msgY);
         msgY += 30;
       });
-
-      actionY += msgH + 14;
+      y += msgBoxH + actionGap;
     }
 
-    // Contact footer
-    if (data.contato.tipo && actionY + 90 < baseHeight - 18) {
-      const footerH = 90;
-      drawRoundedRect(actionBoxX, actionY, actionBoxW, footerH, 18, '#20CE90');
-
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 24px Montserrat, Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Envie seu currículo em:', actionBoxX + actionBoxW / 2, actionY + 30);
+    // ── Contact footer (green, larger) ──
+    if (hasContact) {
+      rr(boxX, y, boxW, contactH, 18, '#20CE90');
 
       const contactText = data.contato.tipo === 'whatsapp'
         ? data.contato.valor || '(xx) xxxxx-xxxx'
@@ -322,29 +313,34 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
         ? data.contato.valor || 'email@exemplo.com'
         : 'novotemporh.com.br';
 
-      const btnY = actionY + 46;
-      ctx.font = 'bold 22px Montserrat, Arial';
-      const btnTextW = ctx.measureText(contactText).width;
-      const btnW = btnTextW + 60;
-      const btnX = actionBoxX + (actionBoxW - btnW) / 2;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 28px Montserrat, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Envie seu currículo em:', boxX + boxW / 2, y + 36);
 
-      drawRoundedRect(btnX, btnY, btnW, 34, 17, '#FFFFFF');
+      // Contact button
+      ctx.font = 'bold 26px Montserrat, Arial';
+      const btnTextW = ctx.measureText(contactText).width;
+      const btnW = btnTextW + 72;
+      const btnX = boxX + (boxW - btnW) / 2;
+      const btnY = y + 52;
+      const btnH = 38;
+
+      rr(btnX, btnY, btnW, btnH, 19, '#FFFFFF');
 
       if (data.contato.tipo === 'whatsapp') {
-        const whatsappImg = new Image();
-        whatsappImg.src = whatsappIcon;
-        await new Promise((resolve) => { whatsappImg.onload = resolve; whatsappImg.onerror = resolve; });
-        ctx.drawImage(whatsappImg, btnX + 12, btnY + 5, 24, 24);
+        const waImg = new Image();
+        waImg.src = whatsappIcon;
+        await new Promise(r => { waImg.onload = r; waImg.onerror = r; });
+        ctx.drawImage(waImg, btnX + 14, btnY + 7, 24, 24);
         ctx.fillStyle = '#11332B';
-        ctx.font = 'bold 22px Montserrat, Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(contactText, btnX + 40, btnY + 24);
+        ctx.fillText(contactText, btnX + 44, btnY + 27);
       } else {
         const icon = data.contato.tipo === 'email' ? '✉️' : '🌐';
         ctx.fillStyle = '#11332B';
-        ctx.font = 'bold 22px Montserrat, Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(`${icon} ${contactText}`, actionBoxX + actionBoxW / 2, btnY + 24);
+        ctx.fillText(`${icon} ${contactText}`, boxX + boxW / 2, btnY + 27);
       }
       ctx.textAlign = 'left';
     }
