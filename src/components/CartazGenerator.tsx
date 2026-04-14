@@ -227,7 +227,6 @@ export const CartazGenerator = () => {
             <Layers className="w-4 h-4" />
             Compilado
           </Button>
-        </div>
           <Button
             variant={modeloType === 'mutirao' ? 'default' : 'outline'}
             onClick={() => setModeloType('mutirao')}
