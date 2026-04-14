@@ -75,7 +75,21 @@ export const CartazGenerator = () => {
     }
   });
 
-  const handleDownload = async () => {
+  const [mutiraoData, setMutiraoData] = useState<MutiraoData>({
+    image: undefined,
+    tipoMutirao: 'Entrevistas',
+    cargo: '',
+    tipoContrato: 'Temporário',
+    detalhes: '',
+    localEntrega: '',
+    dataPrazo: '',
+    mensagemExtra: '',
+    contato: {
+      tipo: 'site',
+      valor: 'novotemporh.com.br'
+    }
+  });
+
     try {
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
       if (!canvas) {
