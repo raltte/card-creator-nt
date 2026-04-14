@@ -37,7 +37,7 @@ export interface CartazData {
 
 export const CartazGenerator = () => {
   const { toast } = useToast();
-  const [modeloType, setModeloType] = useState<'tradicional' | 'compilado'>('tradicional');
+  const [modeloType, setModeloType] = useState<'tradicional' | 'compilado' | 'mutirao'>('tradicional');
   
   const [cartazData, setCartazData] = useState<CartazData>({
     image: undefined,
