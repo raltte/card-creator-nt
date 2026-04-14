@@ -68,13 +68,29 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     const contentX = rightX + 36;
     const maxTextWidth = rightWidth - 72;
 
-    // Logo at top right
-    const logo = new Image();
-    logo.src = logoImage;
-    await new Promise((resolve) => { logo.onload = resolve; });
-    const logoWidth = 360;
-    const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, contentX, 45, logoWidth, logoHeight);
+    // Logos at top right - NT icon and Bombril side by side
+    const logoNT = new Image();
+    logoNT.src = logoNTIcon;
+    const logoBomb = new Image();
+    logoBomb.src = logoBombril;
+    await Promise.all([
+      new Promise((resolve) => { logoNT.onload = resolve; logoNT.onerror = resolve; }),
+      new Promise((resolve) => { logoBomb.onload = resolve; logoBomb.onerror = resolve; })
+    ]);
+    
+    const logoSize = 120;
+    const logoGap = 24;
+    const totalLogosWidth = logoSize * 2 + logoGap;
+    const logosStartX = contentX + (maxTextWidth - totalLogosWidth) / 2;
+    const logoY = 36;
+    
+    // Draw NT icon
+    ctx.drawImage(logoNT, logosStartX, logoY, logoSize, logoSize);
+    // Draw Bombril logo
+    const bombrilAspect = logoBomb.width / logoBomb.height;
+    const bombrilW = logoSize * bombrilAspect;
+    const bombrilH = logoSize;
+    ctx.drawImage(logoBomb, logosStartX + logoSize + logoGap, logoY + (logoSize - bombrilH) / 2, bombrilW, bombrilH);
 
     // Helper: wrap text
     const wrapText = (text: string, maxW: number, font: string): string[] => {
