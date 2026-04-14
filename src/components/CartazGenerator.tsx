@@ -84,6 +84,7 @@ export const CartazGenerator = () => {
     localEntrega: '',
     dataPrazo: '',
     mensagemExtra: '',
+    modeloMutirao: 'bombril',
     contato: {
       tipo: 'site',
       valor: 'novotemporh.com.br'

@@ -130,6 +130,20 @@ export const MutiraoForm = ({ data, onChange }: MutiraoFormProps) => {
 
   return (
     <div className="space-y-5">
+      {/* Modelo do Mutirão */}
+      <div>
+        <Label className="text-sm font-semibold">Modelo do Cartaz *</Label>
+        <Select value={data.modeloMutirao} onValueChange={(value) => updateData('modeloMutirao', value)}>
+          <SelectTrigger className="mt-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bombril">Bombril + Novo Tempo</SelectItem>
+            <SelectItem value="tradicional">Novo Tempo (Tradicional)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Imagem */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>

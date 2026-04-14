@@ -49,6 +49,7 @@ export const RecrutadoraDashboard = () => {
     localEntrega: '',
     dataPrazo: '',
     mensagemExtra: '',
+    modeloMutirao: 'bombril',
     contato: { tipo: 'site', valor: 'novotemporh.com.br' }
   });
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
