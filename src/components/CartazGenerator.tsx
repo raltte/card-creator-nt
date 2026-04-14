@@ -194,7 +194,9 @@ export const CartazGenerator = () => {
         ? <CompiladoPreviewMarisa data={compiladoData} />
         : <CompiladoPreview data={compiladoData} />;
     } else {
-      return <MutiraoPreview data={mutiraoData} />;
+      return mutiraoData.modeloMutirao === 'tradicional'
+        ? <MutiraoPreviewTradicional data={mutiraoData} />
+        : <MutiraoPreview data={mutiraoData} />;
     }
   };
 

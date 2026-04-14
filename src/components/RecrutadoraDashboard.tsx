@@ -340,7 +340,9 @@ export const RecrutadoraDashboard = () => {
 
   const renderPreview = () => {
     if (tipoCartaz === 'mutirao') {
-      return <MutiraoPreview data={dadosMutirao} />;
+      return dadosMutirao.modeloMutirao === 'tradicional'
+        ? <MutiraoPreviewTradicional data={dadosMutirao} />
+        : <MutiraoPreview data={dadosMutirao} />;
     }
     if (tipoCartaz === 'individual') {
       return (
