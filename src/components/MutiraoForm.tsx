@@ -19,6 +19,7 @@ export interface MutiraoData {
   localEntrega: string; // full address
   dataPrazo: string; // e.g. "até o dia 17/04" or "no dia 20/05"
   mensagemExtra: string; // extra message at bottom
+  modeloMutirao: 'bombril' | 'tradicional';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
