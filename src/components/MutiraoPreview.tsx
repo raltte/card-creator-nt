@@ -187,26 +187,109 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
       if (i < actionBlocks.length - 1) actionH += actionGap;
     });
 
-    // ── Contact (only whatsapp/email, NOT site) ──
+    // Contact
+    const showContact = data.contato.tipo !== 'site' && data.contato.valor;
+    const contactH = showContact ? 100 : 0;
+    if (showContact) actionH += (actionBlocks.length > 0 ? actionGap : 0) + contactH;
+
+    // ── Vertical centering ──
+    const totalH = logoH + logoToBox + redH + (actionH > 0 ? actionGap + actionH : 0);
+    const startY = Math.max(28, (H - totalH) / 2);
+
+    // ══════════════════════════
+    // ── DRAW ──
+    // ══════════════════════════
+
+    let y = startY;
+
+    // ── Logos ──
+    const logoStartX = textLeft;
+    ctx.drawImage(logoBomb, logoStartX, y, bombW, logoH);
+    const ampX = logoStartX + bombW + ampGap;
+    ctx.fillStyle = '#E53935';
+    ctx.font = 'bold 36px Montserrat, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('&', ampX + 14, y + logoH / 2 + 12);
+    ctx.textAlign = 'left';
+    const ntX = ampX + 28 + ampGap;
+    ctx.drawImage(logoNT, ntX, y, ntSize, ntSize);
+    y += logoH + logoToBox;
+
+    // ── Red box ──
+    const redBoxY = y;
+    rr(boxX, redBoxY, boxW, redH, 22, '#E53935');
+
+    let ty = redBoxY + 44;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 56px Montserrat, Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(titleLine1, textLeft, ty + 44);
+    ty += 60;
+    if (titleLine2) {
+      ctx.fillText(titleLine2, textLeft, ty + 50);
+      ty += 66;
+    }
+    ty += 8;
+    ctx.font = cargoFont;
+    cargoLines.forEach(line => {
+      ctx.fillText(line, textLeft, ty + 34);
+      ty += 50;
+    });
+    if (data.tipoContrato) {
+      ty += 20;
+      ctx.font = '26px Montserrat, Arial';
+      ctx.fillText(`Tipo de Contrato: ${data.tipoContrato}`, textLeft, ty + 20);
+      ty += 32;
+    }
+    if (detailBlocks.length > 0) {
+      ty += 16;
+      detailBlocks.forEach(block => {
+        if (block.text === '') { ty += 16; }
+        else {
+          const font = block.bold ? 'bold 28px Montserrat, Arial' : '26px Montserrat, Arial';
+          ctx.font = font;
+          const wrapped = wrap(block.text, innerW, font);
+          wrapped.forEach(wl => {
+            ctx.fillText(wl, textLeft, ty + (block.bold ? 26 : 22));
+            ty += block.bold ? 38 : 34;
+          });
+        }
+      });
+    }
+
+    y = redBoxY + redH + actionGap;
+
+    // ── Action blocks (all uniform red, same width, same font) ──
+    actionBlocks.forEach((block, i) => {
+      const blockH = block.lines.length * 32 + actionPad;
+      rr(boxX, y, boxW, blockH, 18, block.color);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = actionFont;
+      ctx.textAlign = 'center';
+      let ly = y + actionPad / 2 + 8;
+      block.lines.forEach(line => {
+        ctx.fillText(line, boxX + boxW / 2, ly);
+        ly += 32;
+      });
+      y += blockH + actionGap;
+    });
+
+    // ── Contact ──
     if (showContact) {
       rr(boxX, y, boxW, contactH, 18, '#20CE90');
-
       const contactText = data.contato.tipo === 'whatsapp'
         ? data.contato.valor || '(xx) xxxxx-xxxx'
         : data.contato.valor || 'email@exemplo.com';
-
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 28px Montserrat, Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Envie seu currículo em:', boxX + boxW / 2, y + 36);
-
       ctx.font = 'bold 26px Montserrat, Arial';
       const btnTextW = ctx.measureText(contactText).width;
       const btnW = btnTextW + 72;
       const btnX = boxX + (boxW - btnW) / 2;
       const btnY = y + 52;
       rr(btnX, btnY, btnW, 38, 19, '#FFFFFF');
-
       if (data.contato.tipo === 'whatsapp') {
         const waImg = new Image();
         waImg.src = whatsappIcon;
