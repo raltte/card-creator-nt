@@ -377,7 +377,7 @@ export const RecrutadoraDashboard = () => {
                 <Tabs 
                   defaultValue="individual" 
                   onValueChange={(value) => {
-                    const tipo = value as 'individual' | 'compilado';
+                    const tipo = value as 'individual' | 'compilado' | 'mutirao';
                     setTipoCartaz(tipo);
                     // Reset modelo se for compilado e o modelo atual não é válido
                     if (tipo === 'compilado' && !['padrao', 'marisa'].includes(modeloSelecionado)) {
@@ -385,9 +385,10 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className="grid w-full max-w-xs grid-cols-2 h-10">
+                  <TabsList className="grid w-full max-w-md grid-cols-3 h-10">
                     <TabsTrigger value="individual" className="text-sm">Individual</TabsTrigger>
                     <TabsTrigger value="compilado" className="text-sm">Compilado</TabsTrigger>
+                    <TabsTrigger value="mutirao" className="text-sm">Mutirão</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
