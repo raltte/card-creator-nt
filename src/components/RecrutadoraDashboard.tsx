@@ -393,6 +393,7 @@ export const RecrutadoraDashboard = () => {
                 </Tabs>
               </div>
 
+              {tipoCartaz !== 'mutirao' && (
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Modelo</h3>
               <Tabs 
@@ -428,6 +429,7 @@ export const RecrutadoraDashboard = () => {
                   )}
                 </Tabs>
               </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -440,10 +442,15 @@ export const RecrutadoraDashboard = () => {
                 data={dadosIndividual}
                 onChange={setDadosIndividual}
               />
-            ) : (
+            ) : tipoCartaz === 'compilado' ? (
               <CompiladoForm 
                 data={dadosCompilado} 
                 onChange={updateCompiladoData}
+              />
+            ) : (
+              <MutiraoForm
+                data={dadosMutirao}
+                onChange={setDadosMutirao}
               />
             )}
 
