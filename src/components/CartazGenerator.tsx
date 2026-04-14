@@ -242,17 +242,22 @@ export const CartazGenerator = () => {
           <Card>
             <CardContent className="p-6">
               <h2 className="text-xl font-semibold text-nt-dark mb-4">
-                {modeloType === 'tradicional' ? 'Dados da Vaga' : 'Dados das Vagas'}
+                {modeloType === 'tradicional' ? 'Dados da Vaga' : modeloType === 'compilado' ? 'Dados das Vagas' : 'Dados do Mutirão'}
               </h2>
               {modeloType === 'tradicional' ? (
                 <CartazForm 
                   data={cartazData}
                   onChange={setCartazData}
                 />
-              ) : (
+              ) : modeloType === 'compilado' ? (
                 <CompiladoForm 
                   data={compiladoData}
                   onChange={setCompiladoData}
+                />
+              ) : (
+                <MutiraoForm
+                  data={mutiraoData}
+                  onChange={setMutiraoData}
                 />
               )}
             </CardContent>
