@@ -10,8 +10,10 @@ import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
+import { MutiraoForm, MutiraoData } from "./MutiraoForm";
+import { MutiraoPreview } from "./MutiraoPreview";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, FileImage, Layers } from "lucide-react";
+import { Download, Share2, FileImage, Layers, Megaphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 
