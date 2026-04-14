@@ -152,37 +152,39 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     }
     redH += 44; // bottom pad
 
-    // Action section — all blocks same style, same width, same font
+    // Action section — all blocks same width, left-aligned like red box
     const actionGap = 16;
     let actionH = 0;
-    const actionFont = 'bold 24px Montserrat, Arial';
+    const actionBoldFont = 'bold 24px Montserrat, Arial';
+    const actionRegFont = '24px Montserrat, Arial';
     const actionPad = 32;
 
-    // Build action blocks: each is { lines[], color }
-    const actionBlocks: { lines: string[]; color: string }[] = [];
+    // Each block: { boldText, regularText, color }
+    const actionBlocks: { boldText: string; regularText: string; color: string }[] = [];
 
-    // 1) Instruction (deadline + address hint)
+    // 1) Instruction (deadline)
     if (data.dataPrazo || data.localEntrega) {
       const instrText = data.tipoMutirao === 'Curriculos'
         ? (data.dataPrazo ? `Entregue seu currículo ${data.dataPrazo} no endereço abaixo.` : 'Entregue seu currículo no endereço abaixo.')
         : (data.dataPrazo ? `Compareça com o currículo em mãos ${data.dataPrazo} no endereço abaixo.` : 'Compareça com o currículo em mãos no endereço abaixo.');
-      actionBlocks.push({ lines: wrap(instrText, boxW - actionPad * 2, actionFont), color: '#E53935' });
+      actionBlocks.push({ boldText: instrText, regularText: '', color: '#E53935' });
     }
 
     // 2) Address
     if (data.localEntrega) {
-      const addrText = `Local de Entrega: ${data.localEntrega}`;
-      actionBlocks.push({ lines: wrap(addrText, boxW - actionPad * 2, actionFont), color: '#E53935' });
+      actionBlocks.push({ boldText: 'Local de Entrega:', regularText: data.localEntrega, color: '#E53935' });
     }
 
-    // 3) Extra message
+    // 3) Extra message — dark gray
     if (data.mensagemExtra && data.tipoMutirao !== 'Personalizado') {
-      actionBlocks.push({ lines: wrap(data.mensagemExtra, boxW - actionPad * 2, actionFont), color: '#E53935' });
+      actionBlocks.push({ boldText: '', regularText: data.mensagemExtra, color: '#333333' });
     }
 
     // Calculate total action height
     actionBlocks.forEach((block, i) => {
-      const blockH = block.lines.length * 32 + actionPad;
+      const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
+      const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
+      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
       actionH += blockH;
       if (i < actionBlocks.length - 1) actionH += actionGap;
     });
@@ -259,16 +261,23 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
 
     y = redBoxY + redH + actionGap;
 
-    // ── Action blocks (all uniform red, same width, same font) ──
+    // ── Action blocks (left-aligned, same margins as red box) ──
     actionBlocks.forEach((block, i) => {
-      const blockH = block.lines.length * 32 + actionPad;
+      const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
+      const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
+      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
       rr(boxX, y, boxW, blockH, 18, block.color);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = actionFont;
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'left';
       let ly = y + actionPad / 2 + 8;
-      block.lines.forEach(line => {
-        ctx.fillText(line, boxX + boxW / 2, ly);
+      bLines.forEach(line => {
+        ctx.font = actionBoldFont;
+        ctx.fillText(line, textLeft, ly);
+        ly += 32;
+      });
+      rLines.forEach(line => {
+        ctx.font = actionRegFont;
+        ctx.fillText(line, textLeft, ly);
         ly += 32;
       });
       y += blockH + actionGap;
