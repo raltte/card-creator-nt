@@ -14,6 +14,7 @@ import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MutiraoPreview } from "./MutiraoPreview";
+import { MutiraoPreviewTradicional } from "./MutiraoPreviewTradicional";
 import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
