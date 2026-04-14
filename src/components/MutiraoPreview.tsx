@@ -261,16 +261,23 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
 
     y = redBoxY + redH + actionGap;
 
-    // ── Action blocks (all uniform red, same width, same font) ──
+    // ── Action blocks (left-aligned, same margins as red box) ──
     actionBlocks.forEach((block, i) => {
-      const blockH = block.lines.length * 32 + actionPad;
+      const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
+      const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
+      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
       rr(boxX, y, boxW, blockH, 18, block.color);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = actionFont;
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'left';
       let ly = y + actionPad / 2 + 8;
-      block.lines.forEach(line => {
-        ctx.fillText(line, boxX + boxW / 2, ly);
+      bLines.forEach(line => {
+        ctx.font = actionBoldFont;
+        ctx.fillText(line, textLeft, ly);
+        ly += 32;
+      });
+      rLines.forEach(line => {
+        ctx.font = actionRegFont;
+        ctx.fillText(line, textLeft, ly);
         ly += 32;
       });
       y += blockH + actionGap;
