@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
+import { MutiraoForm, MutiraoData } from "./MutiraoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
@@ -12,13 +13,13 @@ import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
 import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
+import { MutiraoPreview } from "./MutiraoPreview";
 import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Edit } from "lucide-react";
 import { HistoricoCartazes } from "./HistoricoCartazes";
-
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
   cidade = '';
