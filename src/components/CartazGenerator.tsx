@@ -94,7 +94,7 @@ export const CartazGenerator = () => {
 
   const handleDownload = async () => {
     try {
-      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
+      const canvas = (document.getElementById('cartaz-canvas') || document.getElementById('cartaz-canvas-tradicional')) as HTMLCanvasElement;
       if (!canvas) {
         toast({
           title: "Erro",
