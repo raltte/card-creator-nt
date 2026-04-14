@@ -184,7 +184,7 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     actionBlocks.forEach((block, i) => {
       const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
       const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
-      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
+      const blockH = (bLines.length + rLines.length) * 34 + 48;
       actionH += blockH;
       if (i < actionBlocks.length - 1) actionH += actionGap;
     });
@@ -265,20 +265,23 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     actionBlocks.forEach((block, i) => {
       const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
       const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
-      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
+      const totalLines = bLines.length + rLines.length;
+      const vertPad = 24;
+      const lineH = 34;
+      const blockH = totalLines * lineH + vertPad * 2;
       rr(boxX, y, boxW, blockH, 18, block.color);
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'left';
-      let ly = y + actionPad / 2 + 8;
+      let ly = y + vertPad + 20;
       bLines.forEach(line => {
         ctx.font = actionBoldFont;
         ctx.fillText(line, textLeft, ly);
-        ly += 32;
+        ly += lineH;
       });
       rLines.forEach(line => {
         ctx.font = actionRegFont;
         ctx.fillText(line, textLeft, ly);
-        ly += 32;
+        ly += lineH;
       });
       y += blockH + actionGap;
     });
