@@ -113,7 +113,7 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
 
     // Red rounded box
     const boxX = contentX - 12;
-    const boxY = 45 + logoHeight + 36;
+    const boxY = logoY + logoSize + 36;
     const boxWidth = maxTextWidth + 24;
 
     // Build title
