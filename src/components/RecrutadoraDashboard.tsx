@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecrutadoraForm, RecrutadoraData } from "./RecrutadoraForm";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
+import { MutiraoForm, MutiraoData } from "./MutiraoForm";
 import { CartazPreview } from "./CartazPreview";
 import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
@@ -12,13 +13,13 @@ import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
 import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
+import { MutiraoPreview } from "./MutiraoPreview";
 import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Edit } from "lucide-react";
 import { HistoricoCartazes } from "./HistoricoCartazes";
-
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
   cidade = '';
@@ -38,7 +39,18 @@ export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { role, user } = useAuth();
-  const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
+  const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado' | 'mutirao'>('individual');
+  const [dadosMutirao, setDadosMutirao] = useState<MutiraoData>({
+    image: undefined,
+    tipoMutirao: 'Entrevistas',
+    cargo: '',
+    tipoContrato: 'Temporário',
+    detalhes: '',
+    localEntrega: '',
+    dataPrazo: '',
+    mensagemExtra: '',
+    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
+  });
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
@@ -325,6 +337,9 @@ export const RecrutadoraDashboard = () => {
   };
 
   const renderPreview = () => {
+    if (tipoCartaz === 'mutirao') {
+      return <MutiraoPreview data={dadosMutirao} />;
+    }
     if (tipoCartaz === 'individual') {
       return (
         <>
@@ -365,7 +380,7 @@ export const RecrutadoraDashboard = () => {
                 <Tabs 
                   defaultValue="individual" 
                   onValueChange={(value) => {
-                    const tipo = value as 'individual' | 'compilado';
+                    const tipo = value as 'individual' | 'compilado' | 'mutirao';
                     setTipoCartaz(tipo);
                     // Reset modelo se for compilado e o modelo atual não é válido
                     if (tipo === 'compilado' && !['padrao', 'marisa'].includes(modeloSelecionado)) {
@@ -373,13 +388,15 @@ export const RecrutadoraDashboard = () => {
                     }
                   }}
                 >
-                  <TabsList className="grid w-full max-w-xs grid-cols-2 h-10">
+                  <TabsList className="grid w-full max-w-md grid-cols-3 h-10">
                     <TabsTrigger value="individual" className="text-sm">Individual</TabsTrigger>
                     <TabsTrigger value="compilado" className="text-sm">Compilado</TabsTrigger>
+                    <TabsTrigger value="mutirao" className="text-sm">Mutirão</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
 
+              {tipoCartaz !== 'mutirao' && (
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Modelo</h3>
               <Tabs 
@@ -415,6 +432,7 @@ export const RecrutadoraDashboard = () => {
                   )}
                 </Tabs>
               </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -427,10 +445,15 @@ export const RecrutadoraDashboard = () => {
                 data={dadosIndividual}
                 onChange={setDadosIndividual}
               />
-            ) : (
+            ) : tipoCartaz === 'compilado' ? (
               <CompiladoForm 
                 data={dadosCompilado} 
                 onChange={updateCompiladoData}
+              />
+            ) : (
+              <MutiraoForm
+                data={dadosMutirao}
+                onChange={setDadosMutirao}
               />
             )}
 
