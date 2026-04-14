@@ -184,7 +184,7 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     actionBlocks.forEach((block, i) => {
       const bLines = block.boldText ? wrap(block.boldText, innerW, actionBoldFont) : [];
       const rLines = block.regularText ? wrap(block.regularText, innerW, actionRegFont) : [];
-      const blockH = (bLines.length + rLines.length) * 32 + actionPad;
+      const blockH = (bLines.length + rLines.length) * 34 + 48;
       actionH += blockH;
       if (i < actionBlocks.length - 1) actionH += actionGap;
     });
