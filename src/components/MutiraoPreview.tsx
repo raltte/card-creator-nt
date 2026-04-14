@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MutiraoData } from "./MutiraoForm";
-import logoImage from "@/assets/novo-tempo-logo-v4.png";
+import logoNTIcon from "@/assets/logo-nt-icon.png";
+import logoBombril from "@/assets/logo-bombril.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
 
 interface MutiraoPreviewProps {
