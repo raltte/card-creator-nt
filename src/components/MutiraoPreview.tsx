@@ -152,42 +152,45 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     }
     redH += 44; // bottom pad
 
-    // Action section
-    const actionGap = 14;
+    // Action section — all blocks same style, same width, same font
+    const actionGap = 16;
     let actionH = 0;
+    const actionFont = 'bold 24px Montserrat, Arial';
+    const actionPad = 32;
 
-    let instrText = '';
-    let instrLines: string[] = [];
-    let instrBoxH = 0;
+    // Build action blocks: each is { lines[], color }
+    const actionBlocks: { lines: string[]; color: string }[] = [];
+
+    // 1) Instruction (deadline + address hint)
     if (data.dataPrazo || data.localEntrega) {
-      instrText = data.tipoMutirao === 'Curriculos'
+      const instrText = data.tipoMutirao === 'Curriculos'
         ? (data.dataPrazo ? `Entregue seu currículo ${data.dataPrazo} no endereço abaixo.` : 'Entregue seu currículo no endereço abaixo.')
         : (data.dataPrazo ? `Compareça com o currículo em mãos ${data.dataPrazo} no endereço abaixo.` : 'Compareça com o currículo em mãos no endereço abaixo.');
-      instrLines = wrap(instrText, boxW - 48, 'bold 26px Montserrat, Arial');
-      instrBoxH = instrLines.length * 34 + 36;
-      actionH += instrBoxH + actionGap;
+      actionBlocks.push({ lines: wrap(instrText, boxW - actionPad * 2, actionFont), color: '#E53935' });
     }
 
-    let addrLines: string[] = [];
-    let addrBoxH = 0;
+    // 2) Address
     if (data.localEntrega) {
-      addrLines = wrap(data.localEntrega, boxW - 80, 'bold 23px Montserrat, Arial');
-      addrBoxH = addrLines.length * 32 + 36;
-      actionH += addrBoxH + actionGap;
+      const addrText = `Local de Entrega: ${data.localEntrega}`;
+      actionBlocks.push({ lines: wrap(addrText, boxW - actionPad * 2, actionFont), color: '#E53935' });
     }
 
-    let msgLines: string[] = [];
-    let msgBoxH = 0;
-    if (data.tipoMutirao !== 'Personalizado' && data.mensagemExtra) {
-      msgLines = wrap(data.mensagemExtra, boxW - 80, 'bold 22px Montserrat, Arial');
-      msgBoxH = msgLines.length * 30 + 36;
-      actionH += msgBoxH + actionGap;
+    // 3) Extra message
+    if (data.mensagemExtra && data.tipoMutirao !== 'Personalizado') {
+      actionBlocks.push({ lines: wrap(data.mensagemExtra, boxW - actionPad * 2, actionFont), color: '#E53935' });
     }
 
-    // Contact only for whatsapp/email (not site, since mutirão is presencial)
+    // Calculate total action height
+    actionBlocks.forEach((block, i) => {
+      const blockH = block.lines.length * 32 + actionPad;
+      actionH += blockH;
+      if (i < actionBlocks.length - 1) actionH += actionGap;
+    });
+
+    // Contact
     const showContact = data.contato.tipo !== 'site' && data.contato.valor;
     const contactH = showContact ? 100 : 0;
-    if (showContact) actionH += contactH;
+    if (showContact) actionH += (actionBlocks.length > 0 ? actionGap : 0) + contactH;
 
     // ── Vertical centering ──
     const totalH = logoH + logoToBox + redH + (actionH > 0 ? actionGap + actionH : 0);
@@ -199,20 +202,17 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
 
     let y = startY;
 
-    // ── Logos: LEFT-ALIGNED with red box left edge ──
-    const logoStartX = textLeft; // aligned with text inside red box
+    // ── Logos ──
+    const logoStartX = textLeft;
     ctx.drawImage(logoBomb, logoStartX, y, bombW, logoH);
-    
     const ampX = logoStartX + bombW + ampGap;
     ctx.fillStyle = '#E53935';
     ctx.font = 'bold 36px Montserrat, Arial';
     ctx.textAlign = 'center';
     ctx.fillText('&', ampX + 14, y + logoH / 2 + 12);
     ctx.textAlign = 'left';
-    
     const ntX = ampX + 28 + ampGap;
     ctx.drawImage(logoNT, ntX, y, ntSize, ntSize);
-    
     y += logoH + logoToBox;
 
     // ── Red box ──
@@ -220,8 +220,6 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
     rr(boxX, redBoxY, boxW, redH, 22, '#E53935');
 
     let ty = redBoxY + 44;
-
-    // Title
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 56px Montserrat, Arial';
     ctx.textAlign = 'left';
@@ -231,30 +229,23 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
       ctx.fillText(titleLine2, textLeft, ty + 50);
       ty += 66;
     }
-
-    // Cargo
     ty += 8;
     ctx.font = cargoFont;
     cargoLines.forEach(line => {
       ctx.fillText(line, textLeft, ty + 34);
       ty += 50;
     });
-
-    // Contract type
     if (data.tipoContrato) {
       ty += 20;
       ctx.font = '26px Montserrat, Arial';
       ctx.fillText(`Tipo de Contrato: ${data.tipoContrato}`, textLeft, ty + 20);
       ty += 32;
     }
-
-    // Details with proper spacing per line
     if (detailBlocks.length > 0) {
       ty += 16;
       detailBlocks.forEach(block => {
-        if (block.text === '') {
-          ty += 16;
-        } else {
+        if (block.text === '') { ty += 16; }
+        else {
           const font = block.bold ? 'bold 28px Montserrat, Arial' : '26px Montserrat, Arial';
           ctx.font = font;
           const wrapped = wrap(block.text, innerW, font);
@@ -268,73 +259,37 @@ export const MutiraoPreview = ({ data }: MutiraoPreviewProps) => {
 
     y = redBoxY + redH + actionGap;
 
-    // ── Action instruction (red rounded) ──
-    if (instrLines.length > 0) {
-      rr(boxX, y, boxW, instrBoxH, 18, '#E53935');
+    // ── Action blocks (all uniform red, same width, same font) ──
+    actionBlocks.forEach((block, i) => {
+      const blockH = block.lines.length * 32 + actionPad;
+      rr(boxX, y, boxW, blockH, 18, block.color);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 26px Montserrat, Arial';
+      ctx.font = actionFont;
       ctx.textAlign = 'center';
-      let iy = y + 28;
-      instrLines.forEach(line => {
-        ctx.fillText(line, boxX + boxW / 2, iy);
-        iy += 34;
+      let ly = y + actionPad / 2 + 8;
+      block.lines.forEach(line => {
+        ctx.fillText(line, boxX + boxW / 2, ly);
+        ly += 32;
       });
-      y += instrBoxH + actionGap;
-    }
+      y += blockH + actionGap;
+    });
 
-    // ── Address (white rounded) ──
-    if (addrLines.length > 0) {
-      rr(boxX + 14, y, boxW - 28, addrBoxH, 16, '#FFFFFF');
-      ctx.strokeStyle = '#e5e7eb';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(boxX + 14, y, boxW - 28, addrBoxH, 16);
-      ctx.stroke();
-      ctx.fillStyle = '#333333';
-      ctx.font = 'bold 23px Montserrat, Arial';
-      ctx.textAlign = 'center';
-      let ay = y + 28;
-      addrLines.forEach(line => {
-        ctx.fillText(line, boxX + boxW / 2, ay);
-        ay += 32;
-      });
-      y += addrBoxH + actionGap;
-    }
-
-    // ── Extra message (red rounded) ──
-    if (msgLines.length > 0) {
-      rr(boxX + 14, y, boxW - 28, msgBoxH, 16, '#E53935');
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 22px Montserrat, Arial';
-      ctx.textAlign = 'center';
-      let my = y + 28;
-      msgLines.forEach(line => {
-        ctx.fillText(line, boxX + boxW / 2, my);
-        my += 30;
-      });
-      y += msgBoxH + actionGap;
-    }
-
-    // ── Contact (only whatsapp/email, NOT site) ──
+    // ── Contact ──
     if (showContact) {
       rr(boxX, y, boxW, contactH, 18, '#20CE90');
-
       const contactText = data.contato.tipo === 'whatsapp'
         ? data.contato.valor || '(xx) xxxxx-xxxx'
         : data.contato.valor || 'email@exemplo.com';
-
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 28px Montserrat, Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Envie seu currículo em:', boxX + boxW / 2, y + 36);
-
       ctx.font = 'bold 26px Montserrat, Arial';
       const btnTextW = ctx.measureText(contactText).width;
       const btnW = btnTextW + 72;
       const btnX = boxX + (boxW - btnW) / 2;
       const btnY = y + 52;
       rr(btnX, btnY, btnW, 38, 19, '#FFFFFF');
-
       if (data.contato.tipo === 'whatsapp') {
         const waImg = new Image();
         waImg.src = whatsappIcon;
