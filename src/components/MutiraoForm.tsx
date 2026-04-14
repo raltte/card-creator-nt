@@ -256,19 +256,15 @@ export const MutiraoForm = ({ data, onChange }: MutiraoFormProps) => {
         </div>
       )}
 
-      {/* Contato */}
+      {/* Contato (opcional - apenas WhatsApp ou Email, já que mutirão é presencial) */}
       <div className="space-y-3">
-        <Label className="text-sm font-semibold">Contato</Label>
+        <Label className="text-sm font-semibold">Contato adicional (opcional)</Label>
+        <p className="text-xs text-muted-foreground">Como o mutirão é presencial, o contato por site não se aplica. Adicione WhatsApp ou email se necessário.</p>
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
-            <Checkbox id="mutirao-website" checked={data.contato.tipo === 'site'} onCheckedChange={(checked) => { if (checked) handleContactTypeChange('site'); }} />
-            <label htmlFor="mutirao-website" className="text-sm cursor-pointer">Website</label>
+            <Checkbox id="mutirao-none" checked={data.contato.tipo === 'site'} onCheckedChange={(checked) => { if (checked) { updateData('contato.tipo', 'site'); updateData('contato.valor', ''); } }} />
+            <label htmlFor="mutirao-none" className="text-sm cursor-pointer">Nenhum</label>
           </div>
-          {data.contato.tipo === 'site' && (
-            <div className="ml-6 p-2 bg-muted rounded-lg">
-              <div className="flex items-center gap-2 text-xs"><Globe className="w-3 h-3 text-nt-light" /><span>novotemporh.com.br</span></div>
-            </div>
-          )}
           <div className="flex items-center space-x-2">
             <Checkbox id="mutirao-whatsapp" checked={data.contato.tipo === 'whatsapp'} onCheckedChange={(checked) => { if (checked) handleContactTypeChange('whatsapp'); }} />
             <label htmlFor="mutirao-whatsapp" className="text-sm cursor-pointer">WhatsApp</label>
