@@ -10,8 +10,10 @@ import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
+import { MutiraoForm, MutiraoData } from "./MutiraoForm";
+import { MutiraoPreview } from "./MutiraoPreview";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, FileImage, Layers } from "lucide-react";
+import { Download, Share2, FileImage, Layers, Megaphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 
@@ -35,7 +37,7 @@ export interface CartazData {
 
 export const CartazGenerator = () => {
   const { toast } = useToast();
-  const [modeloType, setModeloType] = useState<'tradicional' | 'compilado'>('tradicional');
+  const [modeloType, setModeloType] = useState<'tradicional' | 'compilado' | 'mutirao'>('tradicional');
   
   const [cartazData, setCartazData] = useState<CartazData>({
     image: undefined,
@@ -73,6 +75,21 @@ export const CartazGenerator = () => {
     }
   });
 
+  const [mutiraoData, setMutiraoData] = useState<MutiraoData>({
+    image: undefined,
+    tipoMutirao: 'Entrevistas',
+    cargo: '',
+    tipoContrato: 'Temporário',
+    detalhes: '',
+    localEntrega: '',
+    dataPrazo: '',
+    mensagemExtra: '',
+    contato: {
+      tipo: 'site',
+      valor: 'novotemporh.com.br'
+    }
+  });
+
   const handleDownload = async () => {
     try {
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
@@ -88,8 +105,10 @@ export const CartazGenerator = () => {
       const link = document.createElement('a');
       if (modeloType === 'tradicional') {
         link.download = `cartaz-${cartazData.cargo.replace(/\s+/g, '-').toLowerCase()}-${cartazData.codigo}.png`;
-      } else {
+      } else if (modeloType === 'compilado') {
         link.download = `cartaz-compilado-${compiladoData.local.replace(/\s+/g, '-').toLowerCase()}.png`;
+      } else {
+        link.download = `mutirao-${mutiraoData.cargo.replace(/\s+/g, '-').toLowerCase()}.png`;
       }
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
@@ -147,8 +166,10 @@ export const CartazGenerator = () => {
   const isFormValid = () => {
     if (modeloType === 'tradicional') {
       return cartazData.cargo && cartazData.local && cartazData.codigo;
-    } else {
+    } else if (modeloType === 'compilado') {
       return compiladoData.local && compiladoData.vagas.some(v => v.codigo && v.cargo);
+    } else {
+      return mutiraoData.cargo && mutiraoData.localEntrega && mutiraoData.dataPrazo;
     }
   };
 
@@ -166,10 +187,12 @@ export const CartazGenerator = () => {
         default:
           return <CartazPreview data={cartazData} />;
       }
-    } else {
+    } else if (modeloType === 'compilado') {
       return compiladoData.clientTemplate === 'marisa' 
         ? <CompiladoPreviewMarisa data={compiladoData} />
         : <CompiladoPreview data={compiladoData} />;
+    } else {
+      return <MutiraoPreview data={mutiraoData} />;
     }
   };
 
@@ -204,6 +227,14 @@ export const CartazGenerator = () => {
             <Layers className="w-4 h-4" />
             Compilado
           </Button>
+          <Button
+            variant={modeloType === 'mutirao' ? 'default' : 'outline'}
+            onClick={() => setModeloType('mutirao')}
+            className="gap-2"
+          >
+            <Megaphone className="w-4 h-4" />
+            Mutirão
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -211,17 +242,22 @@ export const CartazGenerator = () => {
           <Card>
             <CardContent className="p-6">
               <h2 className="text-xl font-semibold text-nt-dark mb-4">
-                {modeloType === 'tradicional' ? 'Dados da Vaga' : 'Dados das Vagas'}
+                {modeloType === 'tradicional' ? 'Dados da Vaga' : modeloType === 'compilado' ? 'Dados das Vagas' : 'Dados do Mutirão'}
               </h2>
               {modeloType === 'tradicional' ? (
                 <CartazForm 
                   data={cartazData}
                   onChange={setCartazData}
                 />
-              ) : (
+              ) : modeloType === 'compilado' ? (
                 <CompiladoForm 
                   data={compiladoData}
                   onChange={setCompiladoData}
+                />
+              ) : (
+                <MutiraoForm
+                  data={mutiraoData}
+                  onChange={setMutiraoData}
                 />
               )}
             </CardContent>
