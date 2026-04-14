@@ -19,6 +19,7 @@ export interface MutiraoData {
   localEntrega: string; // full address
   dataPrazo: string; // e.g. "até o dia 17/04" or "no dia 20/05"
   mensagemExtra: string; // extra message at bottom
+  modeloMutirao: 'bombril' | 'tradicional';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -129,6 +130,20 @@ export const MutiraoForm = ({ data, onChange }: MutiraoFormProps) => {
 
   return (
     <div className="space-y-5">
+      {/* Modelo do Mutirão */}
+      <div>
+        <Label className="text-sm font-semibold">Modelo do Cartaz *</Label>
+        <Select value={data.modeloMutirao} onValueChange={(value) => updateData('modeloMutirao', value)}>
+          <SelectTrigger className="mt-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bombril">Bombril + Novo Tempo</SelectItem>
+            <SelectItem value="tradicional">Novo Tempo (Tradicional)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Imagem */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>

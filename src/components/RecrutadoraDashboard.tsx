@@ -14,6 +14,7 @@ import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MutiraoPreview } from "./MutiraoPreview";
+import { MutiraoPreviewTradicional } from "./MutiraoPreviewTradicional";
 import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +50,7 @@ export const RecrutadoraDashboard = () => {
     localEntrega: '',
     dataPrazo: '',
     mensagemExtra: '',
+    modeloMutirao: 'bombril',
     contato: { tipo: 'site', valor: 'novotemporh.com.br' }
   });
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
@@ -338,7 +340,9 @@ export const RecrutadoraDashboard = () => {
 
   const renderPreview = () => {
     if (tipoCartaz === 'mutirao') {
-      return <MutiraoPreview data={dadosMutirao} />;
+      return dadosMutirao.modeloMutirao === 'tradicional'
+        ? <MutiraoPreviewTradicional data={dadosMutirao} />
+        : <MutiraoPreview data={dadosMutirao} />;
     }
     if (tipoCartaz === 'individual') {
       return (

@@ -12,6 +12,7 @@ import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MutiraoForm, MutiraoData } from "./MutiraoForm";
 import { MutiraoPreview } from "./MutiraoPreview";
+import { MutiraoPreviewTradicional } from "./MutiraoPreviewTradicional";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, FileImage, Layers, Megaphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -84,6 +85,7 @@ export const CartazGenerator = () => {
     localEntrega: '',
     dataPrazo: '',
     mensagemExtra: '',
+    modeloMutirao: 'bombril',
     contato: {
       tipo: 'site',
       valor: 'novotemporh.com.br'
@@ -92,7 +94,7 @@ export const CartazGenerator = () => {
 
   const handleDownload = async () => {
     try {
-      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
+      const canvas = (document.getElementById('cartaz-canvas') || document.getElementById('cartaz-canvas-tradicional')) as HTMLCanvasElement;
       if (!canvas) {
         toast({
           title: "Erro",
@@ -192,7 +194,9 @@ export const CartazGenerator = () => {
         ? <CompiladoPreviewMarisa data={compiladoData} />
         : <CompiladoPreview data={compiladoData} />;
     } else {
-      return <MutiraoPreview data={mutiraoData} />;
+      return mutiraoData.modeloMutirao === 'tradicional'
+        ? <MutiraoPreviewTradicional data={mutiraoData} />
+        : <MutiraoPreview data={mutiraoData} />;
     }
   };
 
