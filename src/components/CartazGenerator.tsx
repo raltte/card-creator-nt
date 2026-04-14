@@ -166,8 +166,10 @@ export const CartazGenerator = () => {
   const isFormValid = () => {
     if (modeloType === 'tradicional') {
       return cartazData.cargo && cartazData.local && cartazData.codigo;
-    } else {
+    } else if (modeloType === 'compilado') {
       return compiladoData.local && compiladoData.vagas.some(v => v.codigo && v.cargo);
+    } else {
+      return mutiraoData.cargo && mutiraoData.localEntrega && mutiraoData.dataPrazo;
     }
   };
 
