@@ -39,7 +39,18 @@ export const RecrutadoraDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { role, user } = useAuth();
-  const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado'>('individual');
+  const [tipoCartaz, setTipoCartaz] = useState<'individual' | 'compilado' | 'mutirao'>('individual');
+  const [dadosMutirao, setDadosMutirao] = useState<MutiraoData>({
+    image: undefined,
+    tipoMutirao: 'Entrevistas',
+    cargo: '',
+    tipoContrato: 'Temporário',
+    detalhes: '',
+    localEntrega: '',
+    dataPrazo: '',
+    mensagemExtra: '',
+    contato: { tipo: 'site', valor: 'novotemporh.com.br' }
+  });
   const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
