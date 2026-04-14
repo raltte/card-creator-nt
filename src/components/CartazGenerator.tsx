@@ -228,6 +228,15 @@ export const CartazGenerator = () => {
             Compilado
           </Button>
         </div>
+          <Button
+            variant={modeloType === 'mutirao' ? 'default' : 'outline'}
+            onClick={() => setModeloType('mutirao')}
+            className="gap-2"
+          >
+            <Megaphone className="w-4 h-4" />
+            Mutirão
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Formulário */}
