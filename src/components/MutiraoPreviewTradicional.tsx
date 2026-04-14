@@ -28,7 +28,7 @@ export const MutiraoPreviewTradicional = ({ data }: MutiraoPreviewTradicionalPro
     ctx.fillRect(0, 0, W, H);
 
     const leftW = Math.round(W * 0.45);
-    const PRIMARY = '#20CE90';
+    const PRIMARY = '#11332B';
 
     // ── Left image ──
     if (data.image && data.image !== '') {
@@ -91,7 +91,7 @@ export const MutiraoPreviewTradicional = ({ data }: MutiraoPreviewTradicionalPro
     // ── Pre-calculate heights ──
 
     // Logo
-    const logoH = 80;
+    const logoH = 110;
     const logoAspect = logoImg.width / logoImg.height;
     const logoW = logoH * logoAspect;
     const logoToBox = 24;
