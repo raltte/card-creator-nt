@@ -105,8 +105,10 @@ export const CartazGenerator = () => {
       const link = document.createElement('a');
       if (modeloType === 'tradicional') {
         link.download = `cartaz-${cartazData.cargo.replace(/\s+/g, '-').toLowerCase()}-${cartazData.codigo}.png`;
-      } else {
+      } else if (modeloType === 'compilado') {
         link.download = `cartaz-compilado-${compiladoData.local.replace(/\s+/g, '-').toLowerCase()}.png`;
+      } else {
+        link.download = `mutirao-${mutiraoData.cargo.replace(/\s+/g, '-').toLowerCase()}.png`;
       }
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
