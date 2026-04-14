@@ -187,10 +187,12 @@ export const CartazGenerator = () => {
         default:
           return <CartazPreview data={cartazData} />;
       }
-    } else {
+    } else if (modeloType === 'compilado') {
       return compiladoData.clientTemplate === 'marisa' 
         ? <CompiladoPreviewMarisa data={compiladoData} />
         : <CompiladoPreview data={compiladoData} />;
+    } else {
+      return <MutiraoPreview data={mutiraoData} />;
     }
   };
 
