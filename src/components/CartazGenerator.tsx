@@ -90,6 +90,7 @@ export const CartazGenerator = () => {
     }
   });
 
+  const handleDownload = async () => {
     try {
       const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
       if (!canvas) {
