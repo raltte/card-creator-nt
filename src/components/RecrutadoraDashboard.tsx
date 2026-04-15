@@ -150,6 +150,58 @@ export const RecrutadoraDashboard = () => {
     return true;
   };
 
+  // Validação para formulário mutirão
+  const validateMutiraoForm = (): boolean => {
+    if (!dadosMutirao.cargo?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o cargo/vaga.", variant: "destructive" });
+      return false;
+    }
+    if (!dadosMutirao.localEntrega?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha o local/endereço de entrega.", variant: "destructive" });
+      return false;
+    }
+    if (!dadosMutirao.dataPrazo?.trim()) {
+      toast({ title: "Campo obrigatório", description: "Preencha a data/prazo.", variant: "destructive" });
+      return false;
+    }
+    return true;
+  };
+
+  const handleMutiraoSubmit = async () => {
+    if (!validateMutiraoForm()) return;
+
+    try {
+      toast({ title: "Processando...", description: "Criando solicitação do mutirão..." });
+
+      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
+        body: {
+          codigo: `MUT-${Date.now()}`,
+          cargo: dadosMutirao.cargo,
+          tipoContrato: dadosMutirao.tipoContrato || 'Temporário',
+          modeloCartaz: dadosMutirao.modeloMutirao === 'tradicional' ? 'padrao' : 'padrao',
+          local: dadosMutirao.localEntrega,
+          contato: dadosMutirao.contato,
+          requisitos: dadosMutirao.detalhes || null,
+          atividades: null,
+          linkVaga: null,
+          emailSolicitante: user?.email || null,
+          isPcd: false,
+          userId: user?.id || null,
+          skipMonday: true
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.solicitacaoId) {
+        navigate(`/finalizar/${data.solicitacaoId}`);
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
+    }
+  };
+
   const handleFormSubmit = async (dados: RecrutadoraData) => {
     // Validar antes de enviar
     if (!validateIndividualForm(dados)) return;
@@ -466,13 +518,14 @@ export const RecrutadoraDashboard = () => {
               {isEditor ? (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
-                    onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                    onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
                     className="flex-1 h-12" 
                     size="lg"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     Enviar ao Monday
                   </Button>
+                  {tipoCartaz !== 'mutirao' && (
                   <Button 
                     onClick={() => tipoCartaz === 'individual' ? handleFinalizarDireto(dadosIndividual) : handleFinalizarCompiladoDireto()} 
                     variant="outline" 
@@ -482,10 +535,11 @@ export const RecrutadoraDashboard = () => {
                     <Edit className="w-4 h-4 mr-2" />
                     Finalizar Cartaz
                   </Button>
+                  )}
                 </div>
               ) : (
                 <Button 
-                  onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                  onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
                   className="w-full h-12" 
                   size="lg"
                 >
