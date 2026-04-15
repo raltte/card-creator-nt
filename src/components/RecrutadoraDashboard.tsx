@@ -518,13 +518,14 @@ export const RecrutadoraDashboard = () => {
               {isEditor ? (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
-                    onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                    onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
                     className="flex-1 h-12" 
                     size="lg"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     Enviar ao Monday
                   </Button>
+                  {tipoCartaz !== 'mutirao' && (
                   <Button 
                     onClick={() => tipoCartaz === 'individual' ? handleFinalizarDireto(dadosIndividual) : handleFinalizarCompiladoDireto()} 
                     variant="outline" 
@@ -534,10 +535,11 @@ export const RecrutadoraDashboard = () => {
                     <Edit className="w-4 h-4 mr-2" />
                     Finalizar Cartaz
                   </Button>
+                  )}
                 </div>
               ) : (
                 <Button 
-                  onClick={() => tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
+                  onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
                   className="w-full h-12" 
                   size="lg"
                 >
