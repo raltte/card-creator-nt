@@ -77,85 +77,93 @@ serve(async (req) => {
     const finalizacaoUrl = `${origin}/finalizar/${solicitacao.id}`;
     console.log('Link de finalização gerado:', finalizacaoUrl);
 
-    const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
-    if (!mondayApiToken) {
-      throw new Error('Monday.com API token não configurado');
-    }
+    let mondayItemId: string | null = null;
+    let mondayWarning: string | null = null;
 
-    const BOARD_ID = '7854209602';
-    const columns = await fetchBoardColumns(mondayApiToken, BOARD_ID);
-    const candidateUrl = `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`;
-    const columnValues = buildSolicitacaoColumnValues(columns, {
-      ...solicitacao,
-      link_vaga: solicitacao.link_vaga || candidateUrl,
-      finalizacao_url: finalizacaoUrl,
-      sugestao_imagem: solicitacaoData.sugestaoImagem || null,
-    });
-
-    console.log('Column values resolvidos:', JSON.stringify(columnValues, null, 2));
-
-    const itemName = sanitizeItemName(`${solicitacao.cargo} - ${solicitacao.local || 'Local não especificado'}`);
-
-    const createMutation = `
-      mutation {
-        create_item (
-          board_id: ${BOARD_ID},
-          item_name: "${itemName}"
-        ) {
-          id
-          name
-        }
+    try {
+      const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
+      if (!mondayApiToken) {
+        throw new Error('Monday.com API token não configurado');
       }
-    `;
 
-    const mondayResponse = await fetch('https://api.monday.com/v2', {
-      method: 'POST',
-      headers: {
-        'Authorization': mondayApiToken,
-        'Content-Type': 'application/json',
-        'API-Version': '2024-01'
-      },
-      body: JSON.stringify({ query: createMutation })
-    });
+      const BOARD_ID = '7854209602';
+      const columns = await fetchBoardColumns(mondayApiToken, BOARD_ID);
+      const candidateUrl = `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`;
+      const columnValues = buildSolicitacaoColumnValues(columns, {
+        ...solicitacao,
+        link_vaga: solicitacao.link_vaga || candidateUrl,
+        finalizacao_url: finalizacaoUrl,
+        sugestao_imagem: solicitacaoData.sugestaoImagem || null,
+      });
 
-    const mondayResult = await mondayResponse.json();
-    console.log('Resposta do Monday:', mondayResult);
+      console.log('Column values resolvidos:', JSON.stringify(columnValues, null, 2));
 
-    if (mondayResult.errors) {
-      console.error('Erro no Monday:', mondayResult.errors);
-      throw new Error(`Erro do Monday.com: ${mondayResult.errors[0].message}`);
+      const itemName = sanitizeItemName(`${solicitacao.cargo} - ${solicitacao.local || 'Local não especificado'}`);
+
+      const createMutation = `
+        mutation {
+          create_item (
+            board_id: ${BOARD_ID},
+            item_name: "${itemName}"
+          ) {
+            id
+            name
+          }
+        }
+      `;
+
+      const mondayResponse = await fetch('https://api.monday.com/v2', {
+        method: 'POST',
+        headers: {
+          'Authorization': mondayApiToken,
+          'Content-Type': 'application/json',
+          'API-Version': '2024-01'
+        },
+        body: JSON.stringify({ query: createMutation })
+      });
+
+      const mondayResult = await mondayResponse.json();
+      console.log('Resposta do Monday:', mondayResult);
+
+      if (mondayResult.errors) {
+        throw new Error(`Erro do Monday.com: ${mondayResult.errors[0].message}`);
+      }
+
+      mondayItemId = mondayResult.data?.create_item?.id ?? null;
+      if (!mondayItemId) {
+        throw new Error('Falha ao obter o ID do item criado no Monday');
+      }
+
+      await updateMondayItemColumns(mondayApiToken, BOARD_ID, mondayItemId, columnValues);
+
+      const verifiedValues = await verifyMondayItemLabels(mondayApiToken, mondayItemId);
+      const expectedModelLabel = getModeloLabel(solicitacao.modelo_cartaz);
+
+      console.log('Validação após criação:', {
+        expectedModelLabel,
+        actualModelLabel: verifiedValues.modelo,
+        actualContractLabel: verifiedValues.contrato,
+      });
+
+      if (!labelsMatch(verifiedValues.modelo, expectedModelLabel)) {
+        console.warn(`Aviso: label do modelo no Monday divergente. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}`);
+      }
+
+      await supabase
+        .from('solicitacoes_cartaz')
+        .update({ monday_item_id: mondayItemId })
+        .eq('id', solicitacao.id);
+    } catch (mondayError) {
+      mondayWarning = mondayError instanceof Error ? mondayError.message : 'Erro desconhecido no Monday';
+      console.error('Falha na integração Monday (solicitação ainda criada):', mondayWarning);
     }
-
-    const mondayItemId = mondayResult.data?.create_item?.id;
-    if (!mondayItemId) {
-      throw new Error('Falha ao obter o ID do item criado no Monday');
-    }
-
-    await updateMondayItemColumns(mondayApiToken, BOARD_ID, mondayItemId, columnValues);
-
-    const verifiedValues = await verifyMondayItemLabels(mondayApiToken, mondayItemId);
-    const expectedModelLabel = getModeloLabel(solicitacao.modelo_cartaz);
-
-    console.log('Validação após criação:', {
-      expectedModelLabel,
-      actualModelLabel: verifiedValues.modelo,
-      actualContractLabel: verifiedValues.contrato,
-    });
-
-    if (!labelsMatch(verifiedValues.modelo, expectedModelLabel)) {
-      throw new Error(`Falha ao gravar o tipo de cartaz no Monday. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}`);
-    }
-
-    await supabase
-      .from('solicitacoes_cartaz')
-      .update({ monday_item_id: mondayItemId })
-      .eq('id', solicitacao.id);
 
     return new Response(JSON.stringify({
       success: true,
       solicitacaoId: solicitacao.id,
       mondayItemId,
-      finalizacaoUrl
+      finalizacaoUrl,
+      mondayWarning
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
