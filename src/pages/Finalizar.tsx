@@ -202,9 +202,28 @@ const Finalizar = () => {
     // Save the framed image for re-framing
     setImagemBaseUrl(imagemUrl);
 
+    const isMutirao = sol.modelo_cartaz?.includes('mutirao');
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
-    if (isCompilado) {
+    if (isMutirao) {
+      const detalhes = sol.requisitos || '';
+      const atividades = sol.atividades || '';
+      const dataPrazoMatch = atividades.match(/Data\/Prazo:\s*([^\n]+)/);
+      const dataPrazo = dataPrazoMatch ? dataPrazoMatch[1].trim() : '';
+      const mensagemExtra = atividades.replace(/Data\/Prazo:[^\n]*\n?/, '').trim();
+      setMutiraoData({
+        image: imagemUrl,
+        tipoMutirao: 'Curriculos',
+        cargo: sol.cargo,
+        tipoContrato: sol.tipo_contrato,
+        detalhes,
+        localEntrega: sol.local || '',
+        dataPrazo,
+        mensagemExtra,
+        modeloMutirao: sol.modelo_cartaz === 'mutirao-tradicional' ? 'tradicional' : 'bombril',
+        contato: { tipo: (sol.contato_tipo || 'site') as any, valor: sol.contato_valor || 'novotemporh.com.br' }
+      });
+    } else if (isCompilado) {
       const localParts = (sol.local || '').split(' - ');
       const dados: CompiladoData = {
         image: imagemUrl,
