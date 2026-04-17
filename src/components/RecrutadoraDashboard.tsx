@@ -19,7 +19,7 @@ import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Edit } from "lucide-react";
+import { Send } from "lucide-react";
 import { HistoricoCartazes } from "./HistoricoCartazes";
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
@@ -74,7 +74,7 @@ export const RecrutadoraDashboard = () => {
     dados: any;
   } | null>(null);
 
-  const { isEditor, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   // Validação centralizada para formulário individual
   const validateIndividualForm = (dados: RecrutadoraData): boolean => {
@@ -182,21 +182,24 @@ export const RecrutadoraDashboard = () => {
           local: dadosMutirao.localEntrega,
           contato: dadosMutirao.contato,
           requisitos: dadosMutirao.detalhes || null,
-          atividades: dadosMutirao.dataPrazo ? `Data/Prazo: ${dadosMutirao.dataPrazo}${dadosMutirao.mensagemExtra ? `\n${dadosMutirao.mensagemExtra}` : ''}` : (dadosMutirao.mensagemExtra || null),
+          atividades: dadosMutirao.dataPrazo
+            ? `Data/Prazo: ${dadosMutirao.dataPrazo}${dadosMutirao.mensagemExtra ? `\n${dadosMutirao.mensagemExtra}` : ''}`
+            : (dadosMutirao.mensagemExtra || null),
           linkVaga: null,
           emailSolicitante: user?.email || null,
           isPcd: false,
           userId: user?.id || null,
-          mutiraoData: dadosMutirao,
-          skipMonday: true
         }
       });
 
       if (error) throw error;
 
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
+      toast({
+        title: "Solicitação criada com sucesso!",
+        description: data?.mondayWarning
+          ? "Solicitação criada. Atenção: integração Monday com aviso."
+          : "Um link de finalização foi enviado para o Monday.com."
+      });
     } catch (error) {
       console.error('Erro:', error);
       toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
@@ -244,84 +247,8 @@ export const RecrutadoraDashboard = () => {
     }
   };
 
-  const handleFinalizarDireto = async (dados: RecrutadoraData) => {
-    // Validar antes de enviar
-    if (!validateIndividualForm(dados)) return;
-
-    try {
-      toast({ title: "Processando...", description: "Criando solicitação..." });
-
-      // Criar solicitação sem enviar ao Monday ainda
-      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
-        body: {
-          codigo: dados.codigoPS,
-          cargo: dados.nomeVaga,
-          tipoContrato: dados.tipoContrato,
-          modeloCartaz: tipoCartaz === 'compilado' ? `compilado-${modeloSelecionado}` : modeloSelecionado,
-          local: `${dados.cidade} - ${dados.estado}`,
-          contato: dados.captacaoCurriculo === 'whatsapp' 
-            ? { tipo: 'whatsapp', valor: dados.whatsappNumber || '' }
-            : dados.captacaoCurriculo === 'email'
-            ? { tipo: 'email', valor: dados.emailCaptacao || '' }
-            : { tipo: 'site', valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
-          requisitos: dados.requisitos.join('\n• '),
-          atividades: null,
-          linkVaga: null,
-          emailSolicitante: user?.email || null,
-          isPcd: dados.isPcd || false,
-          userId: user?.id || null,
-          sugestaoImagem: dados.sugestaoImagem || null,
-          skipMonday: true // Flag para não criar item no Monday
-        }
-      });
-
-      if (error) throw error;
-
-      // Redirecionar para a página de finalização
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
-    }
-  };
-
-  const handleFinalizarCompiladoDireto = async () => {
-    // Validar antes de enviar
-    if (!validateCompiladoForm()) return;
-
-    try {
-      toast({ title: "Processando...", description: "Criando solicitação..." });
-
-      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
-        body: {
-          codigo: dadosCompilado.vagas[0].codigo,
-          cargo: dadosCompilado.vagas.map(v => v.cargo).join(', '),
-          tipoContrato: 'Compilado',
-          modeloCartaz: `compilado-${dadosCompilado.clientTemplate}`,
-          local: dadosCompilado.local,
-          contato: dadosCompilado.contato,
-          requisitos: dadosCompilado.requisitos,
-          atividades: null,
-          linkVaga: null,
-          emailSolicitante: user?.email || null,
-          isPcd: dadosCompilado.isPcd || false,
-          userId: user?.id || null,
-          skipMonday: true
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
-    }
-  };
+  // Handlers de "Finalizar Cartaz" (skipMonday) removidos — fluxo unificado:
+  // todos os tipos enviam ao Monday primeiro e finalizam pelo link.
 
   const handleCompiladoGenerate = async () => {
     // Validar antes de enviar
@@ -516,38 +443,20 @@ export const RecrutadoraDashboard = () => {
 
             {/* Actions */}
             <div className="pt-4 border-t pb-6">
-              {isEditor ? (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
-                    className="flex-1 h-12" 
-                    size="lg"
-                  >
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                  {tipoCartaz !== 'mutirao' && (
-                  <Button 
-                    onClick={() => tipoCartaz === 'individual' ? handleFinalizarDireto(dadosIndividual) : handleFinalizarCompiladoDireto()} 
-                    variant="outline" 
-                    className="flex-1 h-12 border-2" 
-                    size="lg"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Finalizar Cartaz
-                  </Button>
-                  )}
-                </div>
-              ) : (
-                <Button 
-                  onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
-                  className="w-full h-12" 
-                  size="lg"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Enviar ao Monday
-                </Button>
-              )}
+              <Button
+                onClick={() =>
+                  tipoCartaz === 'mutirao'
+                    ? handleMutiraoSubmit()
+                    : tipoCartaz === 'individual'
+                    ? handleFormSubmit(dadosIndividual)
+                    : handleCompiladoGenerate()
+                }
+                className="w-full h-12"
+                size="lg"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Enviar ao Monday
+              </Button>
             </div>
 
             {/* Histórico - apenas admins */}
