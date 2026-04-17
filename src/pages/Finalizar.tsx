@@ -390,7 +390,7 @@ const Finalizar = () => {
                 setEtapa('preview');
               }}
               onBack={() => setEtapa('preview')}
-              modelType={isMarisa ? 'tradicional-marisa' : isCompilado ? 'compilado' : 'tradicional-nt'}
+              modelType={isMarisa ? 'tradicional-marisa' : (isCompilado || isMutirao) ? 'compilado' : 'tradicional-nt'}
             />
           </div>
         )}
