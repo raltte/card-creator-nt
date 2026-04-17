@@ -519,38 +519,20 @@ export const RecrutadoraDashboard = () => {
 
             {/* Actions */}
             <div className="pt-4 border-t pb-6">
-              {isEditor ? (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
-                    className="flex-1 h-12" 
-                    size="lg"
-                  >
-                    <Send className="w-4 h-4 mr-2" />
-                    Enviar ao Monday
-                  </Button>
-                  {tipoCartaz !== 'mutirao' && (
-                  <Button 
-                    onClick={() => tipoCartaz === 'individual' ? handleFinalizarDireto(dadosIndividual) : handleFinalizarCompiladoDireto()} 
-                    variant="outline" 
-                    className="flex-1 h-12 border-2" 
-                    size="lg"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Finalizar Cartaz
-                  </Button>
-                  )}
-                </div>
-              ) : (
-                <Button 
-                  onClick={() => tipoCartaz === 'mutirao' ? handleMutiraoSubmit() : tipoCartaz === 'individual' ? handleFormSubmit(dadosIndividual) : handleCompiladoGenerate()} 
-                  className="w-full h-12" 
-                  size="lg"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Enviar ao Monday
-                </Button>
-              )}
+              <Button
+                onClick={() =>
+                  tipoCartaz === 'mutirao'
+                    ? handleMutiraoSubmit()
+                    : tipoCartaz === 'individual'
+                    ? handleFormSubmit(dadosIndividual)
+                    : handleCompiladoGenerate()
+                }
+                className="w-full h-12"
+                size="lg"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Enviar ao Monday
+              </Button>
             </div>
 
             {/* Histórico - apenas admins */}
