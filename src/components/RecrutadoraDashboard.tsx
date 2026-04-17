@@ -19,7 +19,7 @@ import { MondayItemSelector } from "./MondayItemSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Edit } from "lucide-react";
+import { Send } from "lucide-react";
 import { HistoricoCartazes } from "./HistoricoCartazes";
 class CompiladoDataImpl implements CompiladoData {
   image: File | string = '';
@@ -74,7 +74,7 @@ export const RecrutadoraDashboard = () => {
     dados: any;
   } | null>(null);
 
-  const { isEditor, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   // Validação centralizada para formulário individual
   const validateIndividualForm = (dados: RecrutadoraData): boolean => {
