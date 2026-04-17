@@ -18,9 +18,12 @@ import { CartazPreviewVagaInterna } from "@/components/CartazPreviewVagaInterna"
 import { CartazPreviewDMCard } from "@/components/CartazPreviewDMCard";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
+import { MutiraoPreview } from "@/components/MutiraoPreview";
+import { MutiraoPreviewTradicional } from "@/components/MutiraoPreviewTradicional";
 import { MondayItemSelector } from "@/components/MondayItemSelector";
 import { CartazData } from "@/components/CartazGenerator";
 import { CompiladoData } from "@/components/CompiladoForm";
+import { MutiraoData } from "@/components/MutiraoForm";
 
 const Finalizar = () => {
   const { id } = useParams<{ id: string }>();
