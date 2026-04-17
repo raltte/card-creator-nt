@@ -144,33 +144,7 @@ export const MutiraoForm = ({ data, onChange }: MutiraoFormProps) => {
         </Select>
       </div>
 
-      {/* Imagem */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Imagem Ilustrativa</Label>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="border-2 border-dashed border-border rounded-lg p-3 hover:border-nt-light transition-colors">
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="mutirao-image-upload" />
-            <label htmlFor="mutirao-image-upload" className="cursor-pointer">
-              <div className="flex flex-col items-center gap-1 text-center">
-                <Upload className="w-5 h-5 text-muted-foreground" />
-                <div className="text-xs text-muted-foreground">Upload</div>
-              </div>
-            </label>
-          </div>
-          <Button type="button" variant="outline" onClick={handleGenerateAIImage} disabled={isGeneratingImage || !data.cargo} className="h-full">
-            <div className="flex flex-col items-center gap-1">
-              <Wand2 className="w-5 h-5" />
-              <div className="text-xs">{isGeneratingImage ? 'Gerando...' : 'Gerar com IA'}</div>
-            </div>
-          </Button>
-        </div>
-        {data.image && (
-          <div className="relative aspect-[9/16] max-h-32 rounded-lg overflow-hidden border-2 border-nt-light">
-            <img src={typeof data.image === 'string' ? data.image : URL.createObjectURL(data.image)} alt="Preview" className="w-full h-full object-cover" />
-          </div>
-        )}
-      </div>
-
+      {/* Imagem é selecionada/gerada na etapa de finalização (após enviar ao Monday) */}
       {/* Tipo do Mutirão */}
       <div>
         <Label htmlFor="tipo-mutirao" className="text-sm">Tipo do Mutirão *</Label>
