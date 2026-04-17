@@ -402,7 +402,13 @@ const Finalizar = () => {
                 <h2 className="text-xl font-semibold mb-4">Preview do Cartaz</h2>
                 <div className="w-full overflow-hidden" style={{ maxWidth: '100%' }}>
                   <div className="cartaz-container-large">
-                    {isCompilado ? (
+                    {isMutirao ? (
+                      mutiraoData ? (
+                        mutiraoData.modeloMutirao === 'tradicional'
+                          ? <MutiraoPreviewTradicional data={mutiraoData} />
+                          : <MutiraoPreview data={mutiraoData} />
+                      ) : null
+                    ) : isCompilado ? (
                       isMarisa && compiladoData ? (
                         <CompiladoPreviewMarisa data={compiladoData} />
                       ) : compiladoData ? (
