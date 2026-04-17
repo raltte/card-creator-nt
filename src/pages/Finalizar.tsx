@@ -338,6 +338,7 @@ const Finalizar = () => {
     return null;
   }
 
+  const isMutirao = solicitacao.modelo_cartaz?.includes('mutirao');
   const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
   const isMarisa = solicitacao.modelo_cartaz.includes('marisa');
   const isWeg = solicitacao.modelo_cartaz === 'weg';
