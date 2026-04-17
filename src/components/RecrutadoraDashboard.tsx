@@ -247,84 +247,8 @@ export const RecrutadoraDashboard = () => {
     }
   };
 
-  const handleFinalizarDireto = async (dados: RecrutadoraData) => {
-    // Validar antes de enviar
-    if (!validateIndividualForm(dados)) return;
-
-    try {
-      toast({ title: "Processando...", description: "Criando solicitação..." });
-
-      // Criar solicitação sem enviar ao Monday ainda
-      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
-        body: {
-          codigo: dados.codigoPS,
-          cargo: dados.nomeVaga,
-          tipoContrato: dados.tipoContrato,
-          modeloCartaz: tipoCartaz === 'compilado' ? `compilado-${modeloSelecionado}` : modeloSelecionado,
-          local: `${dados.cidade} - ${dados.estado}`,
-          contato: dados.captacaoCurriculo === 'whatsapp' 
-            ? { tipo: 'whatsapp', valor: dados.whatsappNumber || '' }
-            : dados.captacaoCurriculo === 'email'
-            ? { tipo: 'email', valor: dados.emailCaptacao || '' }
-            : { tipo: 'site', valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
-          requisitos: dados.requisitos.join('\n• '),
-          atividades: null,
-          linkVaga: null,
-          emailSolicitante: user?.email || null,
-          isPcd: dados.isPcd || false,
-          userId: user?.id || null,
-          sugestaoImagem: dados.sugestaoImagem || null,
-          skipMonday: true // Flag para não criar item no Monday
-        }
-      });
-
-      if (error) throw error;
-
-      // Redirecionar para a página de finalização
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
-    }
-  };
-
-  const handleFinalizarCompiladoDireto = async () => {
-    // Validar antes de enviar
-    if (!validateCompiladoForm()) return;
-
-    try {
-      toast({ title: "Processando...", description: "Criando solicitação..." });
-
-      const { data, error } = await supabase.functions.invoke('criar-solicitacao', {
-        body: {
-          codigo: dadosCompilado.vagas[0].codigo,
-          cargo: dadosCompilado.vagas.map(v => v.cargo).join(', '),
-          tipoContrato: 'Compilado',
-          modeloCartaz: `compilado-${dadosCompilado.clientTemplate}`,
-          local: dadosCompilado.local,
-          contato: dadosCompilado.contato,
-          requisitos: dadosCompilado.requisitos,
-          atividades: null,
-          linkVaga: null,
-          emailSolicitante: user?.email || null,
-          isPcd: dadosCompilado.isPcd || false,
-          userId: user?.id || null,
-          skipMonday: true
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
-    }
-  };
+  // Handlers de "Finalizar Cartaz" (skipMonday) removidos — fluxo unificado:
+  // todos os tipos enviam ao Monday primeiro e finalizam pelo link.
 
   const handleCompiladoGenerate = async () => {
     // Validar antes de enviar
