@@ -182,21 +182,24 @@ export const RecrutadoraDashboard = () => {
           local: dadosMutirao.localEntrega,
           contato: dadosMutirao.contato,
           requisitos: dadosMutirao.detalhes || null,
-          atividades: dadosMutirao.dataPrazo ? `Data/Prazo: ${dadosMutirao.dataPrazo}${dadosMutirao.mensagemExtra ? `\n${dadosMutirao.mensagemExtra}` : ''}` : (dadosMutirao.mensagemExtra || null),
+          atividades: dadosMutirao.dataPrazo
+            ? `Data/Prazo: ${dadosMutirao.dataPrazo}${dadosMutirao.mensagemExtra ? `\n${dadosMutirao.mensagemExtra}` : ''}`
+            : (dadosMutirao.mensagemExtra || null),
           linkVaga: null,
           emailSolicitante: user?.email || null,
           isPcd: false,
           userId: user?.id || null,
-          mutiraoData: dadosMutirao,
-          skipMonday: true
         }
       });
 
       if (error) throw error;
 
-      if (data?.solicitacaoId) {
-        navigate(`/finalizar/${data.solicitacaoId}`);
-      }
+      toast({
+        title: "Solicitação criada com sucesso!",
+        description: data?.mondayWarning
+          ? "Solicitação criada. Atenção: integração Monday com aviso."
+          : "Um link de finalização foi enviado para o Monday.com."
+      });
     } catch (error) {
       console.error('Erro:', error);
       toast({ title: "Erro", description: "Não foi possível criar a solicitação.", variant: "destructive" });
