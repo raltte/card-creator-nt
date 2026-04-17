@@ -105,11 +105,30 @@ const Finalizar = () => {
   // Atualiza o preview em tempo real quando campos são editados
   const atualizarPreview = (sol: any) => {
     if (!sol) return;
-    const currentImage = cartazData?.image || compiladoData?.image || '';
+    const currentImage = cartazData?.image || compiladoData?.image || mutiraoData?.image || '';
+    const isMutirao = sol.modelo_cartaz?.includes('mutirao');
     const isCompilado = sol.modelo_cartaz.includes('compilado');
     const localParts = (sol.local || '').split(' - ');
 
-    if (isCompilado) {
+    if (isMutirao) {
+      const detalhes = sol.requisitos || '';
+      const atividades = sol.atividades || '';
+      const dataPrazoMatch = atividades.match(/Data\/Prazo:\s*([^\n]+)/);
+      const dataPrazo = dataPrazoMatch ? dataPrazoMatch[1].trim() : '';
+      const mensagemExtra = atividades.replace(/Data\/Prazo:[^\n]*\n?/, '').trim();
+      setMutiraoData({
+        image: currentImage as any,
+        tipoMutirao: 'Curriculos',
+        cargo: sol.cargo,
+        tipoContrato: sol.tipo_contrato,
+        detalhes,
+        localEntrega: sol.local || '',
+        dataPrazo,
+        mensagemExtra,
+        modeloMutirao: sol.modelo_cartaz === 'mutirao-tradicional' ? 'tradicional' : 'bombril',
+        contato: { tipo: (sol.contato_tipo || 'site') as any, valor: sol.contato_valor || 'novotemporh.com.br' }
+      });
+    } else if (isCompilado) {
       setCompiladoData({
         image: currentImage,
         cidade: localParts[0] || '',
