@@ -36,6 +36,7 @@ const Finalizar = () => {
   const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview' | 'enquadramento'>('selecaoImagem');
   const [cartazData, setCartazData] = useState<CartazData | null>(null);
   const [compiladoData, setCompiladoData] = useState<CompiladoData | null>(null);
+  const [mutiraoData, setMutiraoData] = useState<MutiraoData | null>(null);
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
