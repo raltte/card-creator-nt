@@ -178,15 +178,16 @@ export const RecrutadoraDashboard = () => {
           codigo: `MUT-${Date.now()}`,
           cargo: dadosMutirao.cargo,
           tipoContrato: dadosMutirao.tipoContrato || 'Temporário',
-          modeloCartaz: dadosMutirao.modeloMutirao === 'tradicional' ? 'padrao' : 'padrao',
+          modeloCartaz: dadosMutirao.modeloMutirao === 'tradicional' ? 'mutirao-tradicional' : 'mutirao-bombril',
           local: dadosMutirao.localEntrega,
           contato: dadosMutirao.contato,
           requisitos: dadosMutirao.detalhes || null,
-          atividades: null,
+          atividades: dadosMutirao.dataPrazo ? `Data/Prazo: ${dadosMutirao.dataPrazo}${dadosMutirao.mensagemExtra ? `\n${dadosMutirao.mensagemExtra}` : ''}` : (dadosMutirao.mensagemExtra || null),
           linkVaga: null,
           emailSolicitante: user?.email || null,
           isPcd: false,
           userId: user?.id || null,
+          mutiraoData: dadosMutirao,
           skipMonday: true
         }
       });

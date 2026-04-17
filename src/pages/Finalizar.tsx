@@ -18,9 +18,12 @@ import { CartazPreviewVagaInterna } from "@/components/CartazPreviewVagaInterna"
 import { CartazPreviewDMCard } from "@/components/CartazPreviewDMCard";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
+import { MutiraoPreview } from "@/components/MutiraoPreview";
+import { MutiraoPreviewTradicional } from "@/components/MutiraoPreviewTradicional";
 import { MondayItemSelector } from "@/components/MondayItemSelector";
 import { CartazData } from "@/components/CartazGenerator";
 import { CompiladoData } from "@/components/CompiladoForm";
+import { MutiraoData } from "@/components/MutiraoForm";
 
 const Finalizar = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +36,7 @@ const Finalizar = () => {
   const [etapa, setEtapa] = useState<'selecaoImagem' | 'preview' | 'enquadramento'>('selecaoImagem');
   const [cartazData, setCartazData] = useState<CartazData | null>(null);
   const [compiladoData, setCompiladoData] = useState<CompiladoData | null>(null);
+  const [mutiraoData, setMutiraoData] = useState<MutiraoData | null>(null);
   const [isFinalizando, setIsFinalizando] = useState(false);
   const [showMondaySelector, setShowMondaySelector] = useState(false);
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
@@ -101,11 +105,30 @@ const Finalizar = () => {
   // Atualiza o preview em tempo real quando campos são editados
   const atualizarPreview = (sol: any) => {
     if (!sol) return;
-    const currentImage = cartazData?.image || compiladoData?.image || '';
+    const currentImage = cartazData?.image || compiladoData?.image || mutiraoData?.image || '';
+    const isMutirao = sol.modelo_cartaz?.includes('mutirao');
     const isCompilado = sol.modelo_cartaz.includes('compilado');
     const localParts = (sol.local || '').split(' - ');
 
-    if (isCompilado) {
+    if (isMutirao) {
+      const detalhes = sol.requisitos || '';
+      const atividades = sol.atividades || '';
+      const dataPrazoMatch = atividades.match(/Data\/Prazo:\s*([^\n]+)/);
+      const dataPrazo = dataPrazoMatch ? dataPrazoMatch[1].trim() : '';
+      const mensagemExtra = atividades.replace(/Data\/Prazo:[^\n]*\n?/, '').trim();
+      setMutiraoData({
+        image: currentImage as any,
+        tipoMutirao: 'Curriculos',
+        cargo: sol.cargo,
+        tipoContrato: sol.tipo_contrato,
+        detalhes,
+        localEntrega: sol.local || '',
+        dataPrazo,
+        mensagemExtra,
+        modeloMutirao: sol.modelo_cartaz === 'mutirao-tradicional' ? 'tradicional' : 'bombril',
+        contato: { tipo: (sol.contato_tipo || 'site') as any, valor: sol.contato_valor || 'novotemporh.com.br' }
+      });
+    } else if (isCompilado) {
       setCompiladoData({
         image: currentImage,
         cidade: localParts[0] || '',
@@ -179,9 +202,28 @@ const Finalizar = () => {
     // Save the framed image for re-framing
     setImagemBaseUrl(imagemUrl);
 
+    const isMutirao = sol.modelo_cartaz?.includes('mutirao');
     const isCompilado = sol.modelo_cartaz.includes('compilado');
 
-    if (isCompilado) {
+    if (isMutirao) {
+      const detalhes = sol.requisitos || '';
+      const atividades = sol.atividades || '';
+      const dataPrazoMatch = atividades.match(/Data\/Prazo:\s*([^\n]+)/);
+      const dataPrazo = dataPrazoMatch ? dataPrazoMatch[1].trim() : '';
+      const mensagemExtra = atividades.replace(/Data\/Prazo:[^\n]*\n?/, '').trim();
+      setMutiraoData({
+        image: imagemUrl,
+        tipoMutirao: 'Curriculos',
+        cargo: sol.cargo,
+        tipoContrato: sol.tipo_contrato,
+        detalhes,
+        localEntrega: sol.local || '',
+        dataPrazo,
+        mensagemExtra,
+        modeloMutirao: sol.modelo_cartaz === 'mutirao-tradicional' ? 'tradicional' : 'bombril',
+        contato: { tipo: (sol.contato_tipo || 'site') as any, valor: sol.contato_valor || 'novotemporh.com.br' }
+      });
+    } else if (isCompilado) {
       const localParts = (sol.local || '').split(' - ');
       const dados: CompiladoData = {
         image: imagemUrl,
@@ -296,6 +338,7 @@ const Finalizar = () => {
     return null;
   }
 
+  const isMutirao = solicitacao.modelo_cartaz?.includes('mutirao');
   const isCompilado = solicitacao.modelo_cartaz.includes('compilado');
   const isMarisa = solicitacao.modelo_cartaz.includes('marisa');
   const isWeg = solicitacao.modelo_cartaz === 'weg';
@@ -359,7 +402,13 @@ const Finalizar = () => {
                 <h2 className="text-xl font-semibold mb-4">Preview do Cartaz</h2>
                 <div className="w-full overflow-hidden" style={{ maxWidth: '100%' }}>
                   <div className="cartaz-container-large">
-                    {isCompilado ? (
+                    {isMutirao ? (
+                      mutiraoData ? (
+                        mutiraoData.modeloMutirao === 'tradicional'
+                          ? <MutiraoPreviewTradicional data={mutiraoData} />
+                          : <MutiraoPreview data={mutiraoData} />
+                      ) : null
+                    ) : isCompilado ? (
                       isMarisa && compiladoData ? (
                         <CompiladoPreviewMarisa data={compiladoData} />
                       ) : compiladoData ? (

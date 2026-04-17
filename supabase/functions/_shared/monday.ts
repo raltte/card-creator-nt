@@ -69,6 +69,8 @@ export function getModeloLabel(modelo: string | null | undefined): string {
     "dm-card": "DM",
     "compilado-padrao": "COMPILADO",
     "compilado-marisa": "Marisa COMPILADO",
+    "mutirao-bombril": "MUTIRÃO",
+    "mutirao-tradicional": "MUTIRÃO",
   };
 
   return map[modelo || ""] || "TRADICIONAL";
