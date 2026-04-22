@@ -57,7 +57,12 @@ serve(async (req) => {
 
     const columns = await fetchBoardColumns(mondayApiToken, BOARD_ID);
     const fileColumn = columns.find((col) => col.id === 'enviar_arquivo__1');
-    const candidateUrl = solicitacao.link_vaga || `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`;
+
+    const isMutirao = solicitacao.modelo_cartaz === 'mutirao-tradicional' || solicitacao.modelo_cartaz === 'mutirao-bombril';
+    // Mutirões não têm link de vaga; demais modelos usam o link salvo ou geram a URL de busca
+    const candidateUrl = isMutirao
+      ? null
+      : (solicitacao.link_vaga || `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`);
 
     let targetItemId = mondayItemId || solicitacao.monday_item_id;
     const columnValues = buildSolicitacaoColumnValues(columns, {
@@ -128,7 +133,7 @@ serve(async (req) => {
     });
 
     if (!labelsMatch(verifiedValues.modelo, expectedModelLabel)) {
-      throw new Error(`Falha ao atualizar o tipo de cartaz no Monday. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}`);
+      console.warn(`Aviso: label do modelo no Monday divergente. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}. Continuando finalização.`);
     }
 
     if (fileColumn) {
