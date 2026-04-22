@@ -69,8 +69,9 @@ export function getModeloLabel(modelo: string | null | undefined): string {
     "dm-card": "DM",
     "compilado-padrao": "COMPILADO",
     "compilado-marisa": "Marisa COMPILADO",
-    "mutirao-bombril": "MUTIRÃO",
-    "mutirao-tradicional": "MUTIRÃO",
+    // Mutirão usa label COMPILADO (board do Monday não tem label MUTIRÃO cadastrada)
+    "mutirao-bombril": "COMPILADO",
+    "mutirao-tradicional": "COMPILADO",
   };
 
   return map[modelo || ""] || "TRADICIONAL";
