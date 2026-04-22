@@ -272,7 +272,7 @@ const Finalizar = () => {
     try {
       setIsFinalizando(true);
 
-      const canvas = document.getElementById('cartaz-canvas') as HTMLCanvasElement;
+      const canvas = (document.getElementById('cartaz-canvas') || document.getElementById('cartaz-canvas-tradicional')) as HTMLCanvasElement | null;
       if (!canvas) {
         throw new Error('Canvas não encontrado');
       }
