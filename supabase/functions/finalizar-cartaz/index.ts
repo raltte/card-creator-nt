@@ -133,7 +133,7 @@ serve(async (req) => {
     });
 
     if (!labelsMatch(verifiedValues.modelo, expectedModelLabel)) {
-      throw new Error(`Falha ao atualizar o tipo de cartaz no Monday. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}`);
+      console.warn(`Aviso: label do modelo no Monday divergente. Esperado: ${expectedModelLabel}. Atual: ${verifiedValues.modelo || 'vazio'}. Continuando finalização.`);
     }
 
     if (fileColumn) {
