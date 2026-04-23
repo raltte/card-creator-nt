@@ -127,7 +127,6 @@ serve(async (req) => {
     await updateMondayItemColumns(mondayApiToken, BOARD_ID, targetItemId, columnValues);
 
     const verifiedValues = await verifyMondayItemLabels(mondayApiToken, targetItemId);
-    const expectedModelLabel = getModeloLabel(solicitacao.modelo_cartaz);
 
     console.log('Validação após finalização:', {
       expectedModelLabel,
