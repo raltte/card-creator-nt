@@ -228,11 +228,14 @@ const Finalizar = () => {
       });
     } else if (isCompilado) {
       const localParts = (sol.local || '').split(' - ');
+      const vagasFromDb = Array.isArray(sol.vagas_compilado) && sol.vagas_compilado.length > 0
+        ? sol.vagas_compilado
+        : [{ codigo: sol.codigo, cargo: sol.cargo }];
       const dados: CompiladoData = {
         image: imagemUrl,
         cidade: localParts[0] || '',
         estado: localParts[1] || '',
-        vagas: [{ codigo: sol.codigo, cargo: sol.cargo }],
+        vagas: vagasFromDb,
         requisitos: sol.requisitos || sol.atividades || '',
         isPcd: sol.is_pcd || false,
         clientTemplate: sol.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
