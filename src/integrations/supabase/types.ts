@@ -36,6 +36,7 @@ export type Database = {
           tipo_contrato: string
           updated_at: string
           user_id: string | null
+          vagas_compilado: Json | null
         }
         Insert: {
           atividades?: string | null
@@ -58,6 +59,7 @@ export type Database = {
           tipo_contrato: string
           updated_at?: string
           user_id?: string | null
+          vagas_compilado?: Json | null
         }
         Update: {
           atividades?: string | null
@@ -80,6 +82,7 @@ export type Database = {
           tipo_contrato?: string
           updated_at?: string
           user_id?: string | null
+          vagas_compilado?: Json | null
         }
         Relationships: []
       }
