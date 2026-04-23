@@ -30,12 +30,20 @@ serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const filtroModelos: string[] = body.modelos || ['mutirao-tradicional', 'mutirao-bombril'];
+    const filtroIds: string[] | null = Array.isArray(body.ids) && body.ids.length > 0 ? body.ids : null;
 
-    const { data: pendentes, error } = await supabase
+    let query = supabase
       .from('solicitacoes_cartaz')
       .select('*')
-      .in('modelo_cartaz', filtroModelos)
       .is('monday_item_id', null);
+
+    if (filtroIds) {
+      query = query.in('id', filtroIds);
+    } else {
+      query = query.in('modelo_cartaz', filtroModelos);
+    }
+
+    const { data: pendentes, error } = await query;
 
     if (error) throw error;
 
