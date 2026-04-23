@@ -270,7 +270,8 @@ export const RecrutadoraDashboard = () => {
           linkVaga: null,
           emailSolicitante: user?.email || null,
           isPcd: dadosCompilado.isPcd || false,
-          userId: user?.id || null
+          userId: user?.id || null,
+          vagasCompilado: dadosCompilado.vagas
         }
       });
 

@@ -50,7 +50,10 @@ serve(async (req) => {
         email_solicitante: solicitacaoData.emailSolicitante,
         is_pcd: solicitacaoData.isPcd || false,
         status: 'pendente_imagem',
-        user_id: validUserId
+        user_id: validUserId,
+        vagas_compilado: Array.isArray(solicitacaoData.vagasCompilado) && solicitacaoData.vagasCompilado.length > 0
+          ? solicitacaoData.vagasCompilado
+          : null
       })
       .select()
       .single();
