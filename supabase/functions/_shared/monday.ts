@@ -94,9 +94,9 @@ function resolveStatusValue(column: MondayColumn, desiredLabel: string) {
   const statusIndex = getStatusIndexByLabel(column, desiredLabel);
 
   if (statusIndex === null || Number.isNaN(statusIndex)) {
-    // Em vez de quebrar a integração, manda o label e pede para o Monday criar se não existir
-    console.warn(`Label "${desiredLabel}" não encontrada na coluna ${column.id} (${column.title || "sem título"}). Usando create_labels_if_missing.`);
-    return { label: desiredLabel, create_labels_if_missing: true };
+    // Label não encontrada exatamente — envia o texto e deixa o Monday casar/criar se necessário
+    console.warn(`Label "${desiredLabel}" não encontrada na coluna ${column.id} (${column.title || "sem título"}). Enviando como texto.`);
+    return { label: desiredLabel };
   }
 
   return { index: statusIndex };
