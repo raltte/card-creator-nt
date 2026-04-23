@@ -129,11 +129,14 @@ const Finalizar = () => {
         contato: { tipo: (sol.contato_tipo || 'site') as any, valor: sol.contato_valor || 'novotemporh.com.br' }
       });
     } else if (isCompilado) {
+      const vagasFromDb = Array.isArray(sol.vagas_compilado) && sol.vagas_compilado.length > 0
+        ? sol.vagas_compilado
+        : [{ codigo: sol.codigo, cargo: sol.cargo }];
       setCompiladoData({
         image: currentImage,
         cidade: localParts[0] || '',
         estado: localParts[1] || '',
-        vagas: [{ codigo: sol.codigo, cargo: sol.cargo }],
+        vagas: vagasFromDb,
         requisitos: sol.requisitos || sol.atividades || '',
         isPcd: sol.is_pcd || false,
         clientTemplate: sol.modelo_cartaz.includes('marisa') ? 'marisa' : 'padrao',
