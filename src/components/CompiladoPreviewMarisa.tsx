@@ -155,42 +155,92 @@ export const CompiladoPreviewMarisa = ({ data }: CompiladoPreviewMarisaProps) =>
       return lines;
     };
 
-    // Vagas - usa fonte dinâmica para caber em UMA linha
+    // Vagas - usa fonte dinâmica e quebra em múltiplas linhas se necessário,
+    // sempre respeitando a área segura (não invade a imagem).
     y += local ? 135 : 45;
 
     data.vagas.forEach((vaga) => {
       if (vaga.codigo && vaga.cargo) {
         const codigoText = `${vaga.codigo}:`;
         const cargoText = ` ${vaga.cargo}`;
-        
-        // Encontrar tamanho de fonte que caiba na área segura
+
+        // 1) Tenta caber em UMA linha reduzindo a fonte até um mínimo legível
         let fontSize = 34;
-        const minFontSize = 20;
-        
+        const minFontSizeOneLine = 24;
+
         ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-        let totalWidth = ctx.measureText(codigoText).width;
+        let codigoWidth = ctx.measureText(codigoText).width;
         ctx.font = `${fontSize}px Montserrat, Arial`;
-        totalWidth += ctx.measureText(cargoText).width;
-        
-        while (totalWidth > maxTextWidth && fontSize > minFontSize) {
+        let cargoWidth = ctx.measureText(cargoText).width;
+
+        while (codigoWidth + cargoWidth > maxTextWidth && fontSize > minFontSizeOneLine) {
           fontSize -= 1;
           ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-          totalWidth = ctx.measureText(codigoText).width;
+          codigoWidth = ctx.measureText(codigoText).width;
           ctx.font = `${fontSize}px Montserrat, Arial`;
-          totalWidth += ctx.measureText(cargoText).width;
+          cargoWidth = ctx.measureText(cargoText).width;
         }
-        
-        // Desenhar código (rosa/bold) + cargo (escuro/normal)
-        ctx.fillStyle = '#E5007E';
-        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
-        ctx.fillText(codigoText, 72, y);
-        
-        const codigoWidth = ctx.measureText(codigoText).width;
-        ctx.fillStyle = '#11332B';
-        ctx.font = `${fontSize}px Montserrat, Arial`;
-        ctx.fillText(cargoText, 72 + codigoWidth, y);
-        
-        y += fontSize + 12;
+
+        const cabeEmUmaLinha = codigoWidth + cargoWidth <= maxTextWidth;
+
+        if (cabeEmUmaLinha) {
+          ctx.fillStyle = '#E5007E';
+          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+          ctx.fillText(codigoText, 72, y);
+
+          ctx.fillStyle = '#11332B';
+          ctx.font = `${fontSize}px Montserrat, Arial`;
+          ctx.fillText(cargoText, 72 + codigoWidth, y);
+
+          y += fontSize + 12;
+        } else {
+          // 2) Quebra o cargo em múltiplas linhas com fonte legível
+          fontSize = 26;
+          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+          codigoWidth = ctx.measureText(codigoText).width;
+          ctx.font = `${fontSize}px Montserrat, Arial`;
+
+          const wrapByWidth = (text: string, firstLineMaxWidth: number, otherLinesMaxWidth: number): string[] => {
+            const words = text.trim().split(/\s+/);
+            const lines: string[] = [];
+            let current = '';
+            let isFirst = true;
+
+            for (const word of words) {
+              const test = current ? `${current} ${word}` : word;
+              const limit = isFirst ? firstLineMaxWidth : otherLinesMaxWidth;
+              if (ctx.measureText(test).width <= limit) {
+                current = test;
+              } else {
+                if (current) lines.push(current);
+                current = word;
+                isFirst = false;
+              }
+            }
+            if (current) lines.push(current);
+            return lines;
+          };
+
+          const firstLineAvailable = maxTextWidth - codigoWidth - 6;
+          const linhas = wrapByWidth(vaga.cargo, firstLineAvailable, maxTextWidth);
+
+          ctx.fillStyle = '#E5007E';
+          ctx.font = `bold ${fontSize}px Montserrat, Arial`;
+          ctx.fillText(codigoText, 72, y);
+
+          ctx.fillStyle = '#11332B';
+          ctx.font = `${fontSize}px Montserrat, Arial`;
+          if (linhas[0]) {
+            ctx.fillText(` ${linhas[0]}`, 72 + codigoWidth, y);
+          }
+          y += fontSize + 6;
+
+          for (let i = 1; i < linhas.length; i++) {
+            ctx.fillText(linhas[i], 72, y);
+            y += fontSize + 6;
+          }
+          y += 6;
+        }
       }
     });
 
