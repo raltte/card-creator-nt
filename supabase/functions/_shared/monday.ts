@@ -118,7 +118,12 @@ export function buildSolicitacaoColumnValues(columns: MondayColumn[], solicitaca
         columnValues[col.id] = resolveStatusValue(col, modeloLabel);
         break;
       case "status__1":
-        if (contratoLabel) columnValues[col.id] = resolveStatusValue(col, contratoLabel);
+        // Compilado/Mutirão não são tipos de contrato válidos no board do Monday
+        // (board aceita apenas: Efetiva, Estágio, Temporária, PJ, Terceirizada).
+        // Nesses casos não enviamos a coluna de tipo de contrato.
+        if (contratoLabel && contratoLabel !== "Compilado") {
+          columnValues[col.id] = resolveStatusValue(col, contratoLabel);
+        }
         break;
       case "texto8__1":
         if (solicitacao.local) columnValues[col.id] = solicitacao.local;
