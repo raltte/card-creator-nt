@@ -65,6 +65,9 @@ serve(async (req) => {
       : (solicitacao.link_vaga || `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(solicitacao.codigo)}`);
 
     let targetItemId = mondayItemId || solicitacao.monday_item_id;
+    const expectedModelLabel = getModeloLabel(solicitacao.modelo_cartaz);
+    console.log('Modelo do cartaz (DB):', solicitacao.modelo_cartaz, '-> label Monday:', expectedModelLabel);
+
     const columnValues = buildSolicitacaoColumnValues(columns, {
       ...solicitacao,
       link_vaga: candidateUrl,
