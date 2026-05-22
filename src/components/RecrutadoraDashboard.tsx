@@ -30,7 +30,10 @@ class CompiladoDataImpl implements CompiladoData {
   isPcd = false;
   clientTemplate: 'padrao' | 'marisa' | 'weg' = 'padrao';
   contato: { tipo: 'whatsapp' | 'email' | 'site'; valor: string } = { tipo: 'site', valor: 'novotemporh.com.br' };
-  
+  usaLogoCliente = false;
+  clienteNome = '';
+  clienteLogoUrl?: string;
+
   get local(): string {
     return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
   }
@@ -231,7 +234,9 @@ export const RecrutadoraDashboard = () => {
           emailSolicitante: user?.email || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null,
-          sugestaoImagem: dados.sugestaoImagem || null
+          sugestaoImagem: dados.sugestaoImagem || null,
+          usaLogoCliente: dados.usaLogoCliente || false,
+          clienteNome: dados.usaLogoCliente ? (dados.clienteNome || null) : null
         }
       });
 
@@ -271,7 +276,9 @@ export const RecrutadoraDashboard = () => {
           emailSolicitante: user?.email || null,
           isPcd: dadosCompilado.isPcd || false,
           userId: user?.id || null,
-          vagasCompilado: dadosCompilado.vagas
+          vagasCompilado: dadosCompilado.vagas,
+          usaLogoCliente: dadosCompilado.usaLogoCliente || false,
+          clienteNome: dadosCompilado.usaLogoCliente ? (dadosCompilado.clienteNome || null) : null
         }
       });
 
