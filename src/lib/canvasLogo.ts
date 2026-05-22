@@ -51,7 +51,7 @@ export const drawClienteLogoCombo = async (
   // "&"
   ctx.save();
   ctx.fillStyle = ampersandColor;
-  ctx.font = `300 ${Math.round(maxHeight * 0.7)}px Montserrat, Arial`;
+  ctx.font = `400 ${Math.round(maxHeight * 0.45)}px Montserrat, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('&', x + slotWidth + gap + ampWidth / 2, y + maxHeight / 2);
