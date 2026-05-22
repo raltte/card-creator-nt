@@ -310,6 +310,9 @@ export const RecrutadoraDashboard = () => {
       : dadosIndividual.captacaoCurriculo === 'email'
       ? { tipo: 'email' as const, valor: dadosIndividual.emailCaptacao || '' }
       : { tipo: 'site' as const, valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
+    usaLogoCliente: modeloSelecionado === 'padrao' ? !!dadosIndividual.usaLogoCliente : false,
+    clienteNome: dadosIndividual.clienteNome || '',
+    clienteLogoUrl: undefined,
     local: dadosIndividual.cidade && dadosIndividual.estado ? `${dadosIndividual.cidade} - ${dadosIndividual.estado}` : ""
   });
 
@@ -323,6 +326,8 @@ export const RecrutadoraDashboard = () => {
     updated.isPcd = newData.isPcd;
     updated.clientTemplate = newData.clientTemplate;
     updated.contato = newData.contato;
+    updated.usaLogoCliente = newData.clientTemplate === 'padrao' ? !!newData.usaLogoCliente : false;
+    updated.clienteNome = newData.clienteNome || '';
     setDadosCompilado(updated);
   };
 
