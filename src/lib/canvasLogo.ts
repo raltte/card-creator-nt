@@ -29,7 +29,7 @@ export const drawClienteLogoCombo = async (
   const ntIcon = await loadImg(ntIconSrc);
   const clienteLogo = clienteLogoUrl ? await loadImg(clienteLogoUrl) : null;
 
-  const gap = totalWidth * 1.0;
+  const gap = totalWidth * 0.025;
   const ampWidth = totalWidth * 0.08;
   const slotWidth = (totalWidth - ampWidth - gap * 2) / 2;
 
