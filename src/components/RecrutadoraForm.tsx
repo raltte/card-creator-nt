@@ -23,6 +23,8 @@ export interface RecrutadoraData {
   setorAtuacaoOutro?: string;
   sugestaoImagem?: string;
   isPcd?: boolean;
+  usaLogoCliente?: boolean;
+  clienteNome?: string;
 }
 
 interface RecrutadoraFormProps {
@@ -50,7 +52,9 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
     setorAtuacao: "",
     setorAtuacaoOutro: "",
     sugestaoImagem: "",
-    isPcd: false
+    isPcd: false,
+    usaLogoCliente: false,
+    clienteNome: ""
   });
 
   const formData = isControlled ? externalData : internalFormData;

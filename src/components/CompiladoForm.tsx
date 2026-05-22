@@ -23,6 +23,8 @@ export interface CompiladoData {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
   };
+  usaLogoCliente?: boolean;
+  clienteNome?: string;
   // Computed field for backward compatibility
   get local(): string;
 }
