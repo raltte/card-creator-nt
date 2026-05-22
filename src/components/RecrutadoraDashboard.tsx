@@ -30,7 +30,10 @@ class CompiladoDataImpl implements CompiladoData {
   isPcd = false;
   clientTemplate: 'padrao' | 'marisa' | 'weg' = 'padrao';
   contato: { tipo: 'whatsapp' | 'email' | 'site'; valor: string } = { tipo: 'site', valor: 'novotemporh.com.br' };
-  
+  usaLogoCliente = false;
+  clienteNome = '';
+  clienteLogoUrl?: string;
+
   get local(): string {
     return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
   }
@@ -231,7 +234,9 @@ export const RecrutadoraDashboard = () => {
           emailSolicitante: user?.email || null,
           isPcd: dados.isPcd || false,
           userId: user?.id || null,
-          sugestaoImagem: dados.sugestaoImagem || null
+          sugestaoImagem: dados.sugestaoImagem || null,
+          usaLogoCliente: dados.usaLogoCliente || false,
+          clienteNome: dados.usaLogoCliente ? (dados.clienteNome || null) : null
         }
       });
 
@@ -271,7 +276,9 @@ export const RecrutadoraDashboard = () => {
           emailSolicitante: user?.email || null,
           isPcd: dadosCompilado.isPcd || false,
           userId: user?.id || null,
-          vagasCompilado: dadosCompilado.vagas
+          vagasCompilado: dadosCompilado.vagas,
+          usaLogoCliente: dadosCompilado.usaLogoCliente || false,
+          clienteNome: dadosCompilado.usaLogoCliente ? (dadosCompilado.clienteNome || null) : null
         }
       });
 
@@ -303,6 +310,9 @@ export const RecrutadoraDashboard = () => {
       : dadosIndividual.captacaoCurriculo === 'email'
       ? { tipo: 'email' as const, valor: dadosIndividual.emailCaptacao || '' }
       : { tipo: 'site' as const, valor: modeloSelecionado === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br' },
+    usaLogoCliente: modeloSelecionado === 'padrao' ? !!dadosIndividual.usaLogoCliente : false,
+    clienteNome: dadosIndividual.clienteNome || '',
+    clienteLogoUrl: undefined,
     local: dadosIndividual.cidade && dadosIndividual.estado ? `${dadosIndividual.cidade} - ${dadosIndividual.estado}` : ""
   });
 
@@ -316,6 +326,8 @@ export const RecrutadoraDashboard = () => {
     updated.isPcd = newData.isPcd;
     updated.clientTemplate = newData.clientTemplate;
     updated.contato = newData.contato;
+    updated.usaLogoCliente = newData.clientTemplate === 'padrao' ? !!newData.usaLogoCliente : false;
+    updated.clienteNome = newData.clienteNome || '';
     setDadosCompilado(updated);
   };
 

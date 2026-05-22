@@ -34,6 +34,26 @@ serve(async (req) => {
       ? solicitacaoData.userId
       : null;
 
+    // Normaliza o nome do cliente em slug e busca logo existente
+    const slugify = (name: string): string =>
+      name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+    const clienteNome = solicitacaoData.usaLogoCliente && solicitacaoData.clienteNome
+      ? String(solicitacaoData.clienteNome).trim()
+      : null;
+    const clienteSlug = clienteNome ? slugify(clienteNome) : null;
+    let clienteLogoUrl: string | null = null;
+    if (clienteSlug) {
+      const { data: existingLogo } = await supabase
+        .from('client_logos')
+        .select('logo_url')
+        .eq('slug', clienteSlug)
+        .maybeSingle();
+      clienteLogoUrl = existingLogo?.logo_url || null;
+    }
+
     const { data: solicitacao, error: insertError } = await supabase
       .from('solicitacoes_cartaz')
       .insert({
@@ -53,7 +73,10 @@ serve(async (req) => {
         user_id: validUserId,
         vagas_compilado: Array.isArray(solicitacaoData.vagasCompilado) && solicitacaoData.vagasCompilado.length > 0
           ? solicitacaoData.vagasCompilado
-          : null
+          : null,
+        cliente_nome: clienteNome,
+        cliente_slug: clienteSlug,
+        cliente_logo_url: clienteLogoUrl
       })
       .select()
       .single();

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Send, Upload, Save, Crop } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Upload, Save, Crop, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,7 @@ import { MondayItemSelector } from "@/components/MondayItemSelector";
 import { CartazData } from "@/components/CartazGenerator";
 import { CompiladoData } from "@/components/CompiladoForm";
 import { MutiraoData } from "@/components/MutiraoForm";
+import { slugifyClient } from "@/lib/clientLogo";
 
 const Finalizar = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +43,53 @@ const Finalizar = () => {
   const [imagemFinalizada, setImagemFinalizada] = useState<string | null>(null);
   const [imagemBaseUrl, setImagemBaseUrl] = useState<string | null>(null); // framed image for enquadramento
   const [imagemOriginalUrl, setImagemOriginalUrl] = useState<string | null>(null); // original unframed image
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleUploadClienteLogo = async (file: File) => {
+    if (!solicitacao || !id || !solicitacao.cliente_nome) return;
+    try {
+      setUploadingLogo(true);
+      const slug = solicitacao.cliente_slug || slugifyClient(solicitacao.cliente_nome);
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+      const path = `${slug}-${Date.now()}.${ext}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from('client-logos')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('client-logos').getPublicUrl(path);
+      const logoUrl = urlData.publicUrl;
+
+      // Atualiza solicitação
+      await supabase
+        .from('solicitacoes_cartaz')
+        .update({ cliente_logo_url: logoUrl, cliente_slug: slug })
+        .eq('id', id);
+
+      // Upsert no banco de logos por cliente
+      const { data: existing } = await supabase
+        .from('client_logos')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+      if (existing) {
+        await supabase.from('client_logos').update({ logo_url: logoUrl, nome: solicitacao.cliente_nome }).eq('id', existing.id);
+      } else {
+        await supabase.from('client_logos').insert({ slug, nome: solicitacao.cliente_nome, logo_url: logoUrl });
+      }
+
+      const updated = { ...solicitacao, cliente_logo_url: logoUrl, cliente_slug: slug };
+      setSolicitacao(updated);
+      atualizarPreview(updated);
+      toast({ title: 'Logo enviado!', description: 'Logo do cliente aplicado ao cartaz e salvo no banco.' });
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Erro', description: 'Falha ao enviar o logo do cliente.', variant: 'destructive' });
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -144,6 +192,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || 'novotemporh.com.br'
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     } else {
@@ -161,6 +212,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || 'novotemporh.com.br'
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     }
@@ -243,6 +297,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || (sol.modelo_cartaz.includes('marisa') ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
@@ -264,6 +321,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || (sol.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }

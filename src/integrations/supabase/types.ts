@@ -14,10 +14,40 @@ export type Database = {
   }
   public: {
     Tables: {
+      client_logos: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string
+          nome: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url: string
+          nome: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string
+          nome?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       solicitacoes_cartaz: {
         Row: {
           atividades: string | null
           cargo: string
+          cliente_logo_url: string | null
+          cliente_nome: string | null
+          cliente_slug: string | null
           codigo: string
           contato_tipo: string | null
           contato_valor: string | null
@@ -41,6 +71,9 @@ export type Database = {
         Insert: {
           atividades?: string | null
           cargo: string
+          cliente_logo_url?: string | null
+          cliente_nome?: string | null
+          cliente_slug?: string | null
           codigo: string
           contato_tipo?: string | null
           contato_valor?: string | null
@@ -64,6 +97,9 @@ export type Database = {
         Update: {
           atividades?: string | null
           cargo?: string
+          cliente_logo_url?: string | null
+          cliente_nome?: string | null
+          cliente_slug?: string | null
           codigo?: string
           contato_tipo?: string | null
           contato_valor?: string | null
