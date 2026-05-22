@@ -145,6 +145,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || 'novotemporh.com.br'
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     } else {
@@ -247,6 +250,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || (sol.modelo_cartaz.includes('marisa') ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
