@@ -29,8 +29,8 @@ export const drawClienteLogoCombo = async (
   const ntIcon = await loadImg(ntIconSrc);
   const clienteLogo = clienteLogoUrl ? await loadImg(clienteLogoUrl) : null;
 
-  const gap = totalWidth * 0.04;
-  const ampWidth = totalWidth * 0.12;
+  const gap = totalWidth * 0.025;
+  const ampWidth = totalWidth * 0.08;
   const slotWidth = (totalWidth - ampWidth - gap * 2) / 2;
 
   const drawCentered = (img: HTMLImageElement, slotX: number) => {
@@ -51,7 +51,7 @@ export const drawClienteLogoCombo = async (
   // "&"
   ctx.save();
   ctx.fillStyle = ampersandColor;
-  ctx.font = `400 ${Math.round(maxHeight * 0.45)}px Montserrat, Arial`;
+  ctx.font = `400 ${Math.round(maxHeight * 0.35)}px Montserrat, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('&', x + slotWidth + gap + ampWidth / 2, y + maxHeight / 2);
