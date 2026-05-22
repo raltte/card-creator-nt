@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X, Briefcase, MapPin, MessageSquare, ListChecks, ImageIcon, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, X, Briefcase, MapPin, MessageSquare, ListChecks, ImageIcon, GripVertical, ChevronUp, ChevronDown, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface RecrutadoraData {
@@ -446,6 +446,44 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
             </div>
           )}
         </div>
+      </div>
+
+      {/* Seção: Logo do Cliente */}
+      <div className="form-section">
+        <div className="form-section-title">
+          <Building2 className="w-4 h-4" />
+          Logo do Cliente
+          <span className="text-xs font-normal text-muted-foreground ml-auto">(opcional)</span>
+        </div>
+
+        <div className="flex items-center justify-between p-4 bg-accent/30 border border-accent/50 rounded-xl">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-semibold">Exibir logo do cliente no cartaz</Label>
+            <p className="text-xs text-muted-foreground">
+              O cartaz mostrará o ícone NT, "&" e o logo do cliente (estilo WEG). O upload do logo é feito pelo designer na finalização.
+            </p>
+          </div>
+          <Switch
+            checked={!!formData.usaLogoCliente}
+            onCheckedChange={(checked) => updateFormData('usaLogoCliente', checked)}
+          />
+        </div>
+
+        {formData.usaLogoCliente && (
+          <div className="mt-3">
+            <Label htmlFor="cliente-nome" className="text-sm font-medium">Nome do cliente *</Label>
+            <Input
+              id="cliente-nome"
+              placeholder="Ex: Britânia"
+              value={formData.clienteNome || ""}
+              onChange={(e) => updateFormData('clienteNome', e.target.value)}
+              className="mt-1.5 h-11"
+            />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              Se o cliente já tem logo cadastrado, ele será sugerido ao designer na finalização.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Seção: Imagem */}
