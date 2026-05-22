@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { CompiladoData } from "./CompiladoForm";
 import logoImage from "@/assets/novo-tempo-logo-light-bg.png";
+import ntIconImage from "@/assets/logo-nt-icon.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
+import { drawClienteLogoCombo } from "@/lib/canvasLogo";
 
 interface CompiladoPreviewProps {
   data: CompiladoData;
@@ -366,16 +368,32 @@ export const CompiladoPreview = ({ data }: CompiladoPreviewProps) => {
       });
     }
 
-    // Logo no topo direito
-    const logo = new Image();
-    logo.src = logoImage;
-    await new Promise((resolve) => {
-      logo.onload = resolve;
-    });
-    
+    // Logo no topo direito (ou combo NT + & + cliente quando ativado)
     const logoWidth = 360;
-    const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, 648, topOffset + 45, logoWidth, logoHeight);
+    const logoY = topOffset + 45;
+    let logoHeight: number;
+
+    if (data.usaLogoCliente) {
+      logoHeight = 90;
+      await drawClienteLogoCombo(ctx, {
+        x: 648,
+        y: logoY,
+        totalWidth: logoWidth,
+        maxHeight: logoHeight,
+        ntIconSrc: ntIconImage,
+        clienteLogoUrl: data.clienteLogoUrl,
+        ampersandColor: '#11332B',
+        placeholderText: data.clienteNome?.toUpperCase() || 'LOGO CLIENTE',
+      });
+    } else {
+      const logo = new Image();
+      logo.src = logoImage;
+      await new Promise((resolve) => {
+        logo.onload = resolve;
+      });
+      logoHeight = (logoWidth * logo.height) / logo.width;
+      ctx.drawImage(logo, 648, logoY, logoWidth, logoHeight);
+    }
 
     // Desenhar imagem no lado direito com bordas arredondadas
     const imageX = 594;
