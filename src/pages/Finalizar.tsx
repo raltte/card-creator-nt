@@ -24,6 +24,7 @@ import { MondayItemSelector } from "@/components/MondayItemSelector";
 import { CartazData } from "@/components/CartazGenerator";
 import { CompiladoData } from "@/components/CompiladoForm";
 import { MutiraoData } from "@/components/MutiraoForm";
+import { slugifyClient } from "@/lib/clientLogo";
 
 const Finalizar = () => {
   const { id } = useParams<{ id: string }>();
@@ -161,6 +162,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || 'novotemporh.com.br'
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     }
@@ -264,6 +268,9 @@ const Finalizar = () => {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || (sol.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
         },
+        usaLogoCliente: !!sol.cliente_nome,
+        clienteNome: sol.cliente_nome || '',
+        clienteLogoUrl: sol.cliente_logo_url || undefined,
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
