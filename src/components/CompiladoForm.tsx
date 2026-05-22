@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2, Globe } from "lucide-react";
+import { Plus, Trash2, Globe, Building2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export interface CompiladoVaga {
@@ -321,6 +321,33 @@ export const CompiladoForm = ({ data, onChange }: CompiladoFormProps) => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Logo do Cliente */}
+      <div className="space-y-3 p-3 border rounded-lg">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Logo do cliente
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Mostra ícone NT + "&" + logo do cliente no cartaz.
+            </p>
+          </div>
+          <Switch
+            checked={!!data.usaLogoCliente}
+            onCheckedChange={(checked) => updateData('usaLogoCliente', checked)}
+          />
+        </div>
+        {data.usaLogoCliente && (
+          <Input
+            placeholder="Nome do cliente (ex: Britânia)"
+            value={data.clienteNome || ""}
+            onChange={(e) => updateData('clienteNome', e.target.value)}
+            className="h-10"
+          />
+        )}
       </div>
     </div>
   );
