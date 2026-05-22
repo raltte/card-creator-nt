@@ -567,6 +567,63 @@ const Finalizar = () => {
                       />
                     </div>
                   )}
+
+                  {solicitacao.cliente_nome && (
+                    <div className="rounded-md border border-dashed border-nt-light/40 bg-nt-light/5 p-3 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-nt-light" />
+                        <Label className="text-xs font-semibold uppercase tracking-wide">
+                          Logo do cliente
+                        </Label>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Nome do cliente</Label>
+                        <Input
+                          value={solicitacao.cliente_nome || ''}
+                          onChange={(e) => {
+                            const nome = e.target.value;
+                            const slug = slugifyClient(nome);
+                            const updated = { ...solicitacao, cliente_nome: nome, cliente_slug: slug };
+                            setSolicitacao(updated);
+                            atualizarPreview(updated);
+                          }}
+                        />
+                      </div>
+                      {solicitacao.cliente_logo_url && (
+                        <div className="flex items-center gap-3 rounded bg-background/60 p-2">
+                          <img
+                            src={solicitacao.cliente_logo_url}
+                            alt={`Logo ${solicitacao.cliente_nome}`}
+                            className="h-12 w-12 object-contain bg-white rounded"
+                          />
+                          <p className="text-xs text-muted-foreground truncate flex-1">
+                            Logo atual aplicado ao cartaz.
+                          </p>
+                        </div>
+                      )}
+                      <div>
+                        <Label htmlFor="cliente-logo-upload" className="text-xs">
+                          {solicitacao.cliente_logo_url ? 'Substituir logo' : 'Enviar logo (PNG transparente recomendado)'}
+                        </Label>
+                        <Input
+                          id="cliente-logo-upload"
+                          type="file"
+                          accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                          disabled={uploadingLogo || !solicitacao.cliente_nome}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadClienteLogo(file);
+                            e.target.value = '';
+                          }}
+                        />
+                        {uploadingLogo && (
+                          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                            <Loader2 className="h-3 w-3 animate-spin" /> Enviando logo…
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-6 space-y-3">
