@@ -25,6 +25,7 @@ export interface CompiladoData {
   };
   usaLogoCliente?: boolean;
   clienteNome?: string;
+  clienteLogoUrl?: string;
   // Computed field for backward compatibility
   get local(): string;
 }
