@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { CartazData } from "./CartazGenerator";
 import logoImage from "@/assets/novo-tempo-logo-light-bg.png"; // Logo para fundo claro
+import ntIconImage from "@/assets/logo-nt-icon.png";
 import whatsappIcon from "@/assets/whatsapp.svg";
+import { drawClienteLogoCombo } from "@/lib/canvasLogo";
 
 interface CartazPreviewVagaInternaProps {
   data: CartazData;
@@ -96,18 +98,32 @@ export const CartazPreviewVagaInterna = ({ data }: CartazPreviewVagaInternaProps
     ctx.roundRect(leftWidth, topOffset, rightWidth, rightHeight, [0, 24, 0, 0]);
     ctx.fill();
 
-    // Logo Novo Tempo
-    const logo = new Image();
-    logo.src = logoImage;
-    await new Promise((resolve) => {
-      logo.onload = resolve;
-    });
-    
+    // Logo Novo Tempo (ou combo NT + & + cliente quando ativado)
     const contentOffset = 45;
     const contentX = leftWidth + 24;
     const logoWidth = 400;
-    const logoHeight = (logoWidth * logo.height) / logo.width;
-    ctx.drawImage(logo, contentX, topOffset + contentOffset + 90, logoWidth, logoHeight);
+
+    if (data.usaLogoCliente) {
+      await drawClienteLogoCombo(ctx, {
+        x: contentX,
+        y: topOffset + contentOffset + 90,
+        totalWidth: logoWidth,
+        maxHeight: 110,
+        ntIconSrc: ntIconImage,
+        clienteLogoUrl: data.clienteLogoUrl,
+        ampersandColor: '#11332B',
+        placeholderText: data.clienteNome?.toUpperCase() || 'LOGO CLIENTE',
+      });
+    } else {
+      const logo = new Image();
+      logo.src = logoImage;
+      await new Promise((resolve) => {
+        logo.onload = resolve;
+      });
+      
+      const logoHeight = (logoWidth * logo.height) / logo.width;
+      ctx.drawImage(logo, contentX, topOffset + contentOffset + 90, logoWidth, logoHeight);
+    }
 
     // "Trabalhe conosco" - título principal
     ctx.fillStyle = '#11332B'; // Verde escuro
