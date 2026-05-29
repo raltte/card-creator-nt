@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Upload, Globe, MessageCircle, Mail, Wand2 } from "lucide-react";
+import { Upload, Globe, MessageCircle, Mail, Wand2, Building2 } from "lucide-react";
 import { CartazData } from "./CartazGenerator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -446,6 +446,33 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Logo do Cliente */}
+      <div className="space-y-3 p-3 border rounded-lg">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Logo do cliente
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Mostra ícone NT + "&" + logo do cliente no cartaz.
+            </p>
+          </div>
+          <Switch
+            checked={!!data.usaLogoCliente}
+            onCheckedChange={(checked) => updateData('usaLogoCliente', checked)}
+          />
+        </div>
+        {data.usaLogoCliente && (
+          <Input
+            placeholder="Nome do cliente (ex: Britânia)"
+            value={data.clienteNome || ""}
+            onChange={(e) => updateData('clienteNome', e.target.value)}
+            className="h-10"
+          />
+        )}
       </div>
     </div>
   );
