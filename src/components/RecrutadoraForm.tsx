@@ -35,7 +35,7 @@ interface RecrutadoraFormProps {
   showTextoDestaque?: boolean;
 }
 
-export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: RecrutadoraFormProps) => {
+export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange, showTextoDestaque }: RecrutadoraFormProps) => {
   const { toast } = useToast();
   
   // Use external data if provided, otherwise use internal state
