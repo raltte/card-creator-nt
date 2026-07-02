@@ -11,6 +11,7 @@ import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
 import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
+import { CartazPreviewTramasso } from "./CartazPreviewTramasso";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
 import { MutiraoPreview } from "./MutiraoPreview";
@@ -56,7 +57,7 @@ export const RecrutadoraDashboard = () => {
     modeloMutirao: 'bombril',
     contato: { tipo: 'site', valor: 'novotemporh.com.br' }
   });
-  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card'>('padrao');
+  const [modeloSelecionado, setModeloSelecionado] = useState<'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card' | 'tramasso'>('padrao');
   const [dadosIndividual, setDadosIndividual] = useState<any>({
     nomeVaga: "",
     codigoPS: "",
@@ -304,7 +305,7 @@ export const RecrutadoraDashboard = () => {
     tipoContrato: dadosIndividual.tipoContrato || '',
     requisitos: dadosIndividual.requisitos?.join('\n• ') || '',
     isPcd: dadosIndividual.isPcd || false,
-    clientTemplate: modeloSelecionado as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card',
+    clientTemplate: modeloSelecionado as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card' | 'tramasso',
     contato: dadosIndividual.captacaoCurriculo === 'whatsapp'
       ? { tipo: 'whatsapp' as const, valor: dadosIndividual.whatsappNumber || '' }
       : dadosIndividual.captacaoCurriculo === 'email'
@@ -345,6 +346,7 @@ export const RecrutadoraDashboard = () => {
           {modeloSelecionado === 'weg' && <CartazPreviewWeg data={getIndividualPreviewData()} />}
           {modeloSelecionado === 'marisa' && <CartazPreviewMarisa data={getIndividualPreviewData()} />}
           {modeloSelecionado === 'dm-card' && <CartazPreviewDMCard data={getIndividualPreviewData()} />}
+          {modeloSelecionado === 'tramasso' && <CartazPreviewTramasso data={getIndividualPreviewData()} />}
         </>
       );
     }
@@ -399,7 +401,7 @@ export const RecrutadoraDashboard = () => {
               <Tabs 
                   value={modeloSelecionado} 
                   onValueChange={(value) => {
-                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card');
+                    setModeloSelecionado(value as 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card' | 'tramasso');
                     if (tipoCartaz === 'compilado') {
                       const updated = new CompiladoDataImpl();
                       Object.assign(updated, dadosCompilado);
@@ -420,11 +422,12 @@ export const RecrutadoraDashboard = () => {
                       <TabsTrigger value="marisa">Marisa</TabsTrigger>
                     </TabsList>
                   ) : (
-                    <TabsList className="grid w-full max-w-md grid-cols-4">
+                    <TabsList className="grid w-full max-w-2xl grid-cols-5">
                       <TabsTrigger value="padrao">Tradicional</TabsTrigger>
                       <TabsTrigger value="vaga-interna">Vaga Interna</TabsTrigger>
                       <TabsTrigger value="weg">WEG</TabsTrigger>
                       <TabsTrigger value="marisa">Marisa</TabsTrigger>
+                      <TabsTrigger value="tramasso">Tramasso IDH</TabsTrigger>
                     </TabsList>
                   )}
                 </Tabs>
