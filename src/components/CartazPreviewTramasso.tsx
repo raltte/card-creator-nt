@@ -68,30 +68,57 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
-    const SIDE_MARGIN = 60;
-    const TOP_MARGIN = 60;
+    const SIDE_MARGIN = 55;
+    const TOP_MARGIN = 55;
 
     // ---------- top-left pill "UMA OPORTUNIDADE..." ----------
-    const badgePadX = 32;
-    const badgePadY = 20;
-    const badgeLines = ["UMA OPORTUNIDADE", "EXCLUSIVA E SELECIONADA", "POR TRAMASSOIDH"];
-    ctx.font = "800 21px Montserrat, Arial";
-    const badgeTextW = Math.max(...badgeLines.map((l) => ctx.measureText(l).width));
+    // Hierarquia: linhas 1-2 em peso semibold; "POR" leve + "TRAMASSOIDH" black
+    const badgePadX = 26;
+    const badgePadY = 16;
+    const badgeLineH = 20;
+    const badgeFontSize = 15;
+
+    const line1 = "UMA OPORTUNIDADE";
+    const line2 = "EXCLUSIVA E SELECIONADA";
+    const line3a = "POR ";
+    const line3b = "TRAMASSOIDH";
+
+    ctx.font = `700 ${badgeFontSize}px Montserrat, Arial`;
+    const w1 = ctx.measureText(line1).width;
+    const w2 = ctx.measureText(line2).width;
+    ctx.font = `600 ${badgeFontSize}px Montserrat, Arial`;
+    const w3a = ctx.measureText(line3a).width;
+    ctx.font = `900 ${badgeFontSize}px Montserrat, Arial`;
+    const w3b = ctx.measureText(line3b).width;
+    const w3 = w3a + w3b;
+
+    const badgeTextW = Math.max(w1, w2, w3);
     const badgeW = badgeTextW + badgePadX * 2;
-    const lineH = 26;
-    const badgeH = badgeLines.length * lineH + badgePadY * 2 - 6;
+    const badgeH = badgeLineH * 3 + badgePadY * 2;
+
     ctx.fillStyle = TRAMASSO_GREEN;
     ctx.beginPath();
     ctx.roundRect(SIDE_MARGIN, TOP_MARGIN, badgeW, badgeH, badgeH / 2);
     ctx.fill();
+
     ctx.fillStyle = TRAMASSO_DARK;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const badgeCX = SIDE_MARGIN + badgeW / 2;
-    const startY = TOP_MARGIN + badgePadY + lineH / 2 - 2;
-    badgeLines.forEach((line, i) => {
-      ctx.fillText(line, badgeCX, startY + i * lineH);
-    });
+    const line1Y = TOP_MARGIN + badgePadY + badgeLineH / 2;
+    const line2Y = line1Y + badgeLineH;
+    const line3Y = line2Y + badgeLineH;
+
+    ctx.font = `700 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line1, badgeCX, line1Y);
+    ctx.fillText(line2, badgeCX, line2Y);
+    // Linha 3 mista: "POR " (600) + "TRAMASSOIDH" (900)
+    ctx.textAlign = "left";
+    const line3StartX = badgeCX - w3 / 2;
+    ctx.font = `600 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line3a, line3StartX, line3Y);
+    ctx.font = `900 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line3b, line3StartX + w3a, line3Y);
 
     // ---------- top-right logo ----------
     const logo = new Image();
@@ -103,7 +130,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     });
     if (logo.width) {
       const logoMaxH = 130;
-      const logoMaxW = 210;
+      const logoMaxW = 200;
       const asp = logo.width / logo.height;
       let lh = logoMaxH;
       let lw = lh * asp;
@@ -111,7 +138,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         lw = logoMaxW;
         lh = lw / asp;
       }
-      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 6, lw, lh);
+      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 4, lw, lh);
     }
 
     // ---------- Title: "Vaga para [Cargo]" ----------
@@ -184,27 +211,31 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.beginPath();
     ctx.arc(iconCX, iconCY, iconR, 0, Math.PI * 2);
     ctx.fill();
-    // arrow down-left inside
-    ctx.strokeStyle = TRAMASSO_DARK;
+    // Ícone: seta diagonal apontando para baixo-esquerda (BRANCA)
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.fillStyle = "#FFFFFF";
     ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.beginPath();
-    ctx.moveTo(iconCX + 10, iconCY - 10);
-    ctx.lineTo(iconCX - 10, iconCY + 10);
+    ctx.moveTo(iconCX + 9, iconCY - 9);
+    ctx.lineTo(iconCX - 9, iconCY + 9);
     ctx.stroke();
+    // Ponta da seta
     ctx.beginPath();
-    ctx.moveTo(iconCX - 10, iconCY + 2);
-    ctx.lineTo(iconCX - 10, iconCY + 10);
-    ctx.lineTo(iconCX - 2, iconCY + 10);
+    ctx.moveTo(iconCX - 9, iconCY + 1);
+    ctx.lineTo(iconCX - 9, iconCY + 9);
+    ctx.lineTo(iconCX - 1, iconCY + 9);
     ctx.stroke();
 
     // desc text
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    let descFont = 26;
+    let descFont = 25;
     const descMaxW = descPillW - (iconR * 2 + 60);
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 16) {
+    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 15) {
       descFont -= 1;
       ctx.font = `500 ${descFont}px Montserrat, Arial`;
     }
@@ -217,21 +248,21 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     // ---------- Bottom row: location pill | code pill | candidate-se ----------
     const rowY = buttonsY;
-    const rowH = 78;
-    const gap = 20;
+    const rowH = 74;
+    const gap = 18;
 
     // Candidate-se green pill (right side, largest)
-    ctx.font = "bold 26px Montserrat, Arial";
+    ctx.font = "bold 24px Montserrat, Arial";
     const ctaLabel = "Candidate-se";
-    const ctaW = ctx.measureText(ctaLabel).width + 100;
-    const ctaX = W - 60 - ctaW;
+    const ctaW = ctx.measureText(ctaLabel).width + 90;
+    const ctaX = W - SIDE_MARGIN - ctaW;
 
     // Location pill
     ctx.font = "500 24px Montserrat, Arial";
     const locText = data.local || "Cidade - UF";
     const locTextW = ctx.measureText(locText).width;
     const locW = locTextW + 90; // icon + padding
-    const locX = 60;
+    const locX = SIDE_MARGIN;
 
     // Code pill (middle)
     const codeText = `Cód.: ${data.codigo || "0000"}`;
@@ -242,30 +273,31 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     // Ensure they fit
     const totalRow = locW + gap + codeW + gap + ctaW;
-    const maxRow = W - 120;
+    const maxRow = W - SIDE_MARGIN * 2;
     let sc = 1;
     if (totalRow > maxRow) sc = maxRow / totalRow;
     const finalLocW = locW * sc;
     const finalCodeW = codeW * sc;
     const finalCtaW = ctaW * sc;
     const finalCodeX = locX + finalLocW + gap;
-    const finalCtaX = W - 60 - finalCtaW;
+    const finalCtaX = W - SIDE_MARGIN - finalCtaW;
 
     const drawOutlinedPill = (x: number, y: number, w: number, h: number, iconDraw: (cx: number, cy: number) => void, text: string) => {
-      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, h / 2);
       ctx.stroke();
       const cy = y + h / 2;
-      const cIconR = 20;
-      const cIconCX = x + 22 + cIconR;
+      const cIconR = 19;
+      const cIconCX = x + 20 + cIconR;
       ctx.fillStyle = TRAMASSO_GREEN;
       ctx.beginPath();
       ctx.arc(cIconCX, cy, cIconR, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = TRAMASSO_DARK;
-      ctx.fillStyle = TRAMASSO_DARK;
+      // Ícones internos em BRANCO
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.fillStyle = "#FFFFFF";
       iconDraw(cIconCX, cy);
       ctx.fillStyle = "#FFFFFF";
       ctx.textAlign = "left";
@@ -274,19 +306,26 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       ctx.fillText(text, cIconCX + cIconR + 14, cy);
     };
 
-    // location icon (map pin)
+    // location icon (map pin) - branco
     drawOutlinedPill(locX, rowY, finalLocW, rowH, (cx, cy) => {
+      ctx.fillStyle = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(cx, cy - 3, 7, Math.PI, 0, false);
       ctx.lineTo(cx, cy + 10);
       ctx.closePath();
       ctx.fill();
+      // furo interno do pin
+      ctx.fillStyle = TRAMASSO_GREEN;
+      ctx.beginPath();
+      ctx.arc(cx, cy - 3, 2.5, 0, Math.PI * 2);
+      ctx.fill();
     }, locText);
 
-    // code icon (magnifying glass)
+    // code icon (magnifying glass) - branco
     drawOutlinedPill(finalCodeX, rowY, finalCodeW, rowH, (cx, cy) => {
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = TRAMASSO_DARK;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(cx - 2, cy - 2, 7, 0, Math.PI * 2);
       ctx.stroke();
@@ -302,29 +341,30 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.roundRect(finalCtaX, rowY, finalCtaW, rowH, rowH / 2);
     ctx.fill();
     ctx.fillStyle = TRAMASSO_DARK;
-    ctx.font = "bold 26px Montserrat, Arial";
+    ctx.font = "600 24px Montserrat, Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(ctaLabel, finalCtaX + finalCtaW / 2, rowY + rowH / 2);
 
-    // ---------- Footer text ----------
+    // ---------- Footer text (tudo branco, site em bold) ----------
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "500 24px Montserrat, Arial";
     const preText = "CADASTRE-SE EM NOSSO SITE: ";
     const siteText = "TRAMASSOIDH.COM.BR";
+    ctx.font = "500 22px Montserrat, Arial";
     const preW = ctx.measureText(preText).width;
-    ctx.font = "bold 24px Montserrat, Arial";
+    ctx.font = "800 22px Montserrat, Arial";
     const siteW = ctx.measureText(siteText).width;
     const totalW = preW + siteW;
     const startX = (W - totalW) / 2;
-    ctx.font = "500 24px Montserrat, Arial";
+    ctx.font = "500 22px Montserrat, Arial";
     ctx.textAlign = "left";
-    ctx.fillText(preText, startX, bottomBarY + 40);
-    ctx.font = "bold 24px Montserrat, Arial";
-    ctx.fillStyle = TRAMASSO_GREEN;
-    ctx.fillText(siteText, startX + preW, bottomBarY + 40);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(preText, startX, bottomBarY + 46);
+    ctx.font = "800 22px Montserrat, Arial";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(siteText, startX + preW, bottomBarY + 46);
 
     // PCD tarja
     if (data.isPcd) {
