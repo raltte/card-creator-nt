@@ -16,6 +16,7 @@ import { CartazPreviewMarisa } from "@/components/CartazPreviewMarisa";
 import { CartazPreviewWeg } from "@/components/CartazPreviewWeg";
 import { CartazPreviewVagaInterna } from "@/components/CartazPreviewVagaInterna";
 import { CartazPreviewDMCard } from "@/components/CartazPreviewDMCard";
+import { CartazPreviewTramasso } from "@/components/CartazPreviewTramasso";
 import { CompiladoPreview } from "@/components/CompiladoPreview";
 import { CompiladoPreviewMarisa } from "@/components/CompiladoPreviewMarisa";
 import { MutiraoPreview } from "@/components/MutiraoPreview";
@@ -207,7 +208,7 @@ const Finalizar = () => {
         tipoContrato: sol.tipo_contrato,
         requisitos: sol.requisitos || '',
         isPcd: sol.is_pcd || false,
-        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card', 'tramasso'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
         contato: {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || 'novotemporh.com.br'
@@ -316,7 +317,7 @@ const Finalizar = () => {
         tipoContrato: sol.tipo_contrato,
         requisitos: sol.requisitos || '',
         isPcd: sol.is_pcd || false,
-        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
+        clientTemplate: (['marisa', 'weg', 'vaga-interna', 'dm-card', 'tramasso'].includes(sol.modelo_cartaz) ? sol.modelo_cartaz : 'padrao') as CartazData['clientTemplate'],
         contato: {
           tipo: sol.contato_tipo || 'site',
           valor: sol.contato_valor || (sol.modelo_cartaz === 'marisa' ? 'novotemporh.com.br/marisa' : 'novotemporh.com.br')
@@ -410,6 +411,7 @@ const Finalizar = () => {
   const isWeg = solicitacao.modelo_cartaz === 'weg';
   const isVagaInterna = solicitacao.modelo_cartaz === 'vaga-interna';
   const isDMCard = solicitacao.modelo_cartaz === 'dm-card';
+  const isTramasso = solicitacao.modelo_cartaz === 'tramasso';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-nt-light/10 to-background p-4">
@@ -442,7 +444,7 @@ const Finalizar = () => {
             }}
             onImageSelect={(framedUrl, originalUrl) => handleImagemSelecionada(framedUrl, undefined, originalUrl)}
             onBack={() => navigate('/')}
-            clientTemplate={isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
+            clientTemplate={isTramasso ? 'tramasso' : isVagaInterna ? 'vaga-interna' : isDMCard ? 'dm-card' : isMarisa ? 'marisa' : isWeg ? 'weg' : 'padrao'}
           />
         )}
 
@@ -481,7 +483,9 @@ const Finalizar = () => {
                         <CompiladoPreview data={compiladoData} />
                       ) : null
                     ) : (
-                      isVagaInterna && cartazData ? (
+                      isTramasso && cartazData ? (
+                        <CartazPreviewTramasso data={cartazData} />
+                      ) : isVagaInterna && cartazData ? (
                         <CartazPreviewVagaInterna data={cartazData} />
                       ) : isDMCard && cartazData ? (
                         <CartazPreviewDMCard data={cartazData} />
