@@ -237,7 +237,8 @@ export const RecrutadoraDashboard = () => {
           userId: user?.id || null,
           sugestaoImagem: dados.sugestaoImagem || null,
           usaLogoCliente: dados.usaLogoCliente || false,
-          clienteNome: dados.usaLogoCliente ? (dados.clienteNome || null) : null
+          clienteNome: dados.usaLogoCliente ? (dados.clienteNome || null) : null,
+          textoDestaque: modeloSelecionado === 'tramasso' ? (dados.textoDestaque || null) : null
         }
       });
 
@@ -444,6 +445,7 @@ export const RecrutadoraDashboard = () => {
                 onSubmit={handleFormSubmit} 
                 data={dadosIndividual}
                 onChange={setDadosIndividual}
+                showTextoDestaque={modeloSelecionado === 'tramasso'}
               />
             ) : tipoCartaz === 'compilado' ? (
               <CompiladoForm 
