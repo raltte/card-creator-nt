@@ -26,6 +26,10 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.scale(scale, scale);
     ctx.clearRect(0, 0, W, H);
 
+    // Offset vertical quando tarja PCD está ativa (empurra tudo pra baixo)
+    const PCD_BAR_H = 60;
+    const pcdOffset = data.isPcd ? PCD_BAR_H : 0;
+
     // ---------- background image ----------
     const bg = new Image();
     bg.crossOrigin = "anonymous";
