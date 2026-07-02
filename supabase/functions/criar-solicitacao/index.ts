@@ -65,7 +65,9 @@ serve(async (req) => {
         contato_tipo: solicitacaoData.contato?.tipo,
         contato_valor: solicitacaoData.contato?.valor,
         requisitos: solicitacaoData.requisitos,
-        atividades: solicitacaoData.atividades,
+        atividades: solicitacaoData.textoDestaque
+          ? `[DESTAQUE] ${solicitacaoData.textoDestaque}`
+          : solicitacaoData.atividades,
         link_vaga: solicitacaoData.linkVaga,
         email_solicitante: solicitacaoData.emailSolicitante,
         is_pcd: solicitacaoData.isPcd || false,
