@@ -25,12 +25,14 @@ export interface RecrutadoraData {
   isPcd?: boolean;
   usaLogoCliente?: boolean;
   clienteNome?: string;
+  textoDestaque?: string;
 }
 
 interface RecrutadoraFormProps {
   onSubmit: (data: RecrutadoraData) => void;
   data?: RecrutadoraData;
   onChange?: (data: RecrutadoraData) => void;
+  showTextoDestaque?: boolean;
 }
 
 export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: RecrutadoraFormProps) => {
