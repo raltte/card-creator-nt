@@ -133,8 +133,8 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       logo.onerror = r;
     });
     if (logo.width) {
-      const logoMaxH = 130;
-      const logoMaxW = 200;
+      const logoMaxH = 105;
+      const logoMaxW = 160;
       const asp = logo.width / logo.height;
       let lh = logoMaxH;
       let lw = lh * asp;
@@ -142,7 +142,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         lw = logoMaxW;
         lh = lw / asp;
       }
-      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 4, lw, lh);
+      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 2, lw, lh);
     }
 
     // ---------- Title: "Vaga para [Cargo]" ----------
