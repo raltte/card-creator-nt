@@ -379,15 +379,15 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(siteText, startX + preW, bottomBarY + 46);
 
-    // PCD tarja
+    // PCD tarja (acima da imagem, layout já foi deslocado)
     if (data.isPcd) {
       ctx.fillStyle = "#3B5998";
-      ctx.fillRect(0, 0, W, 50);
+      ctx.fillRect(0, 0, W, PCD_BAR_H);
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 20px Montserrat, Arial";
+      ctx.font = "bold 22px Montserrat, Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("*Vaga exclusiva ou afirmativa para Pessoa com Deficiência", W / 2, 25);
+      ctx.fillText("*Vaga exclusiva ou afirmativa para Pessoa com Deficiência", W / 2, PCD_BAR_H / 2);
     }
   };
 
