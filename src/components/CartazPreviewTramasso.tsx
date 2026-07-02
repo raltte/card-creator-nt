@@ -262,7 +262,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     const locText = data.local || "Cidade - UF";
     const locTextW = ctx.measureText(locText).width;
     const locW = locTextW + 90; // icon + padding
-    const locX = 60;
+    const locX = SIDE_MARGIN;
 
     // Code pill (middle)
     const codeText = `Cód.: ${data.codigo || "0000"}`;
@@ -273,30 +273,31 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     // Ensure they fit
     const totalRow = locW + gap + codeW + gap + ctaW;
-    const maxRow = W - 120;
+    const maxRow = W - SIDE_MARGIN * 2;
     let sc = 1;
     if (totalRow > maxRow) sc = maxRow / totalRow;
     const finalLocW = locW * sc;
     const finalCodeW = codeW * sc;
     const finalCtaW = ctaW * sc;
     const finalCodeX = locX + finalLocW + gap;
-    const finalCtaX = W - 60 - finalCtaW;
+    const finalCtaX = W - SIDE_MARGIN - finalCtaW;
 
     const drawOutlinedPill = (x: number, y: number, w: number, h: number, iconDraw: (cx: number, cy: number) => void, text: string) => {
-      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, h / 2);
       ctx.stroke();
       const cy = y + h / 2;
-      const cIconR = 20;
-      const cIconCX = x + 22 + cIconR;
+      const cIconR = 19;
+      const cIconCX = x + 20 + cIconR;
       ctx.fillStyle = TRAMASSO_GREEN;
       ctx.beginPath();
       ctx.arc(cIconCX, cy, cIconR, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = TRAMASSO_DARK;
-      ctx.fillStyle = TRAMASSO_DARK;
+      // Ícones internos em BRANCO
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.fillStyle = "#FFFFFF";
       iconDraw(cIconCX, cy);
       ctx.fillStyle = "#FFFFFF";
       ctx.textAlign = "left";
@@ -305,19 +306,26 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       ctx.fillText(text, cIconCX + cIconR + 14, cy);
     };
 
-    // location icon (map pin)
+    // location icon (map pin) - branco
     drawOutlinedPill(locX, rowY, finalLocW, rowH, (cx, cy) => {
+      ctx.fillStyle = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(cx, cy - 3, 7, Math.PI, 0, false);
       ctx.lineTo(cx, cy + 10);
       ctx.closePath();
       ctx.fill();
+      // furo interno do pin
+      ctx.fillStyle = TRAMASSO_GREEN;
+      ctx.beginPath();
+      ctx.arc(cx, cy - 3, 2.5, 0, Math.PI * 2);
+      ctx.fill();
     }, locText);
 
-    // code icon (magnifying glass)
+    // code icon (magnifying glass) - branco
     drawOutlinedPill(finalCodeX, rowY, finalCodeW, rowH, (cx, cy) => {
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = TRAMASSO_DARK;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#FFFFFF";
       ctx.beginPath();
       ctx.arc(cx - 2, cy - 2, 7, 0, Math.PI * 2);
       ctx.stroke();
@@ -333,29 +341,30 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.roundRect(finalCtaX, rowY, finalCtaW, rowH, rowH / 2);
     ctx.fill();
     ctx.fillStyle = TRAMASSO_DARK;
-    ctx.font = "bold 26px Montserrat, Arial";
+    ctx.font = "600 24px Montserrat, Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(ctaLabel, finalCtaX + finalCtaW / 2, rowY + rowH / 2);
 
-    // ---------- Footer text ----------
+    // ---------- Footer text (tudo branco, site em bold) ----------
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "500 24px Montserrat, Arial";
     const preText = "CADASTRE-SE EM NOSSO SITE: ";
     const siteText = "TRAMASSOIDH.COM.BR";
+    ctx.font = "500 22px Montserrat, Arial";
     const preW = ctx.measureText(preText).width;
-    ctx.font = "bold 24px Montserrat, Arial";
+    ctx.font = "800 22px Montserrat, Arial";
     const siteW = ctx.measureText(siteText).width;
     const totalW = preW + siteW;
     const startX = (W - totalW) / 2;
-    ctx.font = "500 24px Montserrat, Arial";
+    ctx.font = "500 22px Montserrat, Arial";
     ctx.textAlign = "left";
-    ctx.fillText(preText, startX, bottomBarY + 40);
-    ctx.font = "bold 24px Montserrat, Arial";
-    ctx.fillStyle = TRAMASSO_GREEN;
-    ctx.fillText(siteText, startX + preW, bottomBarY + 40);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(preText, startX, bottomBarY + 46);
+    ctx.font = "800 22px Montserrat, Arial";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(siteText, startX + preW, bottomBarY + 46);
 
     // PCD tarja
     if (data.isPcd) {
