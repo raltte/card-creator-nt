@@ -204,12 +204,11 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     let descFont = 26;
     const descMaxW = descPillW - (iconR * 2 + 60);
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    while (ctx.measureText(descText).width > descMaxW && descFont > 16) {
+    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 16) {
       descFont -= 1;
       ctx.font = `500 ${descFont}px Montserrat, Arial`;
     }
-    // truncate if still too long
-    let shown = descText;
+    let shown = rawDesc;
     if (ctx.measureText(shown).width > descMaxW) {
       while (ctx.measureText(shown + "…").width > descMaxW && shown.length > 4) shown = shown.slice(0, -1);
       shown = shown + "…";
