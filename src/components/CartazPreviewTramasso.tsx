@@ -73,7 +73,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.fillRect(0, 0, W, H);
 
     const SIDE_MARGIN = 55;
-    const TOP_MARGIN = 55;
+    const TOP_MARGIN = 55 + pcdOffset;
 
     // ---------- top-left pill "UMA OPORTUNIDADE..." ----------
     // Hierarquia: linhas 1-2 em peso semibold; "POR" leve + "TRAMASSOIDH" black
