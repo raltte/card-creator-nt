@@ -26,6 +26,10 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.scale(scale, scale);
     ctx.clearRect(0, 0, W, H);
 
+    // Offset vertical quando tarja PCD está ativa (empurra tudo pra baixo)
+    const PCD_BAR_H = 60;
+    const pcdOffset = data.isPcd ? PCD_BAR_H : 0;
+
     // ---------- background image ----------
     const bg = new Image();
     bg.crossOrigin = "anonymous";
@@ -43,33 +47,42 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       bg.onerror = r;
     });
 
-    // cover
+    // Área útil (abaixo da tarja PCD se ativa)
+    const contentTop = pcdOffset;
+    const contentH = H - pcdOffset;
+
+    // cover na área útil
     const iAsp = bg.width / bg.height;
-    const cAsp = W / H;
+    const cAsp = W / contentH;
     let dw, dh, ox, oy;
     if (iAsp > cAsp) {
-      dh = H;
-      dw = H * iAsp;
+      dh = contentH;
+      dw = contentH * iAsp;
       ox = -(dw - W) / 2;
-      oy = 0;
+      oy = contentTop;
     } else {
       dw = W;
       dh = W / iAsp;
       ox = 0;
-      oy = -(dh - H) / 2;
+      oy = contentTop - (dh - contentH) / 2;
     }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, contentTop, W, contentH);
+    ctx.clip();
     ctx.drawImage(bg, ox, oy, dw, dh);
 
-    // dark gradient overlay bottom for legibility
-    const grad = ctx.createLinearGradient(0, H * 0.30, 0, H);
+    // dark gradient overlay bottom for legibility (dentro da área útil)
+    const grad = ctx.createLinearGradient(0, contentTop + contentH * 0.30, 0, H);
     grad.addColorStop(0, "rgba(0,0,0,0)");
     grad.addColorStop(0.50, "rgba(0,0,0,0.55)");
     grad.addColorStop(1, "rgba(0,0,0,0.88)");
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(0, contentTop, W, contentH);
+    ctx.restore();
 
     const SIDE_MARGIN = 55;
-    const TOP_MARGIN = 55;
+    const TOP_MARGIN = 55 + pcdOffset;
 
     // ---------- top-left pill "UMA OPORTUNIDADE..." ----------
     // Hierarquia: linhas 1-2 em peso semibold; "POR" leve + "TRAMASSOIDH" black
@@ -129,8 +142,8 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       logo.onerror = r;
     });
     if (logo.width) {
-      const logoMaxH = 130;
-      const logoMaxW = 200;
+      const logoMaxH = 105;
+      const logoMaxW = 160;
       const asp = logo.width / logo.height;
       let lh = logoMaxH;
       let lw = lh * asp;
@@ -138,7 +151,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         lw = logoMaxW;
         lh = lw / asp;
       }
-      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 4, lw, lh);
+      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 2, lw, lh);
     }
 
     // ---------- Title: "Vaga para [Cargo]" ----------
@@ -164,7 +177,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     const cargoText = data.cargo || "Cargo da Vaga";
     const titleMaxW = W - SIDE_MARGIN * 2 - 20;
-    let titleFont = 96;
+    let titleFont = 76;
     let cargoLines = wrap(cargoText, titleMaxW, `800 ${titleFont}px Montserrat, Arial`);
     while ((cargoLines.length > 2 || cargoLines.some((l) => ctx.measureText(l).width > titleMaxW)) && titleFont > 52) {
       titleFont -= 4;
@@ -366,15 +379,15 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(siteText, startX + preW, bottomBarY + 46);
 
-    // PCD tarja
+    // PCD tarja (acima da imagem, layout já foi deslocado)
     if (data.isPcd) {
       ctx.fillStyle = "#3B5998";
-      ctx.fillRect(0, 0, W, 50);
+      ctx.fillRect(0, 0, W, PCD_BAR_H);
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 20px Montserrat, Arial";
+      ctx.font = "bold 22px Montserrat, Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("*Vaga exclusiva ou afirmativa para Pessoa com Deficiência", W / 2, 25);
+      ctx.fillText("*Vaga exclusiva ou afirmativa para Pessoa com Deficiência", W / 2, PCD_BAR_H / 2);
     }
   };
 
