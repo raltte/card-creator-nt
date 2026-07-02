@@ -315,6 +315,7 @@ export const RecrutadoraDashboard = () => {
     usaLogoCliente: modeloSelecionado === 'padrao' ? !!dadosIndividual.usaLogoCliente : false,
     clienteNome: dadosIndividual.clienteNome || '',
     clienteLogoUrl: undefined,
+    textoDestaque: dadosIndividual.textoDestaque || '',
     local: dadosIndividual.cidade && dadosIndividual.estado ? `${dadosIndividual.cidade} - ${dadosIndividual.estado}` : ""
   });
 
