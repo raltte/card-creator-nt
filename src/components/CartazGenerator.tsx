@@ -7,6 +7,7 @@ import { CartazPreviewMarisa } from "./CartazPreviewMarisa";
 import { CartazPreviewWeg } from "./CartazPreviewWeg";
 import { CartazPreviewVagaInterna } from "./CartazPreviewVagaInterna";
 import { CartazPreviewDMCard } from "./CartazPreviewDMCard";
+import { CartazPreviewTramasso } from "./CartazPreviewTramasso";
 import { CompiladoForm, CompiladoData } from "./CompiladoForm";
 import { CompiladoPreview } from "./CompiladoPreview";
 import { CompiladoPreviewMarisa } from "./CompiladoPreviewMarisa";
@@ -27,7 +28,7 @@ export interface CartazData {
   tipoContrato: string;
   requisitos: string;
   isPcd: boolean;
-  clientTemplate: 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card';
+  clientTemplate: 'padrao' | 'marisa' | 'weg' | 'vaga-interna' | 'dm-card' | 'tramasso';
   contato: {
     tipo: 'whatsapp' | 'email' | 'site';
     valor: string;
@@ -189,6 +190,8 @@ export const CartazGenerator = () => {
           return <CartazPreviewVagaInterna data={cartazData} />;
         case 'dm-card':
           return <CartazPreviewDMCard data={cartazData} />;
+        case 'tramasso':
+          return <CartazPreviewTramasso data={cartazData} />;
         default:
           return <CartazPreview data={cartazData} />;
       }
