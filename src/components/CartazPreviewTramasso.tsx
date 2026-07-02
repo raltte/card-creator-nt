@@ -168,7 +168,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     const cargoText = data.cargo || "Cargo da Vaga";
     const titleMaxW = W - SIDE_MARGIN * 2 - 20;
-    let titleFont = 96;
+    let titleFont = 76;
     let cargoLines = wrap(cargoText, titleMaxW, `800 ${titleFont}px Montserrat, Arial`);
     while ((cargoLines.length > 2 || cargoLines.some((l) => ctx.measureText(l).width > titleMaxW)) && titleFont > 52) {
       titleFont -= 4;
