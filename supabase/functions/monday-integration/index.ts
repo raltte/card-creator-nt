@@ -94,7 +94,8 @@ serve(async (req) => {
               "vaga-interna": "VAGA INTERNA",
               "dm-card": "DM",
               "compilado-padrao": "COMPILADO",
-              "compilado-marisa": "Marisa COMPILADO"
+              "compilado-marisa": "Marisa COMPILADO",
+              "tramasso": "TRAMASSOIDH"
             };
             const tipo = tipoMap[cartazData.modeloCartaz] || "TRADICIONAL";
             columnValues[col.id] = { label: tipo };
