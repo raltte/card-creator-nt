@@ -476,32 +476,34 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
         </div>
       </div>
 
-      {/* Logo do Cliente */}
-      <div className="space-y-3 p-3 border rounded-lg">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Logo do cliente
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Mostra ícone NT + "&" + logo do cliente no cartaz.
-            </p>
+      {/* Logo do Cliente - oculto para Tramasso, WEG (que já tem logo fixo) */}
+      {data.clientTemplate !== 'tramasso' && data.clientTemplate !== 'weg' && data.clientTemplate !== 'marisa' && (
+        <div className="space-y-3 p-3 border rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-semibold flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                Logo do cliente
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Mostra ícone NT + "&" + logo do cliente no cartaz.
+              </p>
+            </div>
+            <Switch
+              checked={!!data.usaLogoCliente}
+              onCheckedChange={(checked) => updateData('usaLogoCliente', checked)}
+            />
           </div>
-          <Switch
-            checked={!!data.usaLogoCliente}
-            onCheckedChange={(checked) => updateData('usaLogoCliente', checked)}
-          />
+          {data.usaLogoCliente && (
+            <Input
+              placeholder="Nome do cliente (ex: Britânia)"
+              value={data.clienteNome || ""}
+              onChange={(e) => updateData('clienteNome', e.target.value)}
+              className="h-10"
+            />
+          )}
         </div>
-        {data.usaLogoCliente && (
-          <Input
-            placeholder="Nome do cliente (ex: Britânia)"
-            value={data.clienteNome || ""}
-            onChange={(e) => updateData('clienteNome', e.target.value)}
-            className="h-10"
-          />
-        )}
-      </div>
+      )}
     </div>
   );
 };
