@@ -68,30 +68,57 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
-    const SIDE_MARGIN = 60;
-    const TOP_MARGIN = 60;
+    const SIDE_MARGIN = 55;
+    const TOP_MARGIN = 55;
 
     // ---------- top-left pill "UMA OPORTUNIDADE..." ----------
-    const badgePadX = 32;
-    const badgePadY = 20;
-    const badgeLines = ["UMA OPORTUNIDADE", "EXCLUSIVA E SELECIONADA", "POR TRAMASSOIDH"];
-    ctx.font = "800 21px Montserrat, Arial";
-    const badgeTextW = Math.max(...badgeLines.map((l) => ctx.measureText(l).width));
+    // Hierarquia: linhas 1-2 em peso semibold; "POR" leve + "TRAMASSOIDH" black
+    const badgePadX = 26;
+    const badgePadY = 16;
+    const badgeLineH = 20;
+    const badgeFontSize = 15;
+
+    const line1 = "UMA OPORTUNIDADE";
+    const line2 = "EXCLUSIVA E SELECIONADA";
+    const line3a = "POR ";
+    const line3b = "TRAMASSOIDH";
+
+    ctx.font = `700 ${badgeFontSize}px Montserrat, Arial`;
+    const w1 = ctx.measureText(line1).width;
+    const w2 = ctx.measureText(line2).width;
+    ctx.font = `600 ${badgeFontSize}px Montserrat, Arial`;
+    const w3a = ctx.measureText(line3a).width;
+    ctx.font = `900 ${badgeFontSize}px Montserrat, Arial`;
+    const w3b = ctx.measureText(line3b).width;
+    const w3 = w3a + w3b;
+
+    const badgeTextW = Math.max(w1, w2, w3);
     const badgeW = badgeTextW + badgePadX * 2;
-    const lineH = 26;
-    const badgeH = badgeLines.length * lineH + badgePadY * 2 - 6;
+    const badgeH = badgeLineH * 3 + badgePadY * 2;
+
     ctx.fillStyle = TRAMASSO_GREEN;
     ctx.beginPath();
     ctx.roundRect(SIDE_MARGIN, TOP_MARGIN, badgeW, badgeH, badgeH / 2);
     ctx.fill();
+
     ctx.fillStyle = TRAMASSO_DARK;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const badgeCX = SIDE_MARGIN + badgeW / 2;
-    const startY = TOP_MARGIN + badgePadY + lineH / 2 - 2;
-    badgeLines.forEach((line, i) => {
-      ctx.fillText(line, badgeCX, startY + i * lineH);
-    });
+    const line1Y = TOP_MARGIN + badgePadY + badgeLineH / 2;
+    const line2Y = line1Y + badgeLineH;
+    const line3Y = line2Y + badgeLineH;
+
+    ctx.font = `700 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line1, badgeCX, line1Y);
+    ctx.fillText(line2, badgeCX, line2Y);
+    // Linha 3 mista: "POR " (600) + "TRAMASSOIDH" (900)
+    ctx.textAlign = "left";
+    const line3StartX = badgeCX - w3 / 2;
+    ctx.font = `600 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line3a, line3StartX, line3Y);
+    ctx.font = `900 ${badgeFontSize}px Montserrat, Arial`;
+    ctx.fillText(line3b, line3StartX + w3a, line3Y);
 
     // ---------- top-right logo ----------
     const logo = new Image();
@@ -103,7 +130,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     });
     if (logo.width) {
       const logoMaxH = 130;
-      const logoMaxW = 210;
+      const logoMaxW = 200;
       const asp = logo.width / logo.height;
       let lh = logoMaxH;
       let lw = lh * asp;
@@ -111,7 +138,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         lw = logoMaxW;
         lh = lw / asp;
       }
-      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 6, lw, lh);
+      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 4, lw, lh);
     }
 
     // ---------- Title: "Vaga para [Cargo]" ----------
