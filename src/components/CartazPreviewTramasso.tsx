@@ -47,30 +47,39 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       bg.onerror = r;
     });
 
-    // cover
+    // Área útil (abaixo da tarja PCD se ativa)
+    const contentTop = pcdOffset;
+    const contentH = H - pcdOffset;
+
+    // cover na área útil
     const iAsp = bg.width / bg.height;
-    const cAsp = W / H;
+    const cAsp = W / contentH;
     let dw, dh, ox, oy;
     if (iAsp > cAsp) {
-      dh = H;
-      dw = H * iAsp;
+      dh = contentH;
+      dw = contentH * iAsp;
       ox = -(dw - W) / 2;
-      oy = 0;
+      oy = contentTop;
     } else {
       dw = W;
       dh = W / iAsp;
       ox = 0;
-      oy = -(dh - H) / 2;
+      oy = contentTop - (dh - contentH) / 2;
     }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, contentTop, W, contentH);
+    ctx.clip();
     ctx.drawImage(bg, ox, oy, dw, dh);
 
-    // dark gradient overlay bottom for legibility
-    const grad = ctx.createLinearGradient(0, H * 0.30, 0, H);
+    // dark gradient overlay bottom for legibility (dentro da área útil)
+    const grad = ctx.createLinearGradient(0, contentTop + contentH * 0.30, 0, H);
     grad.addColorStop(0, "rgba(0,0,0,0)");
     grad.addColorStop(0.50, "rgba(0,0,0,0.55)");
     grad.addColorStop(1, "rgba(0,0,0,0.88)");
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(0, contentTop, W, contentH);
+    ctx.restore();
 
     const SIDE_MARGIN = 55;
     const TOP_MARGIN = 55 + pcdOffset;
