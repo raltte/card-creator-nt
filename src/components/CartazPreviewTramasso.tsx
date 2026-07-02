@@ -211,27 +211,31 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.beginPath();
     ctx.arc(iconCX, iconCY, iconR, 0, Math.PI * 2);
     ctx.fill();
-    // arrow down-left inside
-    ctx.strokeStyle = TRAMASSO_DARK;
+    // Ícone: seta diagonal apontando para baixo-esquerda (BRANCA)
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.fillStyle = "#FFFFFF";
     ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.beginPath();
-    ctx.moveTo(iconCX + 10, iconCY - 10);
-    ctx.lineTo(iconCX - 10, iconCY + 10);
+    ctx.moveTo(iconCX + 9, iconCY - 9);
+    ctx.lineTo(iconCX - 9, iconCY + 9);
     ctx.stroke();
+    // Ponta da seta
     ctx.beginPath();
-    ctx.moveTo(iconCX - 10, iconCY + 2);
-    ctx.lineTo(iconCX - 10, iconCY + 10);
-    ctx.lineTo(iconCX - 2, iconCY + 10);
+    ctx.moveTo(iconCX - 9, iconCY + 1);
+    ctx.lineTo(iconCX - 9, iconCY + 9);
+    ctx.lineTo(iconCX - 1, iconCY + 9);
     ctx.stroke();
 
     // desc text
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    let descFont = 26;
+    let descFont = 25;
     const descMaxW = descPillW - (iconR * 2 + 60);
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 16) {
+    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 15) {
       descFont -= 1;
       ctx.font = `500 ${descFont}px Montserrat, Arial`;
     }
@@ -244,14 +248,14 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     // ---------- Bottom row: location pill | code pill | candidate-se ----------
     const rowY = buttonsY;
-    const rowH = 78;
-    const gap = 20;
+    const rowH = 74;
+    const gap = 18;
 
     // Candidate-se green pill (right side, largest)
-    ctx.font = "bold 26px Montserrat, Arial";
+    ctx.font = "bold 24px Montserrat, Arial";
     const ctaLabel = "Candidate-se";
-    const ctaW = ctx.measureText(ctaLabel).width + 100;
-    const ctaX = W - 60 - ctaW;
+    const ctaW = ctx.measureText(ctaLabel).width + 90;
+    const ctaX = W - SIDE_MARGIN - ctaW;
 
     // Location pill
     ctx.font = "500 24px Montserrat, Arial";
