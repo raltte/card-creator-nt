@@ -106,6 +106,25 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
   // Estilo de qualidade - CRÍTICO: reforçar múltiplas vezes para não ter texto
   const qualityStyle = "8K, photorealistic, professional photography, natural lighting, absolutely no text anywhere in the image, no words, no letters, no numbers, no writing, no labels, no signs with text, no logos, no captions, no overlays, clean image without any typography";
   
+  // === TRAMASSO IDH - CARGOS TÉCNICOS/EXECUTIVOS/CORPORATIVOS ===
+  // Perfil: profissionais qualificados, cargos de gestão, especialistas, engenheiros, analistas sênior.
+  // Sempre visual corporativo/executivo, mesmo se o cargo lembrar operacional (ex: "Supervisor de Construção" = engenheiro em obra, não pedreiro).
+  const tramassoContext = determineTramassoContext(jobTitle, sector);
+  if (clientTemplate === 'tramasso') {
+    const tramassoSubjects = [
+      "Brazilian professional man, age 35, well-groomed",
+      "Brazilian professional woman, age 32, polished appearance",
+      "Brazilian executive, age 38, confident posture"
+    ];
+    const tramassoQuality = `${qualityStyle}, cinematic depth of field, subtle blurred background, editorial corporate portrait style, sophisticated color grading`;
+    const suggestionPrefix = imageSuggestion && imageSuggestion.trim() ? `CRITICAL: ${imageSuggestion}. ` : '';
+    return [
+      `${suggestionPrefix}${framingStyle}. ${tramassoSubjects[0]} as ${jobTitle}, ${tramassoContext.attire}. Background: ${tramassoContext.environment}, ${tramassoContext.tools} subtly visible, softly blurred. ${tramassoQuality}. Confident intelligent expression, slight professional smile.`,
+      `${suggestionPrefix}${framingStyle}. ${tramassoSubjects[1]} working as ${jobTitle}, ${tramassoContext.action}. ${tramassoContext.attire}. Background: ${tramassoContext.setting} with premium finishes, natural window light. ${tramassoQuality}. Engaged thoughtful demeanor.`,
+      `${suggestionPrefix}${framingStyle}. ${tramassoSubjects[2]} as ${jobTitle}. ${tramassoContext.attire}. Background: ${tramassoContext.environment}, high-end corporate atmosphere. ${tramassoQuality}. Assured leadership presence.`
+    ];
+  }
+
   // === SE TEM SUGESTÃO DO USUÁRIO - PRIORIDADE MÁXIMA ===
   if (imageSuggestion && imageSuggestion.trim()) {
     console.log('Using user suggestion:', imageSuggestion);
@@ -142,6 +161,89 @@ function generateImagePrompts(jobTitle: string, sector: string, contractType: st
     `${framingStyle}. ${subjects[1]} as ${jobTitle}, ${workContext.action}. ${workContext.attire}. Background: ${workContext.setting} environment, proper workplace equipment visible, authentic work atmosphere. ${qualityStyle}. Engaged friendly expression.`,
     `${framingStyle}. ${subjects[2]} employed as ${jobTitle}, ${workContext.alternateAction}. ${workContext.attire}. Background: ${workContext.environment} with relevant tools and equipment. ${qualityStyle}. Determined professional look.`
   ];
+}
+
+// Contexto Tramasso IDH: sempre corporativo/técnico/executivo, nunca operacional puro
+function determineTramassoContext(jobTitle: string, sector: string): {
+  environment: string, action: string, setting: string, attire: string, tools: string
+} {
+  const j = jobTitle.toLowerCase();
+  const s = (sector || '').toLowerCase();
+
+  // Engenharia / obra / mineração / construção — gestor técnico em campo (não peão de obra)
+  if (
+    j.includes('engenh') || j.includes('supervisor de constru') || j.includes('supervisor de obra') ||
+    j.includes('coordenador de obra') || j.includes('gerente de obra') || j.includes('mineraç') ||
+    s.includes('construç') || s.includes('mineraç') || s.includes('infraestrutura')
+  ) {
+    return {
+      environment: "modern construction site or industrial project background, softly blurred",
+      action: "reviewing plans on a tablet",
+      setting: "engineering field office / project site",
+      attire: "clean white hard hat, dark blazer or technical shirt, high-end smart casual",
+      tools: "tablet, blueprints, project documents"
+    };
+  }
+
+  // TI / ERP / Analista / Dev / Dados
+  if (
+    j.includes('erp') || j.includes('sap') || j.includes('desenvolvedor') || j.includes('programador') ||
+    j.includes('analista de sistemas') || j.includes('dados') || j.includes('bi ') || j.endsWith(' bi') ||
+    j.includes('ti ') || s.includes('tecnologia') || s.includes('ti')
+  ) {
+    return {
+      environment: "modern tech office with clean workstations, softly blurred",
+      action: "focused on laptop screen",
+      setting: "contemporary corporate technology office",
+      attire: "elegant smart casual, quality button-up shirt or blazer",
+      tools: "laptop, dual monitors, minimal desk"
+    };
+  }
+
+  // Controladoria / Financeiro / Contábil / Auditoria / Compliance
+  if (
+    j.includes('controlad') || j.includes('financeiro') || j.includes('contábil') || j.includes('contabil') ||
+    j.includes('auditor') || j.includes('compliance') || j.includes('tributár') || j.includes('fiscal')
+  ) {
+    return {
+      environment: "sophisticated corporate office, glass walls and neutral tones, softly blurred",
+      action: "analyzing reports",
+      setting: "executive corporate finance office",
+      attire: "tailored blazer, dress shirt, refined business attire",
+      tools: "financial reports, laptop"
+    };
+  }
+
+  // RH / Gestão de pessoas
+  if (j.includes('rh') || j.includes('recursos humanos') || j.includes('recrutador') || j.includes('gestão de pessoas')) {
+    return {
+      environment: "warm modern corporate meeting room, softly blurred",
+      action: "engaged in professional conversation",
+      setting: "corporate HR office",
+      attire: "modern business casual, blazer",
+      tools: "notebook, laptop"
+    };
+  }
+
+  // Comercial / Vendas / Key Account
+  if (j.includes('comercial') || j.includes('vendas') || j.includes('account') || j.includes('negóc')) {
+    return {
+      environment: "upscale corporate lobby or executive meeting room, softly blurred",
+      action: "in a business meeting",
+      setting: "premium corporate environment",
+      attire: "sharp business attire, blazer or suit",
+      tools: "tablet, business documents"
+    };
+  }
+
+  // Default executivo/corporativo
+  return {
+    environment: "elegant modern corporate office with natural light, softly blurred",
+    action: "engaged with work materials",
+    setting: "premium corporate workplace",
+    attire: "sophisticated business attire, blazer or quality button-up shirt",
+    tools: "laptop, professional documents"
+  };
 }
 
 // Determina o contexto de trabalho baseado no cargo e setor - CRÍTICO para ambiente correto
