@@ -379,6 +379,23 @@ export const CartazForm = ({ data, onChange }: CartazFormProps) => {
             {data.requisitos.length}/180
           </div>
         </div>
+
+        {data.clientTemplate === 'tramasso' && (
+          <div>
+            <Label htmlFor="texto-destaque" className="text-sm">Texto de destaque</Label>
+            <Input
+              id="texto-destaque"
+              placeholder="Ex: Centro de línguas com metodologia Kalan internacionalmente reconhecida."
+              value={data.textoDestaque || ""}
+              onChange={(e) => updateData('textoDestaque', e.target.value)}
+              maxLength={85}
+              className="mt-1"
+            />
+            <div className="text-xs text-muted-foreground mt-1">
+              {(data.textoDestaque || "").length}/85 • aparece no pill abaixo do título
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Contato */}

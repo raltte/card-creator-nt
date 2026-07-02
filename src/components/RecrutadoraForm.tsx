@@ -25,15 +25,17 @@ export interface RecrutadoraData {
   isPcd?: boolean;
   usaLogoCliente?: boolean;
   clienteNome?: string;
+  textoDestaque?: string;
 }
 
 interface RecrutadoraFormProps {
   onSubmit: (data: RecrutadoraData) => void;
   data?: RecrutadoraData;
   onChange?: (data: RecrutadoraData) => void;
+  showTextoDestaque?: boolean;
 }
 
-export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: RecrutadoraFormProps) => {
+export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange, showTextoDestaque }: RecrutadoraFormProps) => {
   const { toast } = useToast();
   
   // Use external data if provided, otherwise use internal state
@@ -447,6 +449,27 @@ export const RecrutadoraForm = ({ onSubmit, data: externalData, onChange }: Recr
           )}
         </div>
       </div>
+
+      {/* Seção: Texto de destaque (Tramasso) */}
+      {showTextoDestaque && (
+        <div className="form-section">
+          <div className="form-section-title">
+            <ListChecks className="w-4 h-4" />
+            Texto de destaque
+            <span className="text-xs font-normal text-muted-foreground ml-auto">(Tramasso IDH)</span>
+          </div>
+          <Input
+            placeholder="Ex: Centro de línguas com metodologia Kalan internacionalmente reconhecida."
+            value={formData.textoDestaque || ""}
+            onChange={(e) => updateFormData('textoDestaque', e.target.value)}
+            maxLength={85}
+            className="h-11"
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            {(formData.textoDestaque || "").length}/85 caracteres • aparece no pill abaixo do título
+          </p>
+        </div>
+      )}
 
       {/* Seção: Logo do Cliente */}
       <div className="form-section">

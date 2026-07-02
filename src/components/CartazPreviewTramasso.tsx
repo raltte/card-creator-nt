@@ -61,35 +61,35 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.drawImage(bg, ox, oy, dw, dh);
 
     // dark gradient overlay bottom for legibility
-    const grad = ctx.createLinearGradient(0, H * 0.35, 0, H);
+    const grad = ctx.createLinearGradient(0, H * 0.30, 0, H);
     grad.addColorStop(0, "rgba(0,0,0,0)");
-    grad.addColorStop(0.55, "rgba(0,0,0,0.55)");
-    grad.addColorStop(1, "rgba(0,0,0,0.85)");
+    grad.addColorStop(0.50, "rgba(0,0,0,0.55)");
+    grad.addColorStop(1, "rgba(0,0,0,0.88)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
+    const SIDE_MARGIN = 60;
+    const TOP_MARGIN = 60;
+
     // ---------- top-left pill "UMA OPORTUNIDADE..." ----------
-    const badgeX = 50;
-    const badgeY = 50;
-    const badgePadX = 30;
-    const badgePadY = 22;
+    const badgePadX = 32;
+    const badgePadY = 20;
     const badgeLines = ["UMA OPORTUNIDADE", "EXCLUSIVA E SELECIONADA", "POR TRAMASSOIDH"];
-    ctx.font = "bold 22px Montserrat, Arial";
+    ctx.font = "800 21px Montserrat, Arial";
     const badgeTextW = Math.max(...badgeLines.map((l) => ctx.measureText(l).width));
     const badgeW = badgeTextW + badgePadX * 2;
-    const lineH = 28;
-    const badgeH = badgeLines.length * lineH + badgePadY * 2 - 8;
+    const lineH = 26;
+    const badgeH = badgeLines.length * lineH + badgePadY * 2 - 6;
     ctx.fillStyle = TRAMASSO_GREEN;
     ctx.beginPath();
-    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, badgeH / 2);
+    ctx.roundRect(SIDE_MARGIN, TOP_MARGIN, badgeW, badgeH, badgeH / 2);
     ctx.fill();
     ctx.fillStyle = TRAMASSO_DARK;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const badgeCX = badgeX + badgeW / 2;
-    const startY = badgeY + badgePadY + lineH / 2 - 4;
+    const badgeCX = SIDE_MARGIN + badgeW / 2;
+    const startY = TOP_MARGIN + badgePadY + lineH / 2 - 2;
     badgeLines.forEach((line, i) => {
-      // last line has "POR " normal + "TRAMASSOIDH" bold. Whole thing bold works fine per reference.
       ctx.fillText(line, badgeCX, startY + i * lineH);
     });
 
@@ -103,7 +103,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     });
     if (logo.width) {
       const logoMaxH = 130;
-      const logoMaxW = 220;
+      const logoMaxW = 210;
       const asp = logo.width / logo.height;
       let lh = logoMaxH;
       let lw = lh * asp;
@@ -111,7 +111,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         lw = logoMaxW;
         lh = lw / asp;
       }
-      ctx.drawImage(logo, W - 50 - lw, 50, lw, lh);
+      ctx.drawImage(logo, W - SIDE_MARGIN - lw, TOP_MARGIN - 6, lw, lh);
     }
 
     // ---------- Title: "Vaga para [Cargo]" ----------
@@ -119,7 +119,6 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = "#FFFFFF";
 
-    // Wrap cargo
     const wrap = (text: string, maxW: number, font: string) => {
       ctx.font = font;
       const words = text.split(" ");
@@ -137,23 +136,21 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     };
 
     const cargoText = data.cargo || "Cargo da Vaga";
-    const titleMaxW = W - 120;
-    let titleFont = 88;
-    let cargoLines = wrap(cargoText, titleMaxW, `bold ${titleFont}px Montserrat, Arial`);
+    const titleMaxW = W - SIDE_MARGIN * 2 - 20;
+    let titleFont = 96;
+    let cargoLines = wrap(cargoText, titleMaxW, `800 ${titleFont}px Montserrat, Arial`);
     while ((cargoLines.length > 2 || cargoLines.some((l) => ctx.measureText(l).width > titleMaxW)) && titleFont > 52) {
       titleFont -= 4;
-      ctx.font = `bold ${titleFont}px Montserrat, Arial`;
-      cargoLines = wrap(cargoText, titleMaxW, `bold ${titleFont}px Montserrat, Arial`);
+      cargoLines = wrap(cargoText, titleMaxW, `800 ${titleFont}px Montserrat, Arial`);
     }
 
-    const bottomBarY = H - 90; // reserved for footer text
-    const buttonsY = bottomBarY - 130;
-    const descBoxY = buttonsY - 110;
-    let titleBottom = descBoxY - 40;
-    const titleLineH = titleFont * 1.05;
+    const bottomBarY = H - 88;
+    const buttonsY = bottomBarY - 118;
+    const descBoxY = buttonsY - 104;
+    const titleBottom = descBoxY - 36;
+    const titleLineH = titleFont * 1.0;
 
-    // Draw "Vaga para" then cargo lines above descBox
-    ctx.font = `bold ${titleFont}px Montserrat, Arial`;
+    ctx.font = `800 ${titleFont}px Montserrat, Arial`;
     const allTitleLines = ["Vaga para", ...cargoLines];
     let ty = titleBottom - (allTitleLines.length - 1) * titleLineH;
     allTitleLines.forEach((line) => {
@@ -161,19 +158,20 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
       ty += titleLineH;
     });
 
-    // ---------- Description pill (first requisito or generic) ----------
-    const descText =
+    // ---------- Description pill (custom text or fallback) ----------
+    const rawDesc =
+      (data.textoDestaque && data.textoDestaque.trim()) ||
       (data.requisitos || "")
         .split("\n")
         .map((l) => l.replace(/^•\s*/, "").trim())
-        .filter(Boolean)[0] || "Confira os detalhes desta oportunidade.";
+        .filter(Boolean)[0] ||
+      "Confira os detalhes desta oportunidade.";
 
-    const descPillH = 78;
+    const descPillH = 76;
     const descPillY = descBoxY;
-    const descPillX = 60;
-    const descPillW = W - 120;
-    // outline
-    ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    const descPillX = SIDE_MARGIN;
+    const descPillW = W - SIDE_MARGIN * 2;
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(descPillX, descPillY, descPillW, descPillH, descPillH / 2);
@@ -206,12 +204,11 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     let descFont = 26;
     const descMaxW = descPillW - (iconR * 2 + 60);
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    while (ctx.measureText(descText).width > descMaxW && descFont > 16) {
+    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 16) {
       descFont -= 1;
       ctx.font = `500 ${descFont}px Montserrat, Arial`;
     }
-    // truncate if still too long
-    let shown = descText;
+    let shown = rawDesc;
     if (ctx.measureText(shown).width > descMaxW) {
       while (ctx.measureText(shown + "…").width > descMaxW && shown.length > 4) shown = shown.slice(0, -1);
       shown = shown + "…";

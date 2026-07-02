@@ -36,6 +36,7 @@ export interface CartazData {
   usaLogoCliente?: boolean;
   clienteNome?: string;
   clienteLogoUrl?: string;
+  textoDestaque?: string;
   // Computed field for backward compatibility
   get local(): string;
 }

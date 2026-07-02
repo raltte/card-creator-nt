@@ -199,6 +199,7 @@ const Finalizar = () => {
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     } else {
+      const destaqueMatch = (sol.atividades || '').match(/^\[DESTAQUE\]\s*(.+)$/s);
       setCartazData({
         image: currentImage,
         cargo: sol.cargo,
@@ -216,6 +217,7 @@ const Finalizar = () => {
         usaLogoCliente: !!sol.cliente_nome,
         clienteNome: sol.cliente_nome || '',
         clienteLogoUrl: sol.cliente_logo_url || undefined,
+        textoDestaque: destaqueMatch ? destaqueMatch[1] : undefined,
         get local() { return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : ""; }
       });
     }
@@ -308,6 +310,7 @@ const Finalizar = () => {
       setCompiladoData(dados);
     } else {
       const localParts = (sol.local || '').split(' - ');
+      const destaqueMatch = (sol.atividades || '').match(/^\[DESTAQUE\]\s*(.+)$/s);
       const dados: CartazData = {
         image: imagemUrl,
         cargo: sol.cargo,
@@ -325,6 +328,7 @@ const Finalizar = () => {
         usaLogoCliente: !!sol.cliente_nome,
         clienteNome: sol.cliente_nome || '',
         clienteLogoUrl: sol.cliente_logo_url || undefined,
+        textoDestaque: destaqueMatch ? destaqueMatch[1] : undefined,
         get local() {
           return this.cidade && this.estado ? `${this.cidade} - ${this.estado}` : "";
         }
