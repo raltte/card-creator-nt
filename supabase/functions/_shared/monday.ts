@@ -67,6 +67,7 @@ export function getModeloLabel(modelo: string | null | undefined): string {
     weg: "WEG",
     "vaga-interna": "VAGA INTERNA",
     "dm-card": "DM",
+    tramasso: "TRAMASSOIDH",
     "compilado-padrao": "COMPILADO",
     "compilado-marisa": "Marisa COMPILADO",
     // Mutirão usa label COMPILADO (board do Monday não tem label MUTIRÃO cadastrada)
