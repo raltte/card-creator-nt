@@ -57,7 +57,13 @@ function getStatusIndexByLabel(column: MondayColumn, desiredLabel: string): numb
 }
 
 export function sanitizeItemName(value: string) {
-  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\r\n/g, " ")
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function getModeloLabel(modelo: string | null | undefined): string {
