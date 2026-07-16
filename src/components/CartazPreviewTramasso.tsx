@@ -196,32 +196,32 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         .filter(Boolean)[0] ||
       "Confira os detalhes desta oportunidade.";
 
-    const descPillX = SIDE_MARGIN;
-    const descPillW = W - SIDE_MARGIN * 2;
     const iconR = 26;
-    const descMaxW = descPillW - (iconR * 2 + 60);
+    const descPillH = 76;
+    const descPadX = 20;
+    const descTextGap = 20; // espaço entre ícone e texto
+    const maxPillW = W - SIDE_MARGIN * 2;
+    const maxTextW = maxPillW - (descPadX * 2 + iconR * 2 + descTextGap);
 
-    // Ajuste dinâmico: escolhe fonte e wrap para caber em até 4 linhas
-    let descFont = 26;
-    let descLines: string[] = [];
-    const MAX_LINES = 4;
-    while (descFont >= 15) {
-      descLines = wrap(rawDesc, descMaxW, `500 ${descFont}px Montserrat, Arial`);
-      if (descLines.length <= MAX_LINES) break;
+    // Fonte fixa; se o texto for muito longo, reduz um pouco pra caber na largura máxima em uma linha
+    let descFont = 25;
+    ctx.font = `500 ${descFont}px Montserrat, Arial`;
+    while (ctx.measureText(rawDesc).width > maxTextW && descFont > 15) {
       descFont -= 1;
-    }
-    if (descLines.length > MAX_LINES) {
-      descLines = descLines.slice(0, MAX_LINES);
       ctx.font = `500 ${descFont}px Montserrat, Arial`;
-      let last = descLines[MAX_LINES - 1];
-      while (ctx.measureText(last + "…").width > descMaxW && last.length > 4) last = last.slice(0, -1);
-      descLines[MAX_LINES - 1] = last + "…";
     }
+    let shown = rawDesc;
+    if (ctx.measureText(shown).width > maxTextW) {
+      while (ctx.measureText(shown + "…").width > maxTextW && shown.length > 4) shown = shown.slice(0, -1);
+      shown = shown + "…";
+    }
+    const textW = ctx.measureText(shown).width;
 
-    const descLineH = descFont * 1.25;
-    const descPadY = 22;
-    const descPillH = Math.max(76, descLines.length * descLineH + descPadY * 2);
-    const descPillY = buttonsY - 30 - descPillH;
+    // Largura do pill ajusta horizontalmente ao conteúdo, centralizado
+    const descPillW = Math.min(maxPillW, descPadX * 2 + iconR * 2 + descTextGap + textW);
+    const descPillX = (W - descPillW) / 2;
+    const buttonsBottomY = buttonsY;
+    const descPillY = buttonsBottomY - 30 - descPillH;
 
     // Título: reposicionado dinamicamente acima do balão de destaque (um pouco mais pra cima)
     const titleBottom = descPillY - 48;
@@ -242,11 +242,11 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(descPillX, descPillY, descPillW, descPillH, Math.min(descPillH / 2, 44));
+    ctx.roundRect(descPillX, descPillY, descPillW, descPillH, descPillH / 2);
     ctx.stroke();
 
     // icon circle (lime)
-    const iconCX = descPillX + 20 + iconR;
+    const iconCX = descPillX + descPadX + iconR;
     const iconCY = descPillY + descPillH / 2;
     ctx.fillStyle = TRAMASSO_GREEN;
     ctx.beginPath();
@@ -268,18 +268,12 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.lineTo(iconCX - 1, iconCY + 9);
     ctx.stroke();
 
-    // desc text — múltiplas linhas centralizadas verticalmente
+    // desc text — linha única
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    const textX = iconCX + iconR + 20;
-    const totalTextH = descLines.length * descLineH;
-    let tyd = iconCY - totalTextH / 2 + descLineH / 2;
-    descLines.forEach((line) => {
-      ctx.fillText(line, textX, tyd);
-      tyd += descLineH;
-    });
+    ctx.fillText(shown, iconCX + iconR + descTextGap, iconCY);
 
     // ---------- Bottom row: location pill | code pill | candidate-se ----------
     const rowY = buttonsY;
