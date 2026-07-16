@@ -11,7 +11,7 @@ interface ImageFramingProps {
   onBack: () => void;
   cropWidth?: number;
   cropHeight?: number;
-  modelType?: 'tradicional-nt' | 'tradicional-marisa' | 'compilado';
+  modelType?: 'tradicional-nt' | 'tradicional-marisa' | 'compilado' | 'tramasso';
 }
 
 export const ImageFraming = ({ 
