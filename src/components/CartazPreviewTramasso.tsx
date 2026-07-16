@@ -224,7 +224,7 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     const descPillY = buttonsBottomY - 30 - descPillH;
 
     // Título: reposicionado dinamicamente acima do balão de destaque (um pouco mais pra cima)
-    const titleBottom = descPillY - 48;
+    const titleBottom = descPillY - 72;
     const titleLineH = titleFont * 1.0;
 
     ctx.font = `800 ${titleFont}px Montserrat, Arial`;
