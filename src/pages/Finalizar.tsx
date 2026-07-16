@@ -462,7 +462,7 @@ const Finalizar = () => {
                 setEtapa('preview');
               }}
               onBack={() => setEtapa('preview')}
-              modelType={isMarisa ? 'tradicional-marisa' : (isCompilado || isMutirao) ? 'compilado' : 'tradicional-nt'}
+              modelType={isTramasso ? 'tramasso' : isMarisa ? 'tradicional-marisa' : (isCompilado || isMutirao) ? 'compilado' : 'tradicional-nt'}
             />
           </div>
         )}

@@ -11,7 +11,7 @@ interface ImageFramingProps {
   onBack: () => void;
   cropWidth?: number;
   cropHeight?: number;
-  modelType?: 'tradicional-nt' | 'tradicional-marisa' | 'compilado';
+  modelType?: 'tradicional-nt' | 'tradicional-marisa' | 'compilado' | 'tramasso';
 }
 
 export const ImageFraming = ({ 
@@ -41,6 +41,8 @@ export const ImageFraming = ({
         return { width: 960, height: 1200 }; // Full canvas
       case 'compilado':
         return { width: 432, height: 900 }; // Lado direito compilado
+      case 'tramasso':
+        return { width: 1080, height: 1350 }; // Full canvas tramasso
       case 'tradicional-nt':
       default:
         return { width: 432, height: 1200 }; // Lado esquerdo tradicional
