@@ -186,19 +186,8 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
 
     const bottomBarY = H - 88;
     const buttonsY = bottomBarY - 118;
-    const descBoxY = buttonsY - 104;
-    const titleBottom = descBoxY - 36;
-    const titleLineH = titleFont * 1.0;
 
-    ctx.font = `800 ${titleFont}px Montserrat, Arial`;
-    const allTitleLines = ["Vaga para", ...cargoLines];
-    let ty = titleBottom - (allTitleLines.length - 1) * titleLineH;
-    allTitleLines.forEach((line) => {
-      ctx.fillText(line, W / 2, ty);
-      ty += titleLineH;
-    });
-
-    // ---------- Description pill (custom text or fallback) ----------
+    // ---------- Description pill (custom text or fallback) — dinâmico ----------
     const rawDesc =
       (data.textoDestaque && data.textoDestaque.trim()) ||
       (data.requisitos || "")
@@ -207,17 +196,56 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
         .filter(Boolean)[0] ||
       "Confira os detalhes desta oportunidade.";
 
-    const descPillH = 76;
-    const descPillY = descBoxY;
     const descPillX = SIDE_MARGIN;
     const descPillW = W - SIDE_MARGIN * 2;
+    const iconR = 26;
+    const descMaxW = descPillW - (iconR * 2 + 60);
+
+    // Ajuste dinâmico: escolhe fonte e wrap para caber em até 4 linhas
+    let descFont = 26;
+    let descLines: string[] = [];
+    const MAX_LINES = 4;
+    while (descFont >= 15) {
+      descLines = wrap(rawDesc, descMaxW, `500 ${descFont}px Montserrat, Arial`);
+      if (descLines.length <= MAX_LINES) break;
+      descFont -= 1;
+    }
+    if (descLines.length > MAX_LINES) {
+      descLines = descLines.slice(0, MAX_LINES);
+      ctx.font = `500 ${descFont}px Montserrat, Arial`;
+      let last = descLines[MAX_LINES - 1];
+      while (ctx.measureText(last + "…").width > descMaxW && last.length > 4) last = last.slice(0, -1);
+      descLines[MAX_LINES - 1] = last + "…";
+    }
+
+    const descLineH = descFont * 1.25;
+    const descPadY = 22;
+    const descPillH = Math.max(76, descLines.length * descLineH + descPadY * 2);
+    const descPillY = buttonsY - 30 - descPillH;
+
+    // Título: reposicionado dinamicamente acima do balão de destaque (um pouco mais pra cima)
+    const titleBottom = descPillY - 48;
+    const titleLineH = titleFont * 1.0;
+
+    ctx.font = `800 ${titleFont}px Montserrat, Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "#FFFFFF";
+    const allTitleLines = ["Vaga para", ...cargoLines];
+    let ty = titleBottom - (allTitleLines.length - 1) * titleLineH;
+    allTitleLines.forEach((line) => {
+      ctx.fillText(line, W / 2, ty);
+      ty += titleLineH;
+    });
+
+    // Pill outline
     ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(descPillX, descPillY, descPillW, descPillH, descPillH / 2);
+    ctx.roundRect(descPillX, descPillY, descPillW, descPillH, Math.min(descPillH / 2, 44));
     ctx.stroke();
+
     // icon circle (lime)
-    const iconR = 26;
     const iconCX = descPillX + 20 + iconR;
     const iconCY = descPillY + descPillH / 2;
     ctx.fillStyle = TRAMASSO_GREEN;
@@ -234,30 +262,24 @@ export const CartazPreviewTramasso = ({ data }: Props) => {
     ctx.moveTo(iconCX + 9, iconCY - 9);
     ctx.lineTo(iconCX - 9, iconCY + 9);
     ctx.stroke();
-    // Ponta da seta
     ctx.beginPath();
     ctx.moveTo(iconCX - 9, iconCY + 1);
     ctx.lineTo(iconCX - 9, iconCY + 9);
     ctx.lineTo(iconCX - 1, iconCY + 9);
     ctx.stroke();
 
-    // desc text
+    // desc text — múltiplas linhas centralizadas verticalmente
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    let descFont = 25;
-    const descMaxW = descPillW - (iconR * 2 + 60);
     ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    while (ctx.measureText(rawDesc).width > descMaxW && descFont > 15) {
-      descFont -= 1;
-      ctx.font = `500 ${descFont}px Montserrat, Arial`;
-    }
-    let shown = rawDesc;
-    if (ctx.measureText(shown).width > descMaxW) {
-      while (ctx.measureText(shown + "…").width > descMaxW && shown.length > 4) shown = shown.slice(0, -1);
-      shown = shown + "…";
-    }
-    ctx.fillText(shown, iconCX + iconR + 20, iconCY);
+    const textX = iconCX + iconR + 20;
+    const totalTextH = descLines.length * descLineH;
+    let tyd = iconCY - totalTextH / 2 + descLineH / 2;
+    descLines.forEach((line) => {
+      ctx.fillText(line, textX, tyd);
+      tyd += descLineH;
+    });
 
     // ---------- Bottom row: location pill | code pill | candidate-se ----------
     const rowY = buttonsY;
