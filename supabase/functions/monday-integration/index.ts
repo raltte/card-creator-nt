@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+import { sanitizeItemName } from "../_shared/monday.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +16,10 @@ serve(async (req) => {
   try {
     const { action, cartazData } = await req.json();
     const mondayApiToken = Deno.env.get('MONDAY_API_TOKEN');
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     if (!mondayApiToken) {
       throw new Error('Monday.com API token não configurado');
@@ -23,6 +29,48 @@ serve(async (req) => {
     const BOARD_ID = "7854209602";
 
     console.log('Enviando cartaz para Monday.com:', cartazData);
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const modeloCartaz = cartazData.modeloCartaz || cartazData.clientTemplate || 'padrao';
+    const tipoContrato = cartazData.tipoContrato || 'Efetivo';
+    const codigo = String(cartazData.codigo || cartazData.codigoPS || '').trim();
+    const cargo = String(cartazData.cargo || cartazData.nomeVaga || 'Cartaz').trim();
+    const local = String(cartazData.local || [cartazData.cidade, cartazData.estado].filter(Boolean).join(' - ') || '').trim();
+    const contato = cartazData.contato || null;
+    const linkVaga = cartazData.linkVaga || (codigo ? `https://novotemporh.com.br/vagas/?search=${encodeURIComponent(codigo)}` : null);
+    const validUserId = cartazData.userId && uuidRegex.test(cartazData.userId) ? cartazData.userId : null;
+
+    const { data: solicitacao, error: insertError } = await supabase
+      .from('solicitacoes_cartaz')
+      .insert({
+        codigo: codigo || `LEG-${Date.now()}`,
+        cargo,
+        tipo_contrato: tipoContrato,
+        modelo_cartaz: modeloCartaz,
+        local: local || null,
+        contato_tipo: contato?.tipo || null,
+        contato_valor: contato?.valor || null,
+        requisitos: cartazData.requisitos || null,
+        atividades: cartazData.atividades || null,
+        link_vaga: linkVaga,
+        email_solicitante: cartazData.emailSolicitante || null,
+        is_pcd: cartazData.isPcd || false,
+        status: 'pendente_imagem',
+        user_id: validUserId,
+      })
+      .select('id')
+      .single();
+
+    if (insertError) {
+      console.error('Erro ao registrar solicitação antes do Monday:', insertError);
+      throw insertError;
+    }
+
+    const origin = req.headers.get('origin')
+      || req.headers.get('referer')?.split('/').slice(0, 3).join('/')
+      || Deno.env.get('APP_URL')
+      || 'https://novotemporh.raltte.com';
+    const finalizacaoUrl = `${origin}/finalizar/${solicitacao.id}`;
 
     // Buscar as colunas e grupos do quadro
     const boardQuery = `
@@ -79,14 +127,14 @@ serve(async (req) => {
         
         // texto6__1 - codigo vaga
         case "texto6__1":
-          if (cartazData.codigo) {
-            columnValues[col.id] = cartazData.codigo;
+          if (codigo) {
+            columnValues[col.id] = codigo;
           }
           break;
           
         // status0__1 - tipo de cartaz (tradicional, compilado, weg, marisa)
         case "status0__1":
-          if (cartazData.modeloCartaz) {
+          if (modeloCartaz) {
             const tipoMap: Record<string, string> = {
               "padrao": "TRADICIONAL",
               "marisa": "Marisa",
@@ -97,26 +145,26 @@ serve(async (req) => {
               "compilado-marisa": "Marisa COMPILADO",
               "tramasso": "TRAMASSOIDH"
             };
-            const tipo = tipoMap[cartazData.modeloCartaz] || "TRADICIONAL";
+            const tipo = tipoMap[modeloCartaz] || "TRADICIONAL";
             columnValues[col.id] = { label: tipo };
           }
           break;
           
         // status__1 - tipo de contrato
         case "status__1":
-          if (cartazData.tipoContrato) {
+          if (tipoContrato) {
             if (col.type === "dropdown" || col.type === "color") {
-              columnValues[col.id] = {"labels": [cartazData.tipoContrato]};
+              columnValues[col.id] = {"labels": [tipoContrato]};
             } else {
-              columnValues[col.id] = cartazData.tipoContrato;
+              columnValues[col.id] = tipoContrato;
             }
           }
           break;
           
         // texto8__1 - cidade estado
         case "texto8__1":
-          if (cartazData.local) {
-            columnValues[col.id] = cartazData.local;
+          if (local) {
+            columnValues[col.id] = local;
           }
           break;
           
@@ -143,12 +191,17 @@ serve(async (req) => {
           
         // link__1 - link da vaga (gerado automaticamente com código)
         case "link__1":
-          if (cartazData.codigo) {
+          if (linkVaga) {
             columnValues[col.id] = {
-              "url": `https://novotemporh.com.br/vagas/?search=${cartazData.codigo}`,
+              "url": linkVaga,
               "text": "Link da Vaga"
             };
           }
+          break;
+
+        // text_mkzwcjb9 - link de finalização
+        case "text_mkzwcjb9":
+          columnValues[col.id] = finalizacaoUrl;
           break;
           
         // e_mail__1 - e-mail solicitante
@@ -171,7 +224,7 @@ serve(async (req) => {
         create_item (
           board_id: ${BOARD_ID},
           ${selectedGroupId ? `group_id: "${selectedGroupId}",` : ''}
-          item_name: "${cartazData.cargo || 'Cartaz'} - ${cartazData.local || ''}",
+            item_name: "${sanitizeItemName(`${cargo} - ${local || ''}`)}",
           column_values: ${JSON.stringify(JSON.stringify(columnValues))}
         ) {
           id
@@ -200,8 +253,17 @@ serve(async (req) => {
       throw new Error(`Erro do Monday.com: ${result.errors[0].message}`);
     }
 
+    const itemId = result.data?.create_item?.id;
+
+    if (itemId) {
+      await supabase
+        .from('solicitacoes_cartaz')
+        .update({ monday_item_id: itemId })
+        .eq('id', solicitacao.id);
+    }
+
     // Se há uma imagem, fazer upload como anexo
-    if (cartazData.image && result.data?.create_item?.id) {
+    if (cartazData.image && itemId) {
       console.log('Fazendo upload da imagem do cartaz...');
       
       try {
@@ -223,7 +285,7 @@ serve(async (req) => {
           const uploadMutation = `
             mutation ($file: File!) {
               add_file_to_column (
-                item_id: ${result.data.create_item.id},
+                item_id: ${itemId},
                 column_id: "${fileColumn.id}",
                 file: $file
               ) {
@@ -257,7 +319,9 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      itemId: result.data?.create_item?.id,
+      itemId,
+      solicitacaoId: solicitacao.id,
+      finalizacaoUrl,
       message: 'Cartaz enviado para Monday.com com sucesso!'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
