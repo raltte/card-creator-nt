@@ -71,10 +71,13 @@ serve(async (req) => {
       }
     }
 
+    const primeiro = resultados[0];
     return new Response(JSON.stringify({
       success: true,
       total: registros.length,
       resultados,
+      // Backwards-compat: quando chamado com um único solicitacaoId
+      novoLink: primeiro?.ok ? primeiro.link : undefined,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
