@@ -84,9 +84,9 @@ const Finalizar = () => {
       setSolicitacao(updated);
       atualizarPreview(updated);
       toast({ title: 'Logo enviado!', description: 'Logo do cliente aplicado ao cartaz e salvo no banco.' });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast({ title: 'Erro', description: 'Falha ao enviar o logo do cliente.', variant: 'destructive' });
+      toast({ title: 'Erro', description: e?.message || 'Falha ao enviar o logo do cliente.', variant: 'destructive' });
     } finally {
       setUploadingLogo(false);
     }
